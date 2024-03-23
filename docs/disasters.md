@@ -56,26 +56,61 @@ font-size: 90px;
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
   <div class="card">${
-    resize((width) => Plot.plot({
-  marginLeft: 100,
-  grid: true,
+Plot.plot({
+  height: 500,
+  marginLeft: 150,
   x: {
-    axis: "top",
-    round: true,
     label: "Number of disasters per category",
     labelAnchor: "center",
   },
-  color: {
-    range: ["#e15759", "#4e79a7"]
-  },
   marks: [
-    Plot.barX(counts, {
-      y: "disaster",
-      x: "amount",
-    }),
-    Plot.ruleX([0])
+    Plot.barX(
+      counts,
+      Plot.groupY(
+        { x: "max" },
+        {
+          x: (val) => val.amount / totalCount,
+          y: "disaster",
+          sort: { y: "x", reverse: true }
+        }
+      )
+    )
   ]
-}))
+})
+  }</div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
+  <div class="card">${
+    Plot.plot({
+    y: {
+      label: "Amount of disasters"
+    },
+    marks: [
+      Plot.areaY(
+        disastersPerYear,
+        Plot.stackY({
+          x: "year",
+          y: "disasters",
+          fill: "disaster",
+          z: "disaster",
+          title: "disaster",
+          order: "max",
+          reverse: true,
+          stroke: "#ddd"
+        })
+      ),
+      Plot.ruleY([0])
+    ],
+    style: {
+      pointerEvents: "all"
+    },
+    color: {
+      legend: true,
+      columns: "110px",
+      width: 640
+    }
+  })
   }</div>
 </div>
 
@@ -94,10 +129,49 @@ const groupedDisasters = Object.groupBy(
 ```
 
 ```js
-const counts = Object.keys(groupedDisasters).reduce((acc, key) => {
-  acc.push({ disaster: key, amount: groupedDisasters[key].length });
-  return acc;
-}, []);
+const disastersPerYear = Object.entries(groupedDisasters).reduce(
+  (acc, [disasterType, disasterList]) => {
+    let obj = new Object();
+    let miny = Number.MAX_VALUE;
+    let maxy = Number.MIN_VALUE;
+    disasterList.forEach((d) => {
+      let y = parseInt(d["Start Year"]);
+      if (y in obj) {
+        obj[y] += 1;
+      } else {
+        obj[y] = 1;
+      }
+      if (y < miny) {
+        miny = y;
+      }
+      if (y > maxy) {
+        maxy = y;
+      }
+    });
+    for (let i = miny; i < maxy; i++) {
+      let nrOfDisasters = 0;
+      if (i in obj) {
+        nrOfDisasters = obj[i];
+      }
+      acc.push({ disaster: disasterType, year: i, disasters: nrOfDisasters });
+    }
+    return acc;
+  },
+  []
+);
+```
+
+```js
+const counts = Object.keys(groupedDisasters)
+  .reduce((acc, key) => {
+    acc.push({ disaster: key, amount: groupedDisasters[key].length });
+    return acc;
+  }, [])
+  .sort((a, b) => b.amount - a.amount);
+```
+
+```js
+const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 ```
 
 ---
