@@ -7,6 +7,7 @@ async function text(url) {
   return response.text();
 }
 
+
 // “Top” vehicles
 const TOP_LAUNCH_VEHICLES = new Set([
   "Falcon9",
