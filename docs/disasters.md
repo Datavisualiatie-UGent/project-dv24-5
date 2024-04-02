@@ -49,12 +49,10 @@ font-size: 90px;
 </style>
 
 <div class="hero">
-  <h1>Hello, Observable Framework</h1>
-  <h2>Welcome to your new project! Edit&nbsp;<code style="font-size: 90%;">docs/index.md</code> to change this page.</h2>
-  <a href="https://observablehq.com/framework/getting-started" target="_blank">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+  <h2>Disasters</h2>
 </div>
 
-<div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">${
 Plot.plot({
   height: 500,
@@ -80,7 +78,21 @@ Plot.plot({
   }</div>
 </div>
 
-<div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
+```js
+const potDisasters = Object.keys(groupedDisasters);
+```
+
+```js
+const selectedDisasters = view(
+  Inputs.checkbox(
+    potDisasters,
+    { label: "Choose Disasters:", value: potDisasters },
+    ""
+  )
+);
+```
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">${
     Plot.plot({
     y: {
@@ -114,8 +126,39 @@ Plot.plot({
   }</div>
 </div>
 
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${
+      Plot.plot({
+    style: "overflow: visible;",
+    y: {
+      label: "Amount of disasters"
+    },
+    marks: [
+      Plot.ruleY([0]),
+      Plot.lineY(disastersPerYear, {
+        x: "year",
+        y: "disasters",
+        stroke: "disaster",
+        title: "disaster",
+        order: "max",
+        reverse: true,
+        tip: true,
+      }),
+    ],
+    color: {
+        legend: true,
+      }
+  })
+      }</div>
+</div>
+
 ```js
-const disasters = FileAttachment("emdat_disasters.csv").csv({
+const nonClimateDisasters = ["Earthquake", "Volcanic activity", "Impact"];
+```
+
+```js
+const emdat_disasters = FileAttachment("emdat_disasters.csv").csv({
   typed: true,
   headers: true,
 });
@@ -123,14 +166,26 @@ const disasters = FileAttachment("emdat_disasters.csv").csv({
 
 ```js
 const groupedDisasters = Object.groupBy(
-  disasters.filter((el) => el["Disaster Subgroup"] != "Biological"),
-  ({ "Disaster Type": type }) => type
+  // Filter based on necessary items
+  emdat_disasters.filter((el) => {
+    const nonBiological = el["Disaster Subgroup"] != "Biological";
+    const correctMeasurement =
+      el["Start Year"] >= 1988 && el["Start Year"] < 2024;
+    const isClimate = !nonClimateDisasters.includes(el["Disaster Type"]);
+    return nonBiological && correctMeasurement && isClimate;
+  }),
+  ({ "Disaster Type": type }) => {
+    if (type.includes("Mass movement")) return "Mass Movement";
+    if (type.includes("Glacial")) return "Flood";
+    return type;
+  }
 );
 ```
 
 ```js
 const disastersPerYear = Object.entries(groupedDisasters).reduce(
   (acc, [disasterType, disasterList]) => {
+    if (!selectedDisasters.includes(disasterType)) return acc;
     let obj = new Object();
     let miny = Number.MAX_VALUE;
     let maxy = Number.MIN_VALUE;
