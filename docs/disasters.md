@@ -158,7 +158,7 @@ const nonClimateDisasters = ["Earthquake", "Volcanic activity", "Impact"];
 ```
 
 ```js
-const emdat_disasters = FileAttachment("emdat_disasters.csv").csv({
+const emdat_disasters = FileAttachment("data/emdat_disasters.csv").csv({
   typed: true,
   headers: true,
 });
