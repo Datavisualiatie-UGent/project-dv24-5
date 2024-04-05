@@ -356,4 +356,56 @@ const confirmedAffectedPersonsPerYear = Object.entries(groupedDisasters).reduce(
 
 ```
 
+```js
+const confirmedAffectedPersonsPerMonth = Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
+  
+  if (!selectedDisasters.includes(disasterType)) {return acc};
+  let json = new Object();
+  let minYear = Number.MAX_VALUE;
+  let maxYear = Number.MIN_VALUE;
+  disasterList.forEach(d => {
+    
+    const month = parseInt(d["Start Month"]) - 1;
+    const year = parseInt(d["Start Year"]);
+    const date = year + (month/12);
+    let deaths = parseInt(d["Total Deaths"]);
+    let injured = parseInt(d["No. Injured"]);
+    let affected = parseInt(d["No. Affected"]);
+    if (!deaths) deaths = 0;
+    if (!injured) injured = 0;
+    if (!affected) affected = 0;
+
+    if (year > maxYear) {
+      maxYear = year;
+    } 
+    if (year < minYear) {
+      minYear = year;
+    }
+
+    if (date in json) {
+      json[date]["deaths"] += deaths;
+      json[date]["injured"] += injured;
+      json[date]["affected"] += affected;
+    } else {
+      json[date] = new Object({deaths : deaths, injured : injured, affected : affected});
+    }
+  });
+  for (let i = minYear; i <= maxYear; i++) {
+    for(let month = 1; month <= 12; month++) {
+      if (i + (month/12) in json) {
+        acc.push({
+          disaster: disasterType,
+          date: i + (month/12),
+          deaths : json[i + (month/12)]["deaths"], 
+          injured : json[i + (month/12)]["injured"], 
+          affected : json[i + (month/12)]["affected"]
+        });
+      }
+    }
+  }
+  return acc;
+}, []);
+
+```
+
 ---
