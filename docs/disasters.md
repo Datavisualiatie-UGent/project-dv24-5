@@ -153,6 +153,85 @@ const selectedDisasters = view(
       }</div>
 </div>
 
+
+
+<div class="grid grid-rows-3">
+  <div class="card">
+    ${
+      Plot.plot({
+    style: "overflow: visible;",
+    y: {
+      label: "Deaths"
+    },
+    marks: [
+      Plot.ruleY([0]),
+      Plot.lineY(confirmedAffectedPersonsPerYear, {
+        x: "year",
+        y: "deaths",
+        stroke: "disaster",
+        title: "disaster",
+        order: "max",
+        reverse: true,
+        tip: true,
+      }),
+    ],
+    color: {
+        legend: true,
+      }
+  })
+      }</div>
+  <div class="card">
+    ${
+      Plot.plot({
+    style: "overflow: visible;",
+    y: {
+      label: "People injured"
+    },
+    marks: [
+      Plot.ruleY([0]),
+      Plot.lineY(confirmedAffectedPersonsPerYear, {
+        x: "year",
+        y: "injured",
+        stroke: "disaster",
+        title: "disaster",
+        order: "max",
+        reverse: true,
+        tip: true,
+      }),
+    ],
+    color: {
+        legend: true,
+      }
+  })
+      }</div>
+
+  <div class="card">
+    ${
+      Plot.plot({
+    style: "overflow: visible;",
+    y: {
+      label: "People affected"
+    },
+    marks: [
+      Plot.ruleY([0]),
+      Plot.lineY(confirmedAffectedPersonsPerYear, {
+        x: "year",
+        y: "affected",
+        stroke: "disaster",
+        title: "disaster",
+        order: "max",
+        reverse: true,
+        tip: true,
+      }),
+    ],
+    color: {
+        legend: true,
+      }
+  })
+      }</div>
+</div>
+
+
 ```js
 const nonClimateDisasters = ["Earthquake", "Volcanic activity", "Impact"];
 ```
@@ -227,6 +306,54 @@ const counts = Object.keys(groupedDisasters)
 
 ```js
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
+```
+
+```js
+const confirmedAffectedPersonsPerYear = Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
+  
+  if (!selectedDisasters.includes(disasterType)) {return acc};
+  let json = new Object();
+  let minYear = Number.MAX_VALUE;
+  let maxYear = Number.MIN_VALUE;
+  disasterList.forEach(d => {
+    
+    const year = parseInt(d["Start Year"]);
+    let deaths = parseInt(d["Total Deaths"]);
+    let injured = parseInt(d["No. Injured"]);
+    let affected = parseInt(d["No. Affected"]);
+    if (!deaths) deaths = 0;
+    if (!injured) injured = 0;
+    if (!affected) affected = 0;
+
+    if (year > maxYear) {
+      maxYear = year;
+    } 
+    if (year < minYear) {
+      minYear = year;
+    }
+
+    if (year in json) {
+      json[year]["deaths"] += deaths;
+      json[year]["injured"] += injured;
+      json[year]["affected"] += affected;
+    } else {
+      json[year] = new Object({deaths : deaths, injured : injured, affected : affected});
+    }
+  });
+  for (let i = minYear; i <= maxYear; i++) {
+      if (i in json) {
+        acc.push({
+          disaster: disasterType,
+          year : i, 
+          deaths : json[i]["deaths"], 
+          injured : json[i]["injured"], 
+          affected : json[i]["affected"]
+        });
+      }
+    }
+  return acc;
+}, []);
+
 ```
 
 ---
