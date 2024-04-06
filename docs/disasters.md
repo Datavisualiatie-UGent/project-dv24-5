@@ -48,312 +48,90 @@ font-size: 90px;
 
 </style>
 
-<div class="hero">
-  <h2>Disasters</h2>
-</div>
+```js
+import {getGroupedDisasters, getDisastersPerYear, getConfirmedAffectedPersonsPerYear} from "./process_data.js";
 
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">${
-Plot.plot({
-  height: 500,
-  marginLeft: 150,
-  x: {
-    label: "Number of disasters per category",
-    labelAnchor: "center",
-  },
-  marks: [
-    Plot.barX(
-      counts,
-      Plot.groupY(
-        { x: "max" },
-        {
-          x: (val) => val.amount / totalCount,
-          y: "disaster",
-          sort: { y: "x", reverse: true }
-        }
-      )
-    )
-  ]
-})
-  }</div>
+const nonClimateDisasters = ["Earthquake", "Volcanic activity", "Impact"];
+
+const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
+    typed: true,
+    headers: true,
+});
+
+const groupedDisasters = getGroupedDisasters(emdat_disasters, nonClimateDisasters)
+const disastersPerYear = getDisastersPerYear(groupedDisasters)
+const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(groupedDisasters)
+
+const counts = Object.keys(groupedDisasters)
+    .reduce((acc, key) => {
+        acc.push({ disaster: key, amount: groupedDisasters[key].length });
+        return acc;
+    }, [])
+    .sort((a, b) => b.amount - a.amount);
+
+const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
+```
+
+````js
+import {bumpChart} from "./components/bump_chart.js";
+import {areaChart} from "./components/area_chart.js";
+import {lineChart} from "./components/line_chart.js";
+import {numberOfDisastersPerCategory} from "./components/bar_chart.js";
+````
+
+<div class="grid">
+    <div class="card">
+        ${resize((width) => bumpChart(disastersPerYear.filter(disaster => disaster["year"] >= 2010), {width}))}
+    </div>
 </div>
 
 ```js
 const potDisasters = Object.keys(groupedDisasters);
-```
 
-```js
 const selectedDisasters = view(
-  Inputs.checkbox(
-    potDisasters,
-    { label: "Choose Disasters:", value: potDisasters },
-    ""
-  )
+    Inputs.checkbox(
+        potDisasters,
+        {label: "Choose Disasters:", value: potDisasters},
+        ""
+    )
 );
 ```
 
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">${
-    Plot.plot({
-    y: {
-      label: "Amount of disasters"
-    },
-    marks: [
-      Plot.areaY(
-        disastersPerYear,
-        Plot.stackY({
-          x: "year",
-          y: "disasters",
-          fill: "disaster",
-          z: "disaster",
-          title: "disaster",
-          order: "max",
-          reverse: true,
-          stroke: "#ddd"
-        })
-      ),
-      Plot.ruleY([0])
-    ],
-    style: {
-      pointerEvents: "all"
-    },
-    color: {
-      legend: true,
-      columns: "110px",
-      width: 640
-    }
-  })
-  }</div>
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "disasters", "Amount of disasters")}
+    </div>
+    <div class="card">
+        ${lineChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "disasters", "Amount of disasters")}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${lineChart(confirmedAffectedPersonsPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "deaths", "Amount of deaths")}
+    </div>
+   <div class="card">
+        ${lineChart(confirmedAffectedPersonsPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "injured", "People injured")}
+    </div>
+</div>
+
+<div class="grid">
+     <div class="card">
+        ${lineChart(confirmedAffectedPersonsPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "affected", "People affected")}
+    </div>
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${
-      Plot.plot({
-    style: "overflow: visible;",
-    y: {
-      label: "Amount of disasters"
-    },
-    marks: [
-      Plot.ruleY([0]),
-      Plot.lineY(disastersPerYear, {
-        x: "year",
-        y: "disasters",
-        stroke: "disaster",
-        title: "disaster",
-        order: "max",
-        reverse: true,
-        tip: true,
-      }),
-    ],
-    color: {
-        legend: true,
-      }
-  })
-      }</div>
+    ${numberOfDisastersPerCategory(counts, totalCount)}
+  </div>
 </div>
 
 
-
-<div class="grid grid-rows-3">
-  <div class="card">
-    ${
-      Plot.plot({
-    style: "overflow: visible;",
-    y: {
-      label: "Deaths"
-    },
-    marks: [
-      Plot.ruleY([0]),
-      Plot.lineY(confirmedAffectedPersonsPerYear, {
-        x: "year",
-        y: "deaths",
-        stroke: "disaster",
-        title: "disaster",
-        order: "max",
-        reverse: true,
-        tip: true,
-      }),
-    ],
-    color: {
-        legend: true,
-      }
-  })
-      }</div>
-  <div class="card">
-    ${
-      Plot.plot({
-    style: "overflow: visible;",
-    y: {
-      label: "People injured"
-    },
-    marks: [
-      Plot.ruleY([0]),
-      Plot.lineY(confirmedAffectedPersonsPerYear, {
-        x: "year",
-        y: "injured",
-        stroke: "disaster",
-        title: "disaster",
-        order: "max",
-        reverse: true,
-        tip: true,
-      }),
-    ],
-    color: {
-        legend: true,
-      }
-  })
-      }</div>
-
-  <div class="card">
-    ${
-      Plot.plot({
-    style: "overflow: visible;",
-    y: {
-      label: "People affected"
-    },
-    marks: [
-      Plot.ruleY([0]),
-      Plot.lineY(confirmedAffectedPersonsPerYear, {
-        x: "year",
-        y: "affected",
-        stroke: "disaster",
-        title: "disaster",
-        order: "max",
-        reverse: true,
-        tip: true,
-      }),
-    ],
-    color: {
-        legend: true,
-      }
-  })
-      }</div>
-</div>
-
-
-```js
-const nonClimateDisasters = ["Earthquake", "Volcanic activity", "Impact"];
-```
-
-```js
-const emdat_disasters = FileAttachment("data/emdat_disasters.csv").csv({
-  typed: true,
-  headers: true,
-});
-```
-
-```js
-const groupedDisasters = Object.groupBy(
-  // Filter based on necessary items
-  emdat_disasters.filter((el) => {
-    const nonBiological = el["Disaster Subgroup"] != "Biological";
-    const correctMeasurement =
-      el["Start Year"] >= 1988 && el["Start Year"] < 2024;
-    const isClimate = !nonClimateDisasters.includes(el["Disaster Type"]);
-    return nonBiological && correctMeasurement && isClimate;
-  }),
-  ({ "Disaster Type": type }) => {
-    if (type.includes("Mass movement")) return "Mass Movement";
-    if (type.includes("Glacial")) return "Flood";
-    return type;
-  }
-);
-```
-
-```js
-const disastersPerYear = Object.entries(groupedDisasters).reduce(
-  (acc, [disasterType, disasterList]) => {
-    if (!selectedDisasters.includes(disasterType)) return acc;
-    let obj = new Object();
-    let miny = Number.MAX_VALUE;
-    let maxy = Number.MIN_VALUE;
-    disasterList.forEach((d) => {
-      let y = parseInt(d["Start Year"]);
-      if (y in obj) {
-        obj[y] += 1;
-      } else {
-        obj[y] = 1;
-      }
-      if (y < miny) {
-        miny = y;
-      }
-      if (y > maxy) {
-        maxy = y;
-      }
-    });
-    for (let i = miny; i < maxy; i++) {
-      let nrOfDisasters = 0;
-      if (i in obj) {
-        nrOfDisasters = obj[i];
-      }
-      acc.push({ disaster: disasterType, year: i, disasters: nrOfDisasters });
-    }
-    return acc;
-  },
-  []
-);
-```
-
-```js
-const counts = Object.keys(groupedDisasters)
-  .reduce((acc, key) => {
-    acc.push({ disaster: key, amount: groupedDisasters[key].length });
-    return acc;
-  }, [])
-  .sort((a, b) => b.amount - a.amount);
-```
-
-```js
-const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
-```
-
-```js
-const confirmedAffectedPersonsPerYear = Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
-  
-  if (!selectedDisasters.includes(disasterType)) {return acc};
-  let json = new Object();
-  let minYear = Number.MAX_VALUE;
-  let maxYear = Number.MIN_VALUE;
-  disasterList.forEach(d => {
-    
-    const year = parseInt(d["Start Year"]);
-    let deaths = parseInt(d["Total Deaths"]);
-    let injured = parseInt(d["No. Injured"]);
-    let affected = parseInt(d["No. Affected"]);
-    if (!deaths) deaths = 0;
-    if (!injured) injured = 0;
-    if (!affected) affected = 0;
-
-    if (year > maxYear) {
-      maxYear = year;
-    } 
-    if (year < minYear) {
-      minYear = year;
-    }
-
-    if (year in json) {
-      json[year]["deaths"] += deaths;
-      json[year]["injured"] += injured;
-      json[year]["affected"] += affected;
-    } else {
-      json[year] = new Object({deaths : deaths, injured : injured, affected : affected});
-    }
-  });
-  for (let i = minYear; i <= maxYear; i++) {
-      if (i in json) {
-        acc.push({
-          disaster: disasterType,
-          year : i, 
-          deaths : json[i]["deaths"], 
-          injured : json[i]["injured"], 
-          affected : json[i]["affected"]
-        });
-      }
-    }
-  return acc;
-}, []);
-
-```
 
 ---
