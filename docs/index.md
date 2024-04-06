@@ -44,8 +44,23 @@ toc: false
 
 </style>
 
+```js
+const fp = await FileAttachment("data/family-planning.csv").csv({typed: true, header: true});
+var land = await FileAttachment("data/land.json").json();
+
+const countries = await FileAttachment("data/countries.json").json();
+
+import {worldMap} from './components/world_map_chart.js';
+```
 <div class="hero">
   <h1>Hello, Observable Framework</h1>
   <h2>Welcome to your new project! Edit&nbsp;<code style="font-size: 90%;">docs/index.md</code> to change this page.</h2>
   <a href="https://observablehq.com/framework/getting-started" target="_blank">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+</div>
+
+
+<div class="grid">
+    <div class="card">
+    ${worldMap(fp, land, countries)}
+    </div>
 </div>
