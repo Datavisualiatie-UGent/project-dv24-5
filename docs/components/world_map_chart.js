@@ -54,11 +54,49 @@ export function choroplethWorldMap(
             Plot.graticule(),
             Plot.geo(countries, {
                 fill: (d) => byName[d.properties.name]?.[disaster],
-                stroke: "currentColor",
+                stroke: "grey",
                 strokeWidth: 0.25,
                 dx: 1,
                 dy: 1,
                 title: (d) => `${d.properties.name}: ${byName[d.properties.name]?.[disaster]}`
+            })
+        ]
+    })
+}
+
+
+export function scatterWorldMap(
+    data,
+    land,
+    countries,
+    {width, disaster="Earthquake", label="Total deaths"} = {}
+) {
+
+    return Plot.plot({
+        width,
+        projection: { type: "equal-earth", rotate: [-10, 0] },
+        color: {
+            unknown: "#ddd",
+            label: label,
+            legend: true,
+            scheme: "BuRd",
+            type: "linear"
+        },
+        //r: {range: [0, 3]},
+        marks: [
+            Plot.sphere({ fill: "#f0faff", stroke: "currentColor" }),
+            Plot.graticule(),
+            Plot.geo(countries, {
+                fill: "#ddd",
+                stroke: "currentColor",
+                strokeWidth: 0.25,
+            }),
+            Plot.dot(data[disaster], {
+                x: "Longitude",
+                y: "Latitude",
+                stroke: "Total Deaths",
+                r: "Total Deaths",
+                title: (d) => `${d["Country"]}: ${d["Start Year"]}`
             })
         ]
     })

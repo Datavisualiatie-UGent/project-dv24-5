@@ -51,16 +51,14 @@ font-size: 90px;
 ```js
 import {getGroupedDisasters, getDisastersPerYear, getConfirmedAffectedPersonsPerYear} from "./process_data.js";
 
-const nonClimateDisasters = ["Earthquake", "Volcanic activity", "Impact"];
-
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
     typed: true,
     headers: true,
 });
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters, nonClimateDisasters)
-const disastersPerYear = getDisastersPerYear(groupedDisasters)
-const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(groupedDisasters)
+const groupedDisasters = getGroupedDisasters(emdat_disasters)
+const disastersPerYear = getDisastersPerYear(emdat_disasters)
+const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(emdat_disasters)
 
 const counts = Object.keys(groupedDisasters)
     .reduce((acc, key) => {

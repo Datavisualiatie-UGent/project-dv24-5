@@ -1,16 +1,16 @@
-function filterDisasters(disasters, nonClimateDisasters) {
+function filterDisasters(disasters) {
     return disasters.filter((el) => {
         const nonBiological = el["Disaster Subgroup"] !== "Biological";
         const correctMeasurement = el["Start Year"] >= 1988 && el["Start Year"] < 2024;
-        const isClimate = !nonClimateDisasters.includes(el["Disaster Type"]);
+        const isClimate = !["Volcanic activity", "Impact"].includes(el["Disaster Type"]);
         return nonBiological && correctMeasurement && isClimate;
     })
 }
 
-export function getGroupedDisasters(disasters, nonClimateDisasters) {
+export function getGroupedDisasters(disasters) {
     return Object.groupBy(
         // Filter based on necessary items
-        filterDisasters(disasters, nonClimateDisasters),
+        filterDisasters(disasters),
         ({ "Disaster Type": type }) => {
             if (type.includes("Mass movement")) return "Mass Movement";
             if (type.includes("Glacial")) return "Flood";
@@ -19,7 +19,8 @@ export function getGroupedDisasters(disasters, nonClimateDisasters) {
     );
 }
 
-export function getDisastersPerYear(groupedDisasters) {
+export function getDisastersPerYear(disasters) {
+    const groupedDisasters = getGroupedDisasters(disasters)
     return Object.entries(groupedDisasters).reduce(
         (acc, [disasterType, disasterList]) => {
             let obj = {};
@@ -53,7 +54,8 @@ export function getDisastersPerYear(groupedDisasters) {
 }
 
 
-export function getConfirmedAffectedPersonsPerYear(groupedDisasters){
+export function getConfirmedAffectedPersonsPerYear(disasters){
+    const groupedDisasters = getGroupedDisasters(disasters)
     return Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
 
         let json = {};
@@ -100,17 +102,17 @@ export function getConfirmedAffectedPersonsPerYear(groupedDisasters){
 }
 
 
-function getGroupedDisastersByCountry(disasters, nonClimateDisasters) {
+function getGroupedDisastersByCountry(disasters) {
     return Object.groupBy(
-        filterDisasters(disasters, nonClimateDisasters),
+        filterDisasters(disasters),
         ({ "Country": country }) => {
             return country;
         }
     );
 }
 
-export function getTotalDisastersPerCountry(disasters, nonClimateDisasters) {
-    const groupedDisastersByCountry = getGroupedDisastersByCountry(disasters, nonClimateDisasters);
+export function getTotalDisastersPerCountry(disasters) {
+    const groupedDisastersByCountry = getGroupedDisastersByCountry(disasters);
     return Object.entries(groupedDisastersByCountry).reduce(
         (acc, [country, disasterList]) => {
             let disastersForCountry = {};
@@ -126,3 +128,4 @@ export function getTotalDisastersPerCountry(disasters, nonClimateDisasters) {
             return acc;
         }, []);
 }
+
