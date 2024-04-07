@@ -45,12 +45,21 @@ toc: false
 </style>
 
 ```js
-const fp = await FileAttachment("data/family-planning.csv").csv({typed: true, header: true});
 var land = await FileAttachment("data/land.json").json();
 
 const countries = await FileAttachment("data/countries.json").json();
 
-import {worldMap} from './components/world_map_chart.js';
+const nonClimateDisasters = ["Earthquake", "Volcanic activity", "Impact"];
+
+const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
+    typed: true,
+    headers: true,
+});
+
+import {getTotalDisastersPerCountry} from './process_data.js';
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters, nonClimateDisasters)
+
+import {choroplethWorldMap} from './components/world_map_chart.js';
 ```
 <div class="hero">
   <h1>Hello, Observable Framework</h1>
@@ -61,6 +70,15 @@ import {worldMap} from './components/world_map_chart.js';
 
 <div class="grid">
     <div class="card">
-    ${worldMap(fp, land, countries)}
+    ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width}))}
+    </div>
+</div>
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, 
+            {width, disaster: "Flood", label: "Total floods per country", scheme: "blues"}))}
+    </div>
+    <div class="card">
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width}))}
     </div>
 </div>
