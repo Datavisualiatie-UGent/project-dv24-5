@@ -74,11 +74,11 @@ import {choroplethWorldMap} from './components/world_map_chart.js';
     </div>
 </div>
 <div class="grid grid-cols-2">
-    <div class="card">
+    <div>
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, 
             {width, disaster: "Flood", label: "Total floods per country", scheme: "blues"}))}
     </div>
-    <div class="card">
+    <div>
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width}))}
     </div>
 </div>

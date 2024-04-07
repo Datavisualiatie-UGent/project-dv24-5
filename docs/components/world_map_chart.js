@@ -1,5 +1,25 @@
 import * as Plot from "npm:@observablehq/plot";
 
+
+const nameMapping = { // datasetName: countries.json name
+    "United States of America": "United States",
+    "Germany Federal Republic": "Germany",
+    "United Republic of Tanzania": "Tanzania",
+    "Soviet Union": "Russia",
+    "T�rkiye": "Turkey",
+    "Venezuela (Bolivarian Republic of)": "Venezuela",
+    "Iran (Islamic Republic of)": "Iran",
+    "Viet Nam": "Vietnam",
+    "China, Hong Kong Special Administrative Region": "China",
+    "Bolivia (Plurinational State of)": "Bolivia",
+    "C�te d�Ivoire": "Cote d'Ivoire",
+    "Democratic Republic of the Congo": "Congo",
+    "Taiwan (Province of China)": "Taiwan",
+    "People's Democratic Republic of Yemen": "Yemen",
+    "Netherlands (Kingdom of the)": "Netherlands",
+    "United Kingdom of Great Britain and Northern Ireland": "United Kingdom"
+}
+
 export function choroplethWorldMap(
     data,
     land,
@@ -8,8 +28,13 @@ export function choroplethWorldMap(
     ) {
     let byName = {};
     for (let i = 0; i < data.length; i++) {
-        byName[data[i].country] = data[i]
+        let country = data[i].country;
+        byName[nameMapping[country] ?? country] = data[i];
     }
+
+    // used to fill nameMapping
+    //const allCountries = countries.features.map(feature => feature.properties.name);
+    //const mismatches = Object.keys(byName).filter(country => !allCountries.includes(country))
 
     return Plot.plot({
         width,
@@ -28,12 +53,12 @@ export function choroplethWorldMap(
             //Plot.geo(land, { fill: "currentColor", dx: 1, dy: 1 }), // shade
             Plot.graticule(),
             Plot.geo(countries, {
-                fill: (d) => byName[d.properties.name] !== undefined ? byName[d.properties.name][disaster] : undefined,
+                fill: (d) => byName[d.properties.name]?.[disaster],
                 stroke: "currentColor",
                 strokeWidth: 0.25,
                 dx: 1,
                 dy: 1,
-                title: (d) => `${d.properties.name}: ${byName[d.properties.name] !== undefined ? byName[d.properties.name][disaster] : undefined ?? "No data"}`
+                title: (d) => `${d.properties.name}: ${byName[d.properties.name]?.[disaster]}`
             })
         ]
     })
