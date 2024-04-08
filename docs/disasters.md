@@ -49,39 +49,48 @@ font-size: 90px;
 </style>
 
 ```js
-import {getGroupedDisasters, getDisastersPerYear, getConfirmedAffectedPersonsPerYear} from "./process_data.js";
+import {
+  getGroupedDisasters,
+  getDisastersPerYear,
+  getConfirmedAffectedPersonsPerYear,
+} from "./process_data.js";
 
-const nonClimateDisasters = ["Earthquake", "Volcanic activity", "Impact"];
+const nonClimateDisasters = ["Impact"];
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
-    typed: true,
-    headers: true,
+  typed: true,
+  headers: true,
 });
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters, nonClimateDisasters)
-const disastersPerYear = getDisastersPerYear(groupedDisasters)
-const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(groupedDisasters)
+const groupedDisasters = getGroupedDisasters(
+  emdat_disasters,
+  nonClimateDisasters
+);
+const disastersPerYear = getDisastersPerYear(groupedDisasters);
+const confirmedAffectedPersonsPerYear =
+  getConfirmedAffectedPersonsPerYear(groupedDisasters);
 
 const counts = Object.keys(groupedDisasters)
-    .reduce((acc, key) => {
-        acc.push({ disaster: key, amount: groupedDisasters[key].length });
-        return acc;
-    }, [])
-    .sort((a, b) => b.amount - a.amount);
+  .reduce((acc, key) => {
+    acc.push({ disaster: key, amount: groupedDisasters[key].length });
+    return acc;
+  }, [])
+  .sort((a, b) => b.amount - a.amount);
 
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 ```
 
-````js
-import {bumpChart} from "./components/bump_chart.js";
-import {areaChart} from "./components/area_chart.js";
-import {lineChart} from "./components/line_chart.js";
-import {numberOfDisastersPerCategory} from "./components/bar_chart.js";
-````
+```js
+import { bumpChart } from "./components/bump_chart.js";
+import { areaChart } from "./components/area_chart.js";
+import { lineChart } from "./components/line_chart.js";
+import { numberOfDisastersPerCategory } from "./components/bar_chart.js";
+import { getDisastersPerColor } from "./components/color_matching.js";
+```
 
 <div class="grid">
     <div class="card">
-        ${resize((width) => bumpChart(disastersPerYear.filter(disaster => disaster["year"] >= 2010), {width}))}
+        ${resize((width) => bumpChart(disastersPerYear.filter(disaster => disaster["year"] >= 2010), {width}, selectedAndColor))}
     </div>
 </div>
 
@@ -89,49 +98,51 @@ import {numberOfDisastersPerCategory} from "./components/bar_chart.js";
 const potDisasters = Object.keys(groupedDisasters);
 
 const selectedDisasters = view(
-    Inputs.checkbox(
-        potDisasters,
-        {label: "Choose Disasters:", value: potDisasters},
-        ""
-    )
+  Inputs.checkbox(
+    potDisasters,
+    { label: "Choose Disasters:", value: potDisasters },
+    ""
+  )
 );
+```
+
+```js
+const selectedAndColor = getDisastersPerColor(selectedDisasters);
 ```
 
 <div class="grid grid-cols-2">
     <div class="card">
         ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
-            "disasters", "Amount of disasters")}
+            "disasters", "Amount of disasters", selectedAndColor)}
     </div>
     <div class="card">
         ${lineChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
-            "disasters", "Amount of disasters")}
+            "disasters", "Amount of disasters", selectedAndColor)}
     </div>
 </div>
 
 <div class="grid grid-cols-2">
     <div class="card">
         ${lineChart(confirmedAffectedPersonsPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
-            "deaths", "Amount of deaths")}
+            "deaths", "Amount of deaths", selectedAndColor)}
     </div>
    <div class="card">
         ${lineChart(confirmedAffectedPersonsPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
-            "injured", "People injured")}
+            "injured", "People injured", selectedAndColor)}
     </div>
 </div>
 
 <div class="grid">
      <div class="card">
         ${lineChart(confirmedAffectedPersonsPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
-            "affected", "People affected")}
+            "affected", "People affected", selectedAndColor)}
     </div>
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${numberOfDisastersPerCategory(counts, totalCount)}
+    ${numberOfDisastersPerCategory(counts, totalCount, selectedAndColor)}
   </div>
 </div>
-
-
 
 ---
