@@ -67,11 +67,6 @@ import {choroplethWorldMap, scatterWorldMap} from './components/world_map_chart.
 </div>
 
 
-<div class="grid">
-    <div class="card">
-    ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width}))}
-    </div>
-</div>
 <div class="grid grid-cols-2">
     <div>
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, 
@@ -79,5 +74,10 @@ import {choroplethWorldMap, scatterWorldMap} from './components/world_map_chart.
     </div>
     <div>
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width}))}
+    </div>
+</div>
+<div class="grid">
+    <div class="card">
+    ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width}))}
     </div>
 </div>

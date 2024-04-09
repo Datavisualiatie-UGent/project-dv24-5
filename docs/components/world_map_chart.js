@@ -79,10 +79,9 @@ export function scatterWorldMap(
             unknown: "#ddd",
             label: label,
             legend: true,
-            scheme: "BuRd",
-            type: "linear"
+            scheme: "reds",
+            type: "linear",
         },
-        //r: {range: [0, 3]},
         marks: [
             Plot.sphere({ fill: "#f0faff", stroke: "currentColor" }),
             Plot.graticule(),
