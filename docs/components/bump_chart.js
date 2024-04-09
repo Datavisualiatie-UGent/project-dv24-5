@@ -2,8 +2,7 @@ import * as Plot from "npm:@observablehq/plot";
 import * as d3 from 'https://unpkg.com/d3?module'
 
 
-export function bumpChart(data, {x = "year", y = "disasters", z = "disaster", interval = "year", width} = {}) {
-
+export function bumpChart(data, {x = "year", y = "disasters", z = "disaster", interval = "year", width} = {}, [disasters, colors]) {
     const rank = Plot.stackY2({x, z, order: y, reverse: true});
     const [xmin, xmax] = d3.extent(Plot.valueof(data, x));
     return Plot.plot({
@@ -18,9 +17,6 @@ export function bumpChart(data, {x = "year", y = "disasters", z = "disaster", in
             axis: null,
             inset: 20,
             reverse: true
-        },
-        color: {
-            scheme: "spectral"
         },
         marks: [
             Plot.line(data, {
@@ -52,6 +48,10 @@ export function bumpChart(data, {x = "year", y = "disasters", z = "disaster", in
                 dx: 20,
                 textAnchor: "start"
             })
-        ]
+        ],
+        color: {
+            domain:disasters,
+            range:colors
+        },
     })
 }

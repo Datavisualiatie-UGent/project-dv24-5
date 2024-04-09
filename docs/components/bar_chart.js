@@ -1,6 +1,6 @@
 import * as Plot from "npm:@observablehq/plot";
 
-export function numberOfDisastersPerCategory(counts, totalCount) {
+export function numberOfDisastersPerCategory(counts, totalCount, [disasters, colors]) {
     return Plot.plot({
         height: 500,
         marginLeft: 150,
@@ -20,6 +20,10 @@ export function numberOfDisastersPerCategory(counts, totalCount) {
                     }
                 )
             )
-        ]
+        ],
+        color: {
+            domain:disasters,
+            range:colors,
+        }
     })
 }
