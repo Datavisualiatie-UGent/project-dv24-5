@@ -69,7 +69,7 @@ export function scatterWorldMap(
     data,
     land,
     countries,
-    {width, disaster="Earthquake", label="Total deaths"} = {}
+    {width, disaster="Earthquake", label="Total Deaths"} = {}
 ) {
 
     return Plot.plot({
@@ -93,8 +93,8 @@ export function scatterWorldMap(
             Plot.dot(data[disaster], {
                 x: "Longitude",
                 y: "Latitude",
-                stroke: "Total Deaths",
-                r: "Total Deaths",
+                stroke: label,
+                r: label,
                 title: (d) => `${d["Country"]}: ${d["Start Year"]}`
             })
         ]
