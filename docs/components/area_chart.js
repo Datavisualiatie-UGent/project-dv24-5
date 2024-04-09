@@ -1,6 +1,6 @@
 import * as Plot from "npm:@observablehq/plot";
 
-export function areaChart(data, y, label) {
+export function areaChart(data, y, label, [disasters, colors]) {
     return Plot.plot({
         y: {
             label: label
@@ -25,6 +25,8 @@ export function areaChart(data, y, label) {
             pointerEvents: "all"
         },
         color: {
+            domain:disasters,
+            range:colors,
             legend: true,
             columns: "110px",
             width: 640

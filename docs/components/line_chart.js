@@ -1,6 +1,6 @@
 import * as Plot from "npm:@observablehq/plot";
 
-export function lineChart(data, y, label) {
+export function lineChart(data, y, label, [disasters, colors]) {
     return Plot.plot({
         style: "overflow: visible;",
         y: {
@@ -19,6 +19,8 @@ export function lineChart(data, y, label) {
             }),
         ],
         color: {
+            domain:disasters,
+            range:colors,
             legend: true,
         }
     })
