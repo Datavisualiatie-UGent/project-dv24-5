@@ -52,7 +52,11 @@ font-size: 90px;
 import {
   getGroupedDisasters,
   getDisastersPerYear,
+  getDisastersAmountPerCountryPerYear,
   getConfirmedAffectedPersonsPerYear,
+  getColumnUniqueValues,
+  getCorrelation,
+  getTypeCorrelations
 } from "./process_data.js";
 
 const nonClimateDisasters = ["Impact"];
@@ -78,12 +82,17 @@ const counts = Object.keys(groupedDisasters)
   .sort((a, b) => b.amount - a.amount);
 
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
+
+const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear();
+
+const correlations = getTypeCorrelations();
 ```
 
 ```js
 import { bumpChart } from "./components/bump_chart.js";
 import { areaChart } from "./components/area_chart.js";
 import { lineChart } from "./components/line_chart.js";
+import { correlationMatrix } from "./components/correlation_matrix.js";
 import { numberOfDisastersPerCategory } from "./components/bar_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 ```
@@ -143,6 +152,11 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
   <div class="card">
     ${numberOfDisastersPerCategory(counts, totalCount, selectedAndColor)}
   </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${correlationMatrix(correlations)}
 </div>
 
 ---
