@@ -51,10 +51,8 @@ export function getDisastersPerYear(groupedDisasters) {
 
 export function getDisastersAmountPerCountryPerYear(emdat_disasters) {
   let obj = new Object();
-  let miny = Number.MAX_VALUE;
-  let maxy = Number.MIN_VALUE;
   emdat_disasters.forEach(d => {
-    let country = d["Country"];
+    let country = d["Subregion"];
     let y = parseInt(d["Start Year"]);
     let disasterType = d["Disaster Type"];
     if (country in obj) {
@@ -70,17 +68,11 @@ export function getDisastersAmountPerCountryPerYear(emdat_disasters) {
       obj[country][y] = new Object();
       obj[country][y][disasterType] = 1;
     }
-    if (y < miny) {
-      miny = y;
-    }
-    if (y > maxy) {
-      maxy = y;
-    }
   });
   return obj;
 }
 
-export function getColumnUniqueValues(name) {
+export function getColumnUniqueValues(name, emdat_disasters) {
   let list = [];
   for (var i in emdat_disasters) {
     if (!list.includes(emdat_disasters[i][name]) && (emdat_disasters[i][name] != undefined)) {
@@ -91,7 +83,7 @@ export function getColumnUniqueValues(name) {
 }
 
 
-export function getCorrelation(firstDisasterType, secondDisasterType) {
+export function getCorrelation(firstDisasterType, secondDisasterType, disastersAmountPerCountryPerYear) {
   let correlations = [];
   for (let country in disastersAmountPerCountryPerYear) {
     let x2 = [];
@@ -130,8 +122,10 @@ export function getCorrelation(firstDisasterType, secondDisasterType) {
 
     if (!(sigmaX == 0 && sigmaY == 0)) {   
       var correlation = ((n*sigmaXY) - (sigmaX*sigmaY))/Math.sqrt((n*sigmaX2 - (sigmaX*sigmaX)) * (n*sigmaY2 - (sigmaY*sigmaY)));
-      if(!isNaN(correlation))
-        correlations.push(correlation);   
+      if(isNaN(correlation))
+        correlations.push(0);
+      else       
+        correlations.push(correlation);  
     }
   }
   if (correlations.length == 0) {
@@ -140,11 +134,11 @@ export function getCorrelation(firstDisasterType, secondDisasterType) {
   return correlations.reduce((x, y) => x + y, 0.0) / correlations.length;
 }
 
-export function getTypeCorrelations() {
+export function getTypeCorrelations(disastersAmountPerCountryPerYear, emdat_disasters) {
   var correlations = [];
-  getColumnUniqueValues("Disaster Type").forEach(x => {
-    getColumnUniqueValues("Disaster Type").forEach(y => {
-      const correlation = getCorrelation(x, y);
+  getColumnUniqueValues("Disaster Type", emdat_disasters).forEach(x => {
+    getColumnUniqueValues("Disaster Type", emdat_disasters).forEach(y => {
+      const correlation = getCorrelation(x, y, disastersAmountPerCountryPerYear);
       correlations.push({first : x, second : y, correlation: correlation});
     })
   })

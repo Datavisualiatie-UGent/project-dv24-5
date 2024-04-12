@@ -1,7 +1,7 @@
 import * as Plot from "npm:@observablehq/plot";
 
 export function correlationMatrix(correlations) {
-  Plot.plot({
+  return Plot.plot({
     marginLeft: 145,
     marginBottom: 100,
     label: "Disaster Type",
@@ -15,7 +15,7 @@ export function correlationMatrix(correlations) {
         y : "second", 
         stroke: "correlation", 
         tip : true,
-        channels: {"Disaster Type" : "first", "Second Disaster Type" : "second", correlation : "correlatino"}
+        channels: {"Disaster Type" : "first", "Second Disaster Type" : "second", correlation : "correlation"}
       })
     ]
   })
