@@ -155,10 +155,4 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
     ${correlationMatrix(correlations)}
   </div>
 </div>
-
-<!-- <div class="grid grid-cols-2" style="grid-auto-rows: 600px;"> -->
-  <!-- <div class="card"> -->
-    <!-- ${JSON.stringify(getCorrelation("Wildfire", "Drought", disastersAmountPerCountryPerYear))} -->
-  <!-- </div> -->
-</div>
 ---
