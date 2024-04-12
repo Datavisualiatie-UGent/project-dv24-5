@@ -44,8 +44,43 @@ toc: false
 
 </style>
 
+```js
+var land = await FileAttachment("data/land.json").json();
+
+const countries = await FileAttachment("data/countries.json").json();
+
+const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
+    typed: true,
+    headers: true,
+});
+
+import {getTotalDisastersPerCountry, getGroupedDisasters} from './process_data.js';
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
+const groupedDisastersByType = getGroupedDisasters(emdat_disasters);
+
+import {choroplethWorldMap, scatterWorldMap} from './components/world_map_chart.js';
+```
 <div class="hero">
   <h1>Hello, Observable Framework</h1>
   <h2>Welcome to your new project! Edit&nbsp;<code style="font-size: 90%;">docs/index.md</code> to change this page.</h2>
   <a href="https://observablehq.com/framework/getting-started" target="_blank">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+</div>
+
+
+<div class="grid grid-cols-2">
+    <div>
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, 
+            {width, disaster: "Flood", label: "Total floods per country", scheme: "blues"}))}
+    </div>
+    <div>
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width}))}
+    </div>
+</div>
+<div class="grid grid-cols-2">
+<div>
+        ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width}))}
+    </div>
+    <div>
+        ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width, label: "Magnitude"}))}
+    </div>
 </div>
