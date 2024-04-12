@@ -55,6 +55,7 @@ import {
   getConfirmedAffectedPersonsPerYear,
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
+  getAverageLengthOfDisasterPerYear,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -62,9 +63,10 @@ const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   headers: true,
 });
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters)
-const disastersPerYear = getDisastersPerYear(emdat_disasters)
-const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(emdat_disasters)
+const groupedDisasters = getGroupedDisasters(emdat_disasters);
+const disastersPerYear = getDisastersPerYear(emdat_disasters);
+const confirmedAffectedPersonsPerYear =
+  getConfirmedAffectedPersonsPerYear(emdat_disasters);
 
 const counts = Object.keys(groupedDisasters)
   .reduce((acc, key) => {
@@ -73,9 +75,15 @@ const counts = Object.keys(groupedDisasters)
   }, [])
   .sort((a, b) => b.amount - a.amount);
 
- const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
- const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(emdat_disasters);
- const correlations = getTypeCorrelations(disastersAmountPerCountryPerYear, emdat_disasters);
+const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
+const disastersAmountPerCountryPerYear =
+  getDisastersAmountPerCountryPerYear(emdat_disasters);
+const correlations = getTypeCorrelations(
+  disastersAmountPerCountryPerYear,
+  emdat_disasters
+);
+const averageLengthOfDisasterPerYear =
+  getAverageLengthOfDisasterPerYear(emdat_disasters);
 ```
 
 ```js
@@ -147,6 +155,13 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
     ${correlationMatrix(correlations)}
+  </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${lineChart(averageLengthOfDisasterPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "avgLength", "Length of disaster", selectedAndColor)}
   </div>
 </div>
 ---
