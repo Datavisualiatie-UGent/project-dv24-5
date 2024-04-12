@@ -1,13 +1,16 @@
-export function getGroupedDisasters(disasters, nonClimateDisasters) {
+function filterDisasters(disasters) {
+    return disasters.filter((el) => {
+        const nonBiological = el["Disaster Subgroup"] !== "Biological";
+        const correctMeasurement = el["Start Year"] >= 1988 && el["Start Year"] < 2024;
+        const isClimate = !["Volcanic activity", "Impact"].includes(el["Disaster Type"]);
+        return nonBiological && correctMeasurement && isClimate;
+    })
+}
+
+export function getGroupedDisasters(disasters) {
     return Object.groupBy(
         // Filter based on necessary items
-        disasters.filter((el) => {
-            const nonBiological = el["Disaster Subgroup"] !== "Biological";
-            const correctMeasurement =
-                el["Start Year"] >= 1988 && el["Start Year"] < 2024;
-            const isClimate = !nonClimateDisasters.includes(el["Disaster Type"]);
-            return nonBiological && correctMeasurement && isClimate;
-        }),
+        filterDisasters(disasters),
         ({ "Disaster Type": type }) => {
             if (type.includes("Mass movement")) return "Mass Movement";
             if (type.includes("Glacial")) return "Flood";
@@ -16,7 +19,8 @@ export function getGroupedDisasters(disasters, nonClimateDisasters) {
     );
 }
 
-export function getDisastersPerYear(groupedDisasters) {
+export function getDisastersPerYear(disasters) {
+    const groupedDisasters = getGroupedDisasters(disasters)
     return Object.entries(groupedDisasters).reduce(
         (acc, [disasterType, disasterList]) => {
             let obj = {};
@@ -50,7 +54,8 @@ export function getDisastersPerYear(groupedDisasters) {
 }
 
 
-export function getConfirmedAffectedPersonsPerYear(groupedDisasters){
+export function getConfirmedAffectedPersonsPerYear(disasters){
+    const groupedDisasters = getGroupedDisasters(disasters)
     return Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
 
         let json = {};
@@ -95,3 +100,32 @@ export function getConfirmedAffectedPersonsPerYear(groupedDisasters){
         return acc;
     }, []);
 }
+
+
+function getGroupedDisastersByCountry(disasters) {
+    return Object.groupBy(
+        filterDisasters(disasters),
+        ({ "Country": country }) => {
+            return country;
+        }
+    );
+}
+
+export function getTotalDisastersPerCountry(disasters) {
+    const groupedDisastersByCountry = getGroupedDisastersByCountry(disasters);
+    return Object.entries(groupedDisastersByCountry).reduce(
+        (acc, [country, disasterList]) => {
+            let disastersForCountry = {};
+            disasterList.forEach((d) => {
+                let disaster = d["Disaster Type"];
+                if (disaster in disastersForCountry) {
+                    disastersForCountry[disaster] += 1;
+                } else {
+                    disastersForCountry[disaster] = 1;
+                }
+            });
+            acc.push({country: country, ...disastersForCountry});
+            return acc;
+        }, []);
+}
+
