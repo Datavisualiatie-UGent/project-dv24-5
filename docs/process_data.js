@@ -53,6 +53,101 @@ export function getDisastersPerYear(disasters) {
     );
 }
 
+export function getDisastersAmountPerCountryPerYear(emdat_disasters) {
+  let obj = new Object();
+  emdat_disasters.forEach(d => {
+    let country = d["Subregion"];
+    let y = parseInt(d["Start Year"]);
+    let disasterType = d["Disaster Type"];
+    if (country in obj) {
+      if (!(y in obj[country])) {
+        obj[country][y] = new Object();
+      }
+      if (!(disasterType in obj[country][y])) {
+        obj[country][y][disasterType] = 0;
+      }
+      obj[country][y][disasterType] += 1;
+    } else {
+      obj[country] = new Object();
+      obj[country][y] = new Object();
+      obj[country][y][disasterType] = 1;
+    }
+  });
+  return obj;
+}
+
+export function getColumnUniqueValues(name, emdat_disasters) {
+  let list = [];
+  for (var i in emdat_disasters) {
+    if (!list.includes(emdat_disasters[i][name]) && (emdat_disasters[i][name] != undefined)) {
+      list.push(emdat_disasters[i][name]);
+    }
+  }
+  return list;
+}
+
+
+export function getCorrelation(firstDisasterType, secondDisasterType, disastersAmountPerCountryPerYear) {
+  let correlations = [];
+  for (let country in disastersAmountPerCountryPerYear) {
+    let x2 = [];
+    let y2 = [];
+    let xy = [];
+    let sigmaX = 0;
+    let sigmaY = 0;
+    let n = 0;
+    const list = disastersAmountPerCountryPerYear[country];
+    const years = Object.keys(list).map(x => parseInt(x));
+    var year = Math.min.apply(Math, years);
+    while (year <= Math.max.apply(Math, years)) {
+      n++;
+      var i = 0;
+      let x = 0;
+      let y = 0;
+      while (i < 1 && (year <= Math.max.apply(Math, years))) {
+        if (year in disastersAmountPerCountryPerYear[country]) {
+          const tempX = disastersAmountPerCountryPerYear[country][year][firstDisasterType];
+          const tempY = disastersAmountPerCountryPerYear[country][year][secondDisasterType];
+          if (!isNaN(tempX)) x += tempX;
+          if (!isNaN(tempY)) y += tempY; 
+        }
+        i++;
+        year++;
+      }
+      sigmaX += x;
+      sigmaY += y;
+      x2.push(x*x);
+      y2.push(y*y);
+      xy.push(x*y);   
+    }
+    let sigmaX2 = x2.reduce(((x, y) => x + y), 0);
+    let sigmaY2 = y2.reduce(((x, y) => x + y), 0);
+    let sigmaXY = xy.reduce(((x, y) => x + y), 0);
+
+    if (!(sigmaX == 0 && sigmaY == 0)) {   
+      var correlation = ((n*sigmaXY) - (sigmaX*sigmaY))/Math.sqrt((n*sigmaX2 - (sigmaX*sigmaX)) * (n*sigmaY2 - (sigmaY*sigmaY)));
+      if(isNaN(correlation))
+        correlations.push(0);
+      else       
+        correlations.push(correlation);  
+    }
+  }
+  if (correlations.length == 0) {
+    return 0;
+  }
+  return correlations.reduce((x, y) => x + y, 0.0) / correlations.length;
+}
+
+export function getTypeCorrelations(disastersAmountPerCountryPerYear, emdat_disasters) {
+  var correlations = [];
+  getColumnUniqueValues("Disaster Type", emdat_disasters).forEach(x => {
+    getColumnUniqueValues("Disaster Type", emdat_disasters).forEach(y => {
+      const correlation = getCorrelation(x, y, disastersAmountPerCountryPerYear);
+      correlations.push({first : x, second : y, correlation: correlation});
+    })
+  })
+  return correlations;
+}
 
 export function getConfirmedAffectedPersonsPerYear(disasters){
     const groupedDisasters = getGroupedDisasters(disasters)
@@ -101,7 +196,6 @@ export function getConfirmedAffectedPersonsPerYear(disasters){
     }, []);
 }
 
-
 function getGroupedDisastersByCountry(disasters) {
     return Object.groupBy(
         filterDisasters(disasters),
@@ -128,4 +222,3 @@ export function getTotalDisastersPerCountry(disasters) {
             return acc;
         }, []);
 }
-
