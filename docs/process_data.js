@@ -150,7 +150,7 @@ export function getTypeCorrelations(disastersAmountPerCountryPerYear, emdat_disa
 }
 
 export function getConfirmedAffectedPersonsPerYear(disasters){
-    const groupedDisasters = getGroupedDisasters(disasters)
+    const groupedDisasters = getGroupedDisasters(disasters);
     return Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
 
         let json = {};
@@ -221,4 +221,54 @@ export function getTotalDisastersPerCountry(disasters) {
             acc.push({country: country, ...disastersForCountry});
             return acc;
         }, []);
+}
+
+
+export function getAverageLengthOfDisasterPerYear(disasters) {
+  const groupedDisasters = getGroupedDisasters(disasters);
+  return Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
+    let obj = new Object();
+    let miny = Number.MAX_VALUE;
+    let maxy = Number.MIN_VALUE;
+  
+    disasterList.forEach(d => {
+      const startYear = parseInt(d["Start Year"]);
+      const startMonth = parseInt(d["Start Month"]);
+      const startDay = parseInt(d["Start Day"]);
+  
+      const endYear = parseInt(d["End Year"]);
+      const endMonth = parseInt(d["End Month"]);
+      const endDay = parseInt(d["End Day"]);
+  
+      const hasNan = [startYear, startMonth, startDay, endYear, endMonth, endDay].some(el => isNaN(el))
+      if (hasNan) return;
+      
+      const startDate = new Date(startYear, startMonth, startDay);
+      const endDate = new Date(endYear, endMonth, endDay);
+  
+      const lengthInDays = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
+      if (startYear in obj) {
+          const [currentAvg, n] = obj[startYear];
+          const newAvg = (lengthInDays + currentAvg * n) / (n + 1);
+          obj[startYear] = [newAvg, n + 1];
+      } else {
+          obj[startYear] = [lengthInDays, 1];
+      }
+  
+      if (startYear < miny) {
+        miny = startYear;
+      }
+      if (startDate > maxy) {
+        maxy = startYear;
+      }
+    });
+    for (let i = miny; i < maxy; i++) {
+      let avgLength = 0;
+      if (i in obj) {
+          avgLength = obj[i][0];
+      }
+      acc.push({disaster: disasterType, year : i, avgLength: avgLength});
+    }
+  return acc;
+  }, []);
 }
