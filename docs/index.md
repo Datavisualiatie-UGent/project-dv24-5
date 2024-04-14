@@ -66,21 +66,34 @@ import {choroplethWorldMap, scatterWorldMap} from './components/world_map_chart.
   <a href="https://observablehq.com/framework/getting-started" target="_blank">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
 </div>
 
+```js
+const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitude = Generators.input(longitudeSlider);
 
+```
+${longitudeSlider}
 <div class="grid grid-cols-2">
     <div>
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, 
-            {width, disaster: "Flood", label: "Total floods per country", scheme: "blues"}))}
+            {width, disaster: "Flood", label: "Total floods per country", scheme: "blues", longitude: longitude}))}
     </div>
     <div>
-        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width}))}
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width, withSlider: false}))}
     </div>
 </div>
+
+```js
+const longitudeSlider2 = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitude2 = Generators.input(longitudeSlider2);
+
+```
+
+${longitudeSlider2}
 <div class="grid grid-cols-2">
-<div>
-        ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width}))}
+    <div>
+        ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width, label: "Total Deaths", longitude: longitude2}))}
     </div>
     <div>
-        ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width, label: "Magnitude"}))}
+        ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width, label: "Magnitude", longitude: longitude2}))}
     </div>
 </div>

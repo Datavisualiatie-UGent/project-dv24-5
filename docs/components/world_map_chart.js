@@ -24,7 +24,14 @@ export function choroplethWorldMap(
     data,
     land,
     countries,
-    {width, disaster="Wildfire", label="Total wildfires per country", scheme="reds"} = {}
+    {
+        width,
+        disaster="Wildfire",
+        label="Total wildfires per country",
+        scheme="reds",
+        withSlider= true,
+        longitude=0
+    } = {}
     ) {
     let byName = {};
     for (let i = 0; i < data.length; i++) {
@@ -38,27 +45,29 @@ export function choroplethWorldMap(
 
     return Plot.plot({
         width,
-        projection: { type: "equal-earth", rotate: [-10, 0] },
+        projection: {
+            type: withSlider ? "orthographic" : "equal-earth",
+            rotate: [-longitude, 0]
+        },
         color: {
             type: "quantize",
-            n: 10,
+            //n: 10,
             scheme: scheme,
             unknown: "#ddd",
             label: label,
             legend: true,
-            //width: width/3
         },
         marks: [
-            Plot.sphere({ fill: "#f0faff", stroke: "currentColor" }),
-            //Plot.geo(land, { fill: "currentColor", dx: 1, dy: 1 }), // shade
+            //Plot.sphere({ fill: "#f0faff", stroke: "currentColor" }),
             Plot.graticule(),
+            Plot.sphere(),
             Plot.geo(countries, {
                 fill: (d) => byName[d.properties.name]?.[disaster],
                 stroke: "grey",
                 strokeWidth: 0.25,
                 dx: 1,
                 dy: 1,
-                title: (d) => `${d.properties.name}: ${byName[d.properties.name]?.[disaster]}`
+                title: (d) => `${nameMapping[d.properties.name] ?? d.properties.name}: ${byName[d.properties.name]?.[disaster]}`
             })
         ]
     })
@@ -69,33 +78,35 @@ export function scatterWorldMap(
     data,
     land,
     countries,
-    {width, disaster="Earthquake", label="Total Deaths"} = {}
+    {
+        width,
+        disaster="Earthquake",
+        label="Total Deaths",
+        withSlider= true,
+        longitude= 0
+    } = {}
 ) {
 
     return Plot.plot({
         width,
-        projection: { type: "equal-earth", rotate: [-10, 0] },
-        color: {
-            unknown: "#ddd",
-            label: label,
-            legend: true,
-            scheme: "reds",
-            type: "linear",
+        title: label,
+        projection: {
+            type: withSlider ? "orthographic" : "equal-earth",
+            rotate: [-longitude, 0],
         },
+        r: {transform: (d) => label === "Magnitude" ? Math.pow(10, d) : d}, // convert Richter to amplitude
         marks: [
-            Plot.sphere({ fill: "#f0faff", stroke: "currentColor" }),
-            Plot.graticule(),
-            Plot.geo(countries, {
-                fill: "#ddd",
-                stroke: "currentColor",
-                strokeWidth: 0.25,
-            }),
+            Plot.geo(countries, {fill: "currentColor", fillOpacity: 0.2}),
+            Plot.sphere(),
             Plot.dot(data[disaster], {
                 x: "Longitude",
                 y: "Latitude",
-                stroke: label,
+                stroke: "red",
+                strokeWidth: 0.5,
+                fill: "red",
+                fillOpacity: 0.05,
                 r: label,
-                title: (d) => `${d["Country"]}: ${d["Start Year"]}`
+                title: (d) => `${nameMapping[d["Country"]] ?? d["Country"]}: ${d["Start Year"]}\nTotal deaths: ${d["Total Deaths"]}\nMagnitude: ${d["Magnitude"]} richter`
             })
         ]
     })
