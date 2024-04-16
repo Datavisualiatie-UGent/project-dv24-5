@@ -44,22 +44,6 @@ toc: false
 
 </style>
 
-```js
-var land = await FileAttachment("data/land.json").json();
-
-const countries = await FileAttachment("data/countries.json").json();
-
-const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
-    typed: true,
-    headers: true,
-});
-
-import {getTotalDisastersPerCountry, getGroupedDisasters} from './process_data.js';
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
-const groupedDisastersByType = getGroupedDisasters(emdat_disasters);
-
-import {choroplethWorldMap, scatterWorldMap} from './components/world_map_chart.js';
-```
 <div class="hero">
   <h1>Hello, Observable Framework</h1>
   <h2>Welcome to your new project! Edit&nbsp;<code style="font-size: 90%;">docs/index.md</code> to change this page.</h2>
@@ -67,33 +51,90 @@ import {choroplethWorldMap, scatterWorldMap} from './components/world_map_chart.
 </div>
 
 ```js
-const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
-const longitude = Generators.input(longitudeSlider);
+import {
+  getGroupedDisasters,
+  getDisastersPerYear,
+  getConfirmedAffectedPersonsPerYear,
+  getDisastersAmountPerCountryPerYear,
+  getTypeCorrelations,
+  getAverageLengthOfDisasterPerYear,
+} from "./process_data.js";
 
+const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
+  typed: true,
+  headers: true,
+});
+
+const groupedDisasters = getGroupedDisasters(emdat_disasters);
+const disastersPerYear = getDisastersPerYear(emdat_disasters);
+const confirmedAffectedPersonsPerYear =
+  getConfirmedAffectedPersonsPerYear(emdat_disasters);
+
+const counts = Object.keys(groupedDisasters)
+  .reduce((acc, key) => {
+    acc.push({ disaster: key, amount: groupedDisasters[key].length });
+    return acc;
+  }, [])
+  .sort((a, b) => b.amount - a.amount);
+
+const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
+const disastersAmountPerCountryPerYear =
+  getDisastersAmountPerCountryPerYear(emdat_disasters);
+const correlations = getTypeCorrelations(
+  disastersAmountPerCountryPerYear,
+  emdat_disasters
+);
+const averageLengthOfDisasterPerYear =
+  getAverageLengthOfDisasterPerYear(emdat_disasters);
 ```
-${longitudeSlider}
-<div class="grid grid-cols-2">
-    <div>
-        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, 
-            {width, disaster: "Flood", label: "Total floods per country", scheme: "blues", longitude: longitude}))}
-    </div>
-    <div>
-        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width, withSlider: false}))}
+
+```js
+import { bumpChart } from "./components/bump_chart.js";
+import { areaChart } from "./components/area_chart.js";
+import { lineChart } from "./components/line_chart.js";
+import { correlationMatrix } from "./components/correlation_matrix.js";
+import { numberOfDisastersPerCategory } from "./components/bar_chart.js";
+import { getDisastersPerColor } from "./components/color_matching.js";
+```
+
+<div class="grid">
+    <div class="card">
+        ${resize((width) => bumpChart(disastersPerYear.filter(disaster => disaster["year"] >= 2010), {width}, selectedAndColor))}
     </div>
 </div>
 
 ```js
-const longitudeSlider2 = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
-const longitude2 = Generators.input(longitudeSlider2);
+const potDisasters = Object.keys(groupedDisasters);
 
+const selectedDisasters = view(
+  Inputs.checkbox(
+    potDisasters,
+    { label: "Choose Disasters:", value: potDisasters },
+    ""
+  )
+);
 ```
 
-${longitudeSlider2}
+```js
+const selectedAndColor = getDisastersPerColor(selectedDisasters);
+```
+
 <div class="grid grid-cols-2">
-    <div>
-        ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width, label: "Total Deaths", longitude: longitude2}))}
-    </div>
-    <div>
-        ${resize((width) => scatterWorldMap(groupedDisastersByType, land, countries, {width, label: "Magnitude", longitude: longitude2}))}
+    <div class="card">
+        ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "disasters", "Amount of disasters", selectedAndColor)}
     </div>
 </div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${numberOfDisastersPerCategory(counts, totalCount, selectedAndColor)}
+  </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${correlationMatrix(correlations)}
+  </div>
+</div>
+---
