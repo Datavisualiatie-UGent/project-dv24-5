@@ -1,16 +1,17 @@
-function filterDisasters(disasters) {
+function filterDisasters(disasters, specificDisasterType=[]) {
     return disasters.filter((el) => {
         const nonBiological = el["Disaster Subgroup"] !== "Biological";
         const correctMeasurement = el["Start Year"] >= 1988 && el["Start Year"] < 2024;
         const isClimate = !["Volcanic activity", "Impact"].includes(el["Disaster Type"]);
-        return nonBiological && correctMeasurement && isClimate;
+        const isSpecificDisasterType = specificDisasterType.length === 0 || specificDisasterType.includes(el["Disaster Type"]);
+        return nonBiological && correctMeasurement && isClimate && isSpecificDisasterType;
     })
 }
 
-export function getGroupedDisasters(disasters) {
+export function getGroupedDisasters(disasters, specificDisasterType=[]) {
     return Object.groupBy(
         // Filter based on necessary items
-        filterDisasters(disasters),
+        filterDisasters(disasters, specificDisasterType),
         ({ "Disaster Type": type }) => {
             if (type.includes("Mass movement")) return "Mass Movement";
             if (type.includes("Glacial")) return "Flood";
@@ -19,8 +20,8 @@ export function getGroupedDisasters(disasters) {
     );
 }
 
-export function getDisastersPerYear(disasters) {
-    const groupedDisasters = getGroupedDisasters(disasters)
+export function getDisastersPerYear(disasters, specificDisasterType=[]) {
+    const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType)
     return Object.entries(groupedDisasters).reduce(
         (acc, [disasterType, disasterList]) => {
             let obj = {};
@@ -149,8 +150,8 @@ export function getTypeCorrelations(disastersAmountPerCountryPerYear, emdat_disa
   return correlations;
 }
 
-export function getConfirmedAffectedPersonsPerYear(disasters){
-    const groupedDisasters = getGroupedDisasters(disasters);
+export function getConfirmedAffectedPersonsPerYear(disasters, specificDisasterType=[]){
+    const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType);
     return Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
 
         let json = {};
@@ -196,17 +197,17 @@ export function getConfirmedAffectedPersonsPerYear(disasters){
     }, []);
 }
 
-function getGroupedDisastersByCountry(disasters) {
+function getGroupedDisastersByCountry(disasters, specificDisasterType=[]) {
     return Object.groupBy(
-        filterDisasters(disasters),
+        filterDisasters(disasters, specificDisasterType),
         ({ "Country": country }) => {
             return country;
         }
     );
 }
 
-export function getTotalDisastersPerCountry(disasters) {
-    const groupedDisastersByCountry = getGroupedDisastersByCountry(disasters);
+export function getTotalDisastersPerCountry(disasters, specificDisasterType=[]) {
+    const groupedDisastersByCountry = getGroupedDisastersByCountry(disasters, specificDisasterType);
     return Object.entries(groupedDisastersByCountry).reduce(
         (acc, [country, disasterList]) => {
             let disastersForCountry = {};
@@ -224,8 +225,8 @@ export function getTotalDisastersPerCountry(disasters) {
 }
 
 
-export function getAverageLengthOfDisasterPerYear(disasters) {
-  const groupedDisasters = getGroupedDisasters(disasters);
+export function getAverageLengthOfDisasterPerYear(disasters, specificDisasterType=[]) {
+  const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType);
   return Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
     let obj = new Object();
     let miny = Number.MAX_VALUE;
