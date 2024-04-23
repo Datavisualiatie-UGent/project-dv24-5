@@ -15,8 +15,14 @@ export function lineChart(data, y, label, [disasters, colors]) {
                 title: "disaster",
                 order: "max",
                 reverse: true,
-                tip: true,
             }),
+            Plot.tip(data, Plot.pointer({
+                x: "year",
+                y: y,
+                //fy: "disaster",
+                //filter: (d) => d.info,
+                //title: (d) => [d.name, d.info].join("\n\n")
+            }))
         ],
         color: {
             domain:disasters,
