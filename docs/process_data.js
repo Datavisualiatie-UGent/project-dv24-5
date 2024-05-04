@@ -178,8 +178,9 @@ export function getConfirmedAffectedPersonsPerYear(disasters, specificDisasterTy
                 json[year]["deaths"] += deaths;
                 json[year]["injured"] += injured;
                 json[year]["affected"] += affected;
+                json[year]["totalCount"] += 1;
             } else {
-                json[year] = new Object({deaths : deaths, injured : injured, affected : affected});
+                json[year] = new Object({deaths : deaths, injured : injured, affected : affected, totalCount: 1});
             }
         });
         for (let i = minYear; i <= maxYear; i++) {
@@ -189,13 +190,16 @@ export function getConfirmedAffectedPersonsPerYear(disasters, specificDisasterTy
                     year : i,
                     deaths : json[i]["deaths"],
                     injured : json[i]["injured"],
-                    affected : json[i]["affected"]
+                    affected : json[i]["affected"],
+                    amount: json[i]["totalCount"]
                 });
             }
         }
         return acc;
     }, []);
 }
+
+
 
 function getGroupedDisastersByCountry(disasters, specificDisasterType=[]) {
     return Object.groupBy(
@@ -271,5 +275,64 @@ export function getAverageLengthOfDisasterPerYear(disasters, specificDisasterTyp
       acc.push({disaster: disasterType, year : i, avgLength: avgLength});
     }
   return acc;
+  }, []);
+}
+
+export function bundleDisasters(disasters) {
+  return disasters.map((disaster) => {
+    let amountOfDisasters = 0;
+    if (disaster["year"] % 3 == 1) {
+      const disasterBefore = disasters.find(d => d["year"] == disaster["year"] - 1 && d["disaster"] == disaster["disaster"]);
+      const disasterAfter = disasters.find(d => d["year"] == disaster["year"] + 1 && d["disaster"] == disaster["disaster"]);
+      if (disasterBefore) {
+        amountOfDisasters += disasterBefore["disasters"];
+      }
+      if (disasterAfter) {
+        amountOfDisasters += disasterAfter["disasters"];
+      }
+    }
+    return {
+      disasters: disaster["disasters"] + amountOfDisasters,
+      ...disaster
+    };
+    }
+  ).filter((disaster) => disaster["year"] % 3 ==  1);
+}
+
+/*
+  * This function takes in a list of disasters and returns a dictionary with the disaster name as key and the amount of deaths, injured and affected people as value.
+  * The amount of deaths, injured and affected people are summed over all years.
+  * Useful for the bar charts.
+*/
+export function getDisasterCounts(emdat_disasters) {
+  const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
+    emdat_disasters
+  );
+  return confirmedAffectedPersonsPerYear.reduce((acc, disaster) => {
+    const disasterName = disaster["disaster"];
+    const nrOfDeaths = disaster["deaths"];
+    const nrOfInjured = disaster["injured"];
+    const nrOfAffected = disaster["affected"];
+    const count = disaster["amount"];
+    const foundDisaster = acc.find((el) => el["disaster"] === disasterName);
+    if (foundDisaster) {
+      foundDisaster["deaths"] += nrOfDeaths;
+      foundDisaster["injured"] += nrOfInjured;
+      foundDisaster["affected"] += nrOfAffected;
+      foundDisaster["numberOfDisasters"] += count;
+
+      acc = acc.filter((el) => el["disaster"] !== disasterName);
+      acc.push(foundDisaster);
+    } else {
+      const obj = {
+        disaster: disasterName,
+        deaths: nrOfDeaths,
+        injured: nrOfInjured,
+        affected: nrOfAffected,
+        numberOfDisasters: count,
+      };
+      acc.push(obj);
+    }
+    return acc;
   }, []);
 }
