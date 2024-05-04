@@ -57,21 +57,13 @@ import {
   getAverageLengthOfDisasterPerYear,
   getTotalDisastersPerCountry,
 } from "./process_data.js";
-// Get countries
-const land = await FileAttachment("data/land.json").json();
-const countries = await FileAttachment("data/countries.json").json();
+
 
 // Get disasters
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   typed: true,
   headers: true,
 });
-// Get disasters per country
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
-import {
-  choroplethWorldMap,
-  scatterWorldMap,
-} from "./components/world_map_chart.js";
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Earthquake"]);
 const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Earthquake"]);
@@ -111,6 +103,65 @@ import { getDisastersPerColor } from "./components/color_matching.js";
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
+```js
+const countries = await FileAttachment("data/countries.json").json();
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
+
+const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitude = Generators.input(longitudeSlider);
+
+const fullWorldCheckbox = Inputs.checkbox([""], {label: "Full world view"})
+const fullWorld = Generators.input(fullWorldCheckbox);
+
+import { choroplethWorldMap, scatterWorldMap } from "./components/world_map_chart.js";
+```
+## Earthquakes per country
+
+<div class="grid grid-cols-2">
+    <div>
+        ${fullWorldCheckbox}
+        ${longitudeSlider}
+        <p>Tekstje over welke gebieden het meest getroffen worden?</p>
+    </div>
+    <div class="">
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
+            width, 
+            longitude: longitude,
+            fullWorld: fullWorld.includes(""),
+            disaster: "Earthquake",
+            label: "Total earthquakes",
+            scheme: "greens",
+        }))}
+    </div>
+</div>
+
+```js
+const longitudeSlider2 = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitude2 = Generators.input(longitudeSlider2);
+
+const fullWorldCheckbox2 = Inputs.checkbox([""], {label: "Full world view"})
+const fullWorld2 = Generators.input(fullWorldCheckbox2);
+```
+
+## Most deadly earthquakes
+<div class="grid grid-cols-2">
+    <div>
+        ${fullWorldCheckbox2}
+        ${longitudeSlider2}
+        <p>Tekstje over welke gebieden het meest getroffen worden?</p>
+    </div>
+    <div>
+        ${resize((width) => scatterWorldMap(groupedDisasters, countries, {
+            width, 
+            label: "Total Deaths", 
+            longitude: longitude2, 
+            fullWorld: fullWorld2.includes("")
+        }))}
+    </div>
+</div>
+
+
+
 <div class="grid grid-cols-2">
     <div class="card">
         ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
@@ -138,42 +189,3 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
   </div>
 </div>
 
-```js
-const longitudeSlider = Inputs.range([-180, 180], {
-  step: 1,
-  label: "Longitude",
-});
-const longitude = Generators.input(longitudeSlider);
-```
-
-${longitudeSlider}
-
-<div class="grid grid-cols-2">
-    <div>
-        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, 
-            {width, disaster: "Flood", label: "Total floods per country", scheme: "blues", longitude: longitude}))}
-    </div>
-    <div>
-        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, land, countries, {width, withSlider: false}))}
-    </div>
-</div>
-
-```js
-const longitudeSlider2 = Inputs.range([-180, 180], {
-  step: 1,
-  label: "Longitude",
-});
-const longitude2 = Generators.input(longitudeSlider2);
-```
-
-${longitudeSlider2}
-
-<div class="grid grid-cols-2">
-    <div>
-        ${resize((width) => scatterWorldMap(groupedDisasters, land, countries, {width, label: "Total Deaths", longitude: longitude2}))}
-    </div>
-    <div>
-        ${resize((width) => scatterWorldMap(groupedDisasters, land, countries, {width, label: "Magnitude", longitude: longitude2}))}
-    </div>
-</div>
----

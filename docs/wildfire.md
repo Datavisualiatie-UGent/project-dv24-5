@@ -49,12 +49,13 @@ font-size: 90px;
 
 ```js
 import {
-  getGroupedDisasters,
-  getDisastersPerYear,
-  getConfirmedAffectedPersonsPerYear,
-  getDisastersAmountPerCountryPerYear,
-  getTypeCorrelations,
-  getAverageLengthOfDisasterPerYear,
+    getTotalDisastersPerCountry,
+    getGroupedDisasters,
+    getDisastersPerYear,
+    getConfirmedAffectedPersonsPerYear,
+    getDisastersAmountPerCountryPerYear,
+    getTypeCorrelations,
+    getAverageLengthOfDisasterPerYear,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -99,6 +100,38 @@ import { getDisastersPerColor } from "./components/color_matching.js";
 ```js
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
+
+```js
+const countries = await FileAttachment("data/countries.json").json();
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
+
+const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitude = Generators.input(longitudeSlider);
+
+const fullWorldCheckbox = Inputs.checkbox([""], {label: "Full world view"})
+const fullWorld = Generators.input(fullWorldCheckbox);
+
+import { choroplethWorldMap } from "./components/world_map_chart.js";
+```
+
+## Wildfires per country
+<div class="grid grid-cols-2">
+    <div>
+        ${fullWorldCheckbox}
+        ${longitudeSlider}
+        <p>Tekstje over welke gebieden het meest getroffen worden?</p>
+    </div>
+    <div class="">
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
+            width, 
+            longitude: longitude,
+            fullWorld: fullWorld.includes(""),
+            disaster: "Wildfire",
+            label: "Total wildfires",
+            scheme: "reds",
+        }))}
+    </div>
+</div>
 
 <div class="grid grid-cols-2">
     <div class="card">

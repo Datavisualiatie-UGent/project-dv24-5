@@ -22,14 +22,13 @@ const nameMapping = { // datasetName: countries.json name
 
 export function choroplethWorldMap(
     data,
-    land,
     countries,
     {
         width,
         disaster="Wildfire",
         label="Total wildfires per country",
         scheme="reds",
-        withSlider= true,
+        fullWorld= false,
         longitude=0
     } = {}
     ) {
@@ -46,12 +45,12 @@ export function choroplethWorldMap(
     return Plot.plot({
         width,
         projection: {
-            type: withSlider ? "orthographic" : "equal-earth",
+            type: fullWorld ? "equal-earth" : "orthographic",
             rotate: [-longitude, 0]
         },
         color: {
             type: "quantize",
-            //n: 10,
+            n: 10,
             scheme: scheme,
             unknown: "#ddd",
             label: label,
@@ -76,13 +75,12 @@ export function choroplethWorldMap(
 
 export function scatterWorldMap(
     data,
-    land,
     countries,
     {
         width,
         disaster="Earthquake",
         label="Total Deaths",
-        withSlider= true,
+        fullWorld= false,
         longitude= 0
     } = {}
 ) {
@@ -91,7 +89,7 @@ export function scatterWorldMap(
         width,
         title: label,
         projection: {
-            type: withSlider ? "orthographic" : "equal-earth",
+            type: fullWorld ? "equal-earth" : "orthographic",
             rotate: [-longitude, 0],
         },
         r: {transform: (d) => label === "Magnitude" ? Math.pow(10, d) : d}, // convert Richter to amplitude

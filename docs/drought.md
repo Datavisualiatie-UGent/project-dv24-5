@@ -49,12 +49,13 @@ font-size: 90px;
 
 ```js
 import {
-  getGroupedDisasters,
-  getDisastersPerYear,
-  getConfirmedAffectedPersonsPerYear,
-  getDisastersAmountPerCountryPerYear,
-  getTypeCorrelations,
-  getAverageLengthOfDisasterPerYear,
+    getTotalDisastersPerCountry,
+    getGroupedDisasters,
+    getDisastersPerYear,
+    getConfirmedAffectedPersonsPerYear,
+    getDisastersAmountPerCountryPerYear,
+    getTypeCorrelations,
+    getAverageLengthOfDisasterPerYear,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -64,10 +65,7 @@ const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Drought"]);
 const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Drought"]);
-const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
-  emdat_disasters,
-  ["Drought"]
-);
+const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(emdat_disasters, ["Drought"]);
 
 const counts = Object.keys(groupedDisasters)
   .reduce((acc, key) => {
@@ -89,17 +87,50 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
   ["Drought"]
 );
+
 ```
 
 ```js
 import { lineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
+
+const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
+
 ```
 
 ```js
-const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
+const countries = await FileAttachment("data/countries.json").json();
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
+
+const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitude = Generators.input(longitudeSlider);
+
+const fullWorldCheckbox = Inputs.checkbox([""], {label: "Full world view"})
+const fullWorld = Generators.input(fullWorldCheckbox);
+
+import { choroplethWorldMap } from "./components/world_map_chart.js";
 ```
 
+## Droughts per country
+<div class="grid grid-cols-2">
+    <div>
+        ${fullWorldCheckbox}
+        ${longitudeSlider}
+        <p>Tekstje over welke gebieden het meest getroffen worden?</p>
+    </div>
+    <div class="">
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
+            width, 
+            longitude: longitude,
+            fullWorld: fullWorld.includes(""),
+            disaster: "Drought",
+            label: "Total droughts",
+            scheme: "blues",
+        }))}
+    </div>
+</div>
+
+## Line charts
 <div class="grid grid-cols-2">
     <div class="card">
         ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
