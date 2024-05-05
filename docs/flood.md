@@ -55,6 +55,7 @@ import {
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
   getAverageLengthOfDisasterPerYear,
+  getDisasterMagnitudes,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -89,6 +90,7 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
   ["Flood"]
 );
+const disasterMagnitudes = getDisasterMagnitudes(emdat_disasters, "Flood");
 ```
 
 ```js
@@ -104,6 +106,18 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
     <div class="card">
         ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
     </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
+  </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${lineChart(disasterMagnitudes, "magnitude", "Magnitude (km2)", selectedAndColor)}
+  </div>
 </div>
 
 <div class="grid grid-cols-2">
