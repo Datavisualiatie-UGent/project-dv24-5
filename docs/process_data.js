@@ -336,3 +336,35 @@ export function getDisasterCounts(emdat_disasters) {
     return acc;
   }, []);
 }
+
+export function getDisasterMagnitudes(emdat_disasters, disasterType) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType])
+  return groupedDisasters[disasterType].filter(el => el["Magnitude"]).reduce((acc, disaster) => {
+    const year = disaster["Start Year"];
+    const magnitude = disaster["Magnitude"];
+  
+    const dInAcc = acc.find(e => e["year"] === year);
+    if (dInAcc) {
+      const nrOfDisasters = dInAcc["nrOfDisasters"];
+      const currentMagnitudeAverage = dInAcc["magnitude"];
+      const newAverage = ((nrOfDisasters * currentMagnitudeAverage + magnitude) / (nrOfDisasters + 1)) | 0
+      const newObj = {
+        year: year,
+        magnitude: newAverage,
+        nrOfDisasters: nrOfDisasters + 1,
+        disaster: disasterType
+      }
+      acc = acc.filter(e => e["year"] !== year);
+      acc.push(newObj);
+    } else {
+      const obj = {
+        year: year,
+        magnitude: magnitude,
+        nrOfDisasters: 1,
+        disaster: disasterType
+      };
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
+}
