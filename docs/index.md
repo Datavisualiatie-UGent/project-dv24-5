@@ -144,19 +144,7 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
 
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
-  ${tempLineChart(monthlyTemperatureChanges)}
-  </div>
-</div>
-
-<div class="grid" style="grid-auto-rows: 600px;">
-  <div class="card">
   ${tempDisasterAmountLineChart(monthlyTemperatureChanges, totalDisasterPerYear, correlation)}
-  </div>
-</div>
-
-<div class="grid" style="grid-auto-rows: 600px;">
-  <div class="card">
-  ${JSON.stringify(totalDisasterPerYear)}
   </div>
 </div>
 

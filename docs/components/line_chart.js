@@ -34,7 +34,7 @@ export function tempDisasterAmountLineChart(tempData, disasterData, correlation)
         style: "overflow: visible;",    
         marks: [
             Plot.barY(
-                disasterData, { x: "date", y: "disasters", fill: "#AAA"}),
+                disasterData, { x: "year", y: "disasters", fill: "#AAA", }),
             Plot.axisX({ticks: []}),
             (_, { x }, __, dimensions) => {
                 return Plot.plot({
@@ -68,12 +68,12 @@ export function tempDisasterAmountLineChart(tempData, disasterData, correlation)
                             },
                         }),
                     ],
-                    y: { axis: "right", nice: true, line: true }    
+                    y: { axis: "right", nice: true, line: true, label: "Temperature Anomaly" }    
                 });
             },
-            Plot.text([[0, 0]], {text : ["Correlation: " + correlation.toFixed(5)], marks: [ Plot.frame() ], monospace: true, dx:100, dy: -300, fontSize: 10})
+            Plot.text([[0, 0]], {text : ["Correlation: " + correlation.toFixed(5)], marks: [ Plot.frame() ], monospace: true, dx:130, dy: -300, fontSize: 10})
         ],
-        y: {nice : true}
+        y: {nice : true, label : "Amount of Disasters"}
         
     })
 }

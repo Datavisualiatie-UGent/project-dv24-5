@@ -34,14 +34,8 @@ export function getDisastersPerYear(disasters, specificDisasterType=[]) {
                 } else {
                     obj[y] = 1;
                 }
-                if (y < miny) {
-                    miny = y;
-                }
-                if (y > maxy) {
-                    maxy = y;
-                }
             });
-            for (let i = miny; i < maxy; i++) {
+            for (let i = 1988; i < 2023; i++) {
                 let nrOfDisasters = 0;
                 if (i in obj) {
                     nrOfDisasters = obj[i];
@@ -149,6 +143,8 @@ export function getCorrelationBetweenTwoLists(listx, listy) {
     for (var i = 0; i < n; i++) {
       const x = listx[i];
       const y = listy[i];
+      sigmaX += x;
+      sigmaY += y;
       x2.push(x*x);
       y2.push(y*y);
       xy.push(x*y);
@@ -158,7 +154,9 @@ export function getCorrelationBetweenTwoLists(listx, listy) {
     let sigmaY2 = y2.reduce(((x, y) => x + y), 0);
     let sigmaXY = xy.reduce(((x, y) => x + y), 0);
 
-    var correlation = ((n*sigmaXY) - (sigmaX*sigmaY))/Math.sqrt((n*sigmaX2 - (sigmaX*sigmaX)) * (n*sigmaY2 - (sigmaY*sigmaY)));
+    var correlation = 
+      ((n*sigmaXY) - (sigmaX*sigmaY))/
+      Math.sqrt((n*sigmaX2 - (sigmaX*sigmaX)) * (n*sigmaY2 - (sigmaY*sigmaY)));
     return correlation;
 }
 
@@ -405,7 +403,7 @@ export function getTotalDisastersPerYear(disasterCounts) {
   });
   var toReturn = [];
   for (var i = 0; i < totalDisastersPerYear.length; i++) {
-    toReturn.push({date : (i + 1988), disasters : totalDisastersPerYear[i]});
+    toReturn.push({year : (i + 1988), disasters : totalDisastersPerYear[i]});
   }
   return toReturn;
 }

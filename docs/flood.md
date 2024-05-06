@@ -54,14 +54,26 @@ import {
   getConfirmedAffectedPersonsPerYear,
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
+  getCorrelationBetweenTwoLists,
   getAverageLengthOfDisasterPerYear,
   getDisasterMagnitudes,
+  getMonthlyTemperatureChanges,
+  getYearlyTemperatureChanges
 } from "./process_data.js";
+
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   typed: true,
   headers: true,
 });
+
+const temperatures = await FileAttachment("data/GISS_surface_temperature.csv").csv({
+  typed: false,
+  headers: true,
+});
+
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Flood"]);
 const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Flood"]);
@@ -69,6 +81,8 @@ const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
   ["Flood"]
 );
+
+const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
 
 const counts = Object.keys(groupedDisasters)
   .reduce((acc, key) => {
@@ -94,7 +108,7 @@ const disasterMagnitudes = getDisasterMagnitudes(emdat_disasters, "Flood");
 ```
 
 ```js
-import { lineChart } from "./components/line_chart.js";
+import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 ```
 
@@ -102,10 +116,10 @@ import { getDisastersPerColor } from "./components/color_matching.js";
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
-    </div>
+<div class="grid" style="grid-auto-rows: 600px;">
+  <div class="card">
+  ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}
+  </div>
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
