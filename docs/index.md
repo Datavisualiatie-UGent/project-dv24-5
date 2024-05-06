@@ -58,6 +58,8 @@ import {
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
   getAverageLengthOfDisasterPerYear,
+  bundleDisasters,
+  getDisasterCounts,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -70,14 +72,8 @@ const disastersPerYear = getDisastersPerYear(emdat_disasters);
 const confirmedAffectedPersonsPerYear =
   getConfirmedAffectedPersonsPerYear(emdat_disasters);
 
-const counts = Object.keys(groupedDisasters)
-  .reduce((acc, key) => {
-    acc.push({ disaster: key, amount: groupedDisasters[key].length });
-    return acc;
-  }, [])
-  .sort((a, b) => b.amount - a.amount);
+const disasterCounts = getDisasterCounts(emdat_disasters);
 
-const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear =
   getDisastersAmountPerCountryPerYear(emdat_disasters);
 const correlations = getTypeCorrelations(
@@ -89,17 +85,21 @@ const averageLengthOfDisasterPerYear =
 ```
 
 ```js
+const bundledDisasters = bundleDisasters(disastersPerYear);
+```
+
+```js
 import { bumpChart } from "./components/bump_chart.js";
 import { areaChart } from "./components/area_chart.js";
 import { lineChart } from "./components/line_chart.js";
 import { correlationMatrix } from "./components/correlation_matrix.js";
-import { numberOfDisastersPerCategory } from "./components/bar_chart.js";
+import { barChart } from "./components/bar_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 ```
 
 <div class="grid">
     <div class="card">
-        ${resize((width) => bumpChart(disastersPerYear.filter(disaster => disaster["year"] >= 2010), {width}, selectedAndColor))}
+        ${resize((width) => bumpChart(bundledDisasters, {width}, selectedAndColor))}
     </div>
 </div>
 
@@ -128,7 +128,25 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${numberOfDisastersPerCategory(counts, totalCount, selectedAndColor)}
+    ${barChart(disasterCounts, "Amount of disasters", "numberOfDisasters", "disaster", selectedAndColor)}
+  </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${barChart(disasterCounts, "Deaths per disaster", "deaths", "disaster", selectedAndColor, "numberOfDisasters")}
+  </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${barChart(disasterCounts, "Affected per disaster", "affected", "disaster", selectedAndColor, "numberOfDisasters")}
+  </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${barChart(disasterCounts, "Injured per disaster", "injured", "disaster", selectedAndColor, "numberOfDisasters")}
   </div>
 </div>
 

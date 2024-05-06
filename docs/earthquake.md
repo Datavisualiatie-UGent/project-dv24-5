@@ -56,6 +56,8 @@ import {
   getTypeCorrelations,
   getAverageLengthOfDisasterPerYear,
   getTotalDisastersPerCountry,
+  getDisasterMagnitudes,
+  getMostDeadlyDisasters,
 } from "./process_data.js";
 
 
@@ -92,11 +94,17 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
   ["Earthquake"]
 );
+const disasterMagnitudes = getDisasterMagnitudes(emdat_disasters, "Earthquake");
+const mostDeadlyDisasters = getMostDeadlyDisasters(
+  emdat_disasters,
+  "Earthquake"
+);
 ```
 
 ```js
 import { lineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
+import { barChart } from "./components/bar_chart.js";
 ```
 
 ```js
@@ -170,6 +178,12 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
 
 <div class="grid grid-cols-2">
     <div class="card">
+        ${barChart(mostDeadlyDisasters, "Most deadly earthquakes", "deaths")}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
         ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
     </div>
 </div>
@@ -192,6 +206,13 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
     ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
+  </div>
+</div>
+
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${lineChart(disasterMagnitudes, "magnitude", "Magnitude (richter)", selectedAndColor)}
   </div>
 </div>
 

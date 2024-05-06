@@ -178,8 +178,9 @@ export function getConfirmedAffectedPersonsPerYear(disasters, specificDisasterTy
                 json[year]["deaths"] += deaths;
                 json[year]["injured"] += injured;
                 json[year]["affected"] += affected;
+                json[year]["totalCount"] += 1;
             } else {
-                json[year] = new Object({deaths : deaths, injured : injured, affected : affected});
+                json[year] = new Object({deaths : deaths, injured : injured, affected : affected, totalCount: 1});
             }
         });
         for (let i = minYear; i <= maxYear; i++) {
@@ -189,13 +190,16 @@ export function getConfirmedAffectedPersonsPerYear(disasters, specificDisasterTy
                     year : i,
                     deaths : json[i]["deaths"],
                     injured : json[i]["injured"],
-                    affected : json[i]["affected"]
+                    affected : json[i]["affected"],
+                    amount: json[i]["totalCount"]
                 });
             }
         }
         return acc;
     }, []);
 }
+
+
 
 function getGroupedDisastersByCountry(disasters, specificDisasterType=[]) {
     return Object.groupBy(
@@ -280,4 +284,133 @@ export function getAreaPerCountry(areasOfCountries) {
         areaPerCountry[entry["Entity"]] = entry["Land area (sq. km)"]
     }
     return areaPerCountry;
+
+  export function bundleDisasters(disasters) {
+  return disasters.map((disaster) => {
+    let amountOfDisasters = 0;
+    if (disaster["year"] % 3 == 1) {
+      const disasterBefore = disasters.find(d => d["year"] == disaster["year"] - 1 && d["disaster"] == disaster["disaster"]);
+      const disasterAfter = disasters.find(d => d["year"] == disaster["year"] + 1 && d["disaster"] == disaster["disaster"]);
+      if (disasterBefore) {
+        amountOfDisasters += disasterBefore["disasters"];
+      }
+      if (disasterAfter) {
+        amountOfDisasters += disasterAfter["disasters"];
+      }
+    }
+    return {
+      disasters: disaster["disasters"] + amountOfDisasters,
+      ...disaster
+    };
+    }
+  ).filter((disaster) => disaster["year"] % 3 ==  1);
+}
+
+/*
+  * This function takes in a list of disasters and returns a dictionary with the disaster name as key and the amount of deaths, injured and affected people as value.
+  * The amount of deaths, injured and affected people are summed over all years.
+  * Useful for the bar charts.
+*/
+export function getDisasterCounts(emdat_disasters) {
+  const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
+    emdat_disasters
+  );
+  return confirmedAffectedPersonsPerYear.reduce((acc, disaster) => {
+    const disasterName = disaster["disaster"];
+    const nrOfDeaths = disaster["deaths"];
+    const nrOfInjured = disaster["injured"];
+    const nrOfAffected = disaster["affected"];
+    const count = disaster["amount"];
+    const foundDisaster = acc.find((el) => el["disaster"] === disasterName);
+    if (foundDisaster) {
+      foundDisaster["deaths"] += nrOfDeaths;
+      foundDisaster["injured"] += nrOfInjured;
+      foundDisaster["affected"] += nrOfAffected;
+      foundDisaster["numberOfDisasters"] += count;
+
+      acc = acc.filter((el) => el["disaster"] !== disasterName);
+      acc.push(foundDisaster);
+    } else {
+      const obj = {
+        disaster: disasterName,
+        deaths: nrOfDeaths,
+        injured: nrOfInjured,
+        affected: nrOfAffected,
+        numberOfDisasters: count,
+      };
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
+}
+
+export function getDisasterMagnitudes(emdat_disasters, disasterType) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType])
+  return groupedDisasters[disasterType].filter(el => el["Magnitude"]).reduce((acc, disaster) => {
+    const year = disaster["Start Year"];
+    const magnitude = disaster["Magnitude"];
+  
+    const dInAcc = acc.find(e => e["year"] === year);
+    if (dInAcc) {
+      const nrOfDisasters = dInAcc["nrOfDisasters"];
+      const currentMagnitudeAverage = dInAcc["magnitude"];
+      const newAverage = ((nrOfDisasters * currentMagnitudeAverage + magnitude) / (nrOfDisasters + 1)) | 0
+      const newObj = {
+        year: year,
+        magnitude: newAverage,
+        nrOfDisasters: nrOfDisasters + 1,
+        disaster: disasterType
+      }
+      acc = acc.filter(e => e["year"] !== year);
+      acc.push(newObj);
+    } else {
+      const obj = {
+        year: year,
+        magnitude: magnitude,
+        nrOfDisasters: 1,
+        disaster: disasterType
+      };
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
+}
+
+export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=5) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
+  const disasters = groupedDisasters[disasterType];
+  return disasters.sort((a, b) => {
+    if (! a["Total Deaths"]) return 1;
+    if (! b["Total Deaths"]) return -1;
+    const deathsA = parseInt(a["Total Deaths"]);
+    const deathsB = parseInt(b["Total Deaths"]);
+    return deathsB - deathsA;
+  }).slice(0, nr).map(disaster => {
+    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} (${disaster["Start Year"]})`: `${disaster["Country"]} (${disaster["Start Year"]})`;
+    return {
+      disaster: disasterName,
+      year: disaster["Start Year"],
+      deaths: disaster["Total Deaths"],
+    };
+  });
+}
+
+export function getMostExpensiveDisasters(emdat_disasters, disasterType, nr=5) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
+  const disasters = groupedDisasters[disasterType];
+  let costStr = "Total Damage, Adjusted ('000 US$)";
+  return disasters.sort((a, b) => {
+    if (! a[costStr]) return 1;
+    if (! b[costStr]) return -1;
+    const costA = parseInt(a[costStr]);
+    const costB = parseInt(b[costStr]);
+    return costB - costA;
+  }).slice(0, nr).map(disaster => {
+    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} (${disaster["Start Year"]})`: `${disaster["Country"]} (${disaster["Start Year"]})`;
+    return {
+      disaster: disasterName,
+      year: disaster["Start Year"],
+      cost: disaster[costStr],
+    };
+  });
 }

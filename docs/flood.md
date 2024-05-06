@@ -49,13 +49,17 @@ font-size: 90px;
 
 ```js
 import {
-    getTotalDisastersPerCountry,
-    getGroupedDisasters,
-    getDisastersPerYear,
-    getConfirmedAffectedPersonsPerYear,
-    getDisastersAmountPerCountryPerYear,
-    getTypeCorrelations,
-    getAverageLengthOfDisasterPerYear,
+  getGroupedDisasters,
+  getDisastersPerYear,
+  getConfirmedAffectedPersonsPerYear,
+  getDisastersAmountPerCountryPerYear,
+  getTypeCorrelations,
+  getAverageLengthOfDisasterPerYear,
+  getDisasterMagnitudes,
+  getMostDeadlyDisasters,
+  getMostExpensiveDisasters,
+  getTotalDisastersPerCountry
+
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -90,11 +94,18 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
   ["Flood"]
 );
+const disasterMagnitudes = getDisasterMagnitudes(emdat_disasters, "Flood");
+const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Flood");
+const mostExpensiveDisasters = getMostExpensiveDisasters(
+  emdat_disasters,
+  "Flood"
+);
 ```
 
 ```js
 import { lineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
+import { barChart } from "./components/bar_chart.js";
 ```
 
 ```js
@@ -140,8 +151,32 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
 
 <div class="grid grid-cols-2">
     <div class="card">
+        ${barChart(mostDeadlyDisasters, "Most deadly floods", "deaths")}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${barChart(mostExpensiveDisasters, "Most costly storms", "cost")}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
         ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
     </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
+  </div>
+</div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${lineChart(disasterMagnitudes, "magnitude", "Magnitude (km2)", selectedAndColor)}
+  </div>
 </div>
 
 <div class="grid grid-cols-2">
