@@ -116,9 +116,6 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 const countries = await FileAttachment("data/countries.json").json();
 const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
 
-const areasOfCountries = await FileAttachment("data/land-area-km.csv").csv({headers: true})
-const areaPerCountry = getAreaPerCountry(areasOfCountries)
-
 const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
 const longitude = Generators.input(longitudeSlider);
 
