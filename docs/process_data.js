@@ -342,15 +342,18 @@ export function getDisasterMagnitudes(emdat_disasters, disasterType) {
   return groupedDisasters[disasterType].filter(el => el["Magnitude"]).reduce((acc, disaster) => {
     const year = disaster["Start Year"];
     const magnitude = disaster["Magnitude"];
+    const deaths = disaster["Total Deaths"];
   
     const dInAcc = acc.find(e => e["year"] === year);
     if (dInAcc) {
       const nrOfDisasters = dInAcc["nrOfDisasters"];
       const currentMagnitudeAverage = dInAcc["magnitude"];
-      const newAverage = ((nrOfDisasters * currentMagnitudeAverage + magnitude) / (nrOfDisasters + 1)) | 0
+      const currDeaths = dInAcc["deaths"];
+      const newAverage = ((nrOfDisasters * currentMagnitudeAverage + magnitude) / (nrOfDisasters + 1));
       const newObj = {
         year: year,
         magnitude: newAverage,
+        deaths: currDeaths + deaths,
         nrOfDisasters: nrOfDisasters + 1,
         disaster: disasterType
       }
@@ -360,6 +363,7 @@ export function getDisasterMagnitudes(emdat_disasters, disasterType) {
       const obj = {
         year: year,
         magnitude: magnitude,
+        deaths: deaths,
         nrOfDisasters: 1,
         disaster: disasterType
       };
@@ -406,4 +410,68 @@ export function getMostExpensiveDisasters(emdat_disasters, disasterType, nr=5) {
       cost: disaster[costStr],
     };
   });
+}
+
+export function getInfoDisaster(emdat_disasters, disasterType) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
+  return groupedDisasters[disasterType]
+  .sort((a, b) => {
+    if (! a["Total Deaths"]) return 1;
+    if (! b["Total Deaths"]) return -1;
+    const deathsA = parseInt(a["Total Deaths"]);
+    const deathsB = parseInt(b["Total Deaths"]);
+    return deathsB - deathsA;
+  })
+  .filter(d => d["Magnitude"])
+  .reduce((acc, disaster) => {
+    const country = disaster["Country"];
+    const eventName = disaster["Event Name"];
+    const year = disaster["Start Year"];
+    const disasterName = eventName ? `${eventName}, ${country} (${year})`: `${country} (${year})`;
+    const deaths = disaster["Total Deaths"];
+    const magnitude = disaster["Magnitude"];
+    const obj = {
+      disaster: disasterName,
+      year: year,
+      country: country,
+      deaths: deaths,
+      magnitude: magnitude,
+    };
+    acc.push(obj);
+    return acc;
+  }, []);
+}
+
+
+export function getDateLengthDisaster(emdat_disasters, disasterType) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, disasterType);
+  return groupedDisasters[disasterType].reduce((acc, disaster) => {
+      const startYear = parseInt(disaster["Start Year"]);
+      const startMonth = parseInt(disaster["Start Month"]);
+      let startDay = parseInt(disaster["Start Day"]);
+  
+      const endYear = parseInt(disaster["End Year"]);
+      const endMonth = parseInt(disaster["End Month"]);
+      let endDay = parseInt(disaster["End Day"]);
+  
+      const hasNan = [startYear, startMonth, endYear, endMonth].some(el => isNaN(el))
+      if (hasNan) return acc;
+      else {
+        endDay = endDay ? endDay : 1;
+        startDay = startDay ? startDay : 1;
+      }
+
+      const startDate = new Date(startYear, startMonth, startDay);
+      const endDate = new Date(endYear, endMonth, endDay);
+      const length = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
+
+      const newobj = {
+        date: startDate,
+        length: length,
+        year: startYear,
+        disaster: disasterType
+      };
+      acc.push(newobj);
+      return acc;
+  }, []).filter(d => d["length"] && d["year"] >= 2000);
 }

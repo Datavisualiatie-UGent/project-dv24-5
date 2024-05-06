@@ -58,6 +58,7 @@ import {
   getTotalDisastersPerCountry,
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
+  getInfoDisaster,
 } from "./process_data.js";
 // Get countries
 const land = await FileAttachment("data/land.json").json();
@@ -107,6 +108,11 @@ const mostDeadlyDisasters = getMostDeadlyDisasters(
   emdat_disasters,
   "Earthquake"
 );
+
+const infoDisaster = getInfoDisaster(emdat_disasters, "Earthquake").slice(
+  0,
+  10
+);
 ```
 
 ```js
@@ -121,7 +127,10 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 
 <div class="grid grid-cols-2">
     <div class="card">
-        ${barChart(mostDeadlyDisasters, "Most deadly earthquakes", "deaths")}
+        ${barChart(infoDisaster, "Deaths with magnitude", "deaths", "disaster", {"scheme":{
+          "color":"oranges",
+          "map": "magnitude"
+        }})}
     </div>
 </div>
 
@@ -129,27 +138,6 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
     <div class="card">
         ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
     </div>
-</div>
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "deaths", "Amount of deaths", selectedAndColor)}
-    </div>
-   <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "injured", "People injured", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid">
-     <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "affected", "People affected", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
-  </div>
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">

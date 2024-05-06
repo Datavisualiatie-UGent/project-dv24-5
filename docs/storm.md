@@ -58,6 +58,7 @@ import {
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
   getMostExpensiveDisasters,
+  getDateLengthDisaster,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -105,6 +106,7 @@ const mostExpensiveDisasters = getMostExpensiveDisasters(
 import { lineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
+import { scatterChart } from "./components/scatter_chart.js";
 ```
 
 ```js
