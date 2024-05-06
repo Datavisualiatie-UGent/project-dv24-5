@@ -17,7 +17,14 @@ const nameMapping = { // datasetName: countries.json name
     "Taiwan (Province of China)": "Taiwan",
     "People's Democratic Republic of Yemen": "Yemen",
     "Netherlands (Kingdom of the)": "Netherlands",
-    "United Kingdom of Great Britain and Northern Ireland": "United Kingdom"
+    "United Kingdom of Great Britain and Northern Ireland": "United Kingdom",
+    "Czechia": "Czech Republic",
+    "North Macedonia": "Macedonia",
+    "Republic of Moldova": "Moldova",
+    "Syrian Arab Republic": "Syria",
+    "South Sudan": "Sudan",
+    "State of Palestine": "Palestine",
+    "Cabo Verde": "Cape Verde"
 }
 
 
@@ -49,8 +56,8 @@ export function choroplethWorldMap(
     }
 
     // used to fill nameMapping
-    //const allCountries = countries.features.map(feature => feature.properties.name);
-    //const mismatches = Object.keys(byName).filter(country => !allCountries.includes(country))
+    // const allCountries = countries.features.map(feature => feature.properties.name);
+    // const mismatches = Object.keys(disastersPerCountry).filter(country => !allCountries.includes(country))
 
     return Plot.plot({
         width,

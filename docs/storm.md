@@ -127,7 +127,8 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
         ${fullWorldCheckbox}
         ${logScaleCheckbox}
         ${fullWorld ? "" : longitudeSlider}
-        <p>Tekstje over welke gebieden het meest getroffen worden?</p>
+        <p>In the case that some country(s) have significantly more occurrences than the average amount, the difference between countries with an average amount vanishes. </p>
+        <p>To get a better idea of how these countries with an average amount relate to each other, you can use the logarithmic scale.</p>
     </div>
     <div class="">
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {

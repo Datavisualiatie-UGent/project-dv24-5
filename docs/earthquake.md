@@ -125,8 +125,8 @@ import { choroplethWorldMap, scatterWorldMap } from "./components/world_map_char
         ${fullWorldCheckbox}
         ${logScaleCheckbox}
         ${fullWorld ? "" : longitudeSlider}
-    <p>Tekstje over welke gebieden het meest getroffen worden?</p>
-    </div>
+        <p>In the case that some country(s) have significantly more occurrences than the average amount, the difference between countries with an average amount vanishes. </p>
+        <p>To get a better idea of how these countries with an average amount relate to each other, you can use the logarithmic scale.</p>    </div>
     <div class="">
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
             width, 
@@ -154,7 +154,7 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
     <div>
         ${fullWorldCheckbox2}
         ${fullWorld2 ? "" : longitudeSlider2}
-        <p>Tekstje over welke gebieden het meest getroffen worden?</p>
+        <p>The disks represent the total amount of deaths. Hover over them to see the exact number and what the magnitude of the eartquake was.</p>
     </div>
     <div>
         ${resize((width) => scatterWorldMap(groupedDisasters, countries, {
