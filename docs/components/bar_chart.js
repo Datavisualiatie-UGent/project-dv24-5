@@ -1,6 +1,20 @@
 import * as Plot from "npm:@observablehq/plot";
 
-export function barChart(counts, [disasters, colors], label, x_val="amount", y="disaster", scale=1) {    
+export function barChart(counts, label, x_val="amount", y="disaster", colorList=[], scale=1) {
+    let colorDict = {};
+    if (!colorList) {
+        colorDict = {
+            legend:true,
+            domain: counts.map(d => d[y]),
+        }
+    } else {
+        const [disasters, colors] = colorList;
+        colorDict = {
+            domain:disasters,
+            range:colors,
+            legend: true,
+        };
+    }
     return Plot.plot({
         height: 500,
         marginLeft: 150,
@@ -26,10 +40,6 @@ export function barChart(counts, [disasters, colors], label, x_val="amount", y="
                 y: y,
             }))
         ],
-        color: {
-            domain:disasters,
-            range:colors,
-            legend: true,
-        }
+        color: colorDict,
     })
 }
