@@ -92,7 +92,7 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
 ```
 
 ```js
-import { lineChart } from "./components/line_chart.js";
+import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 ```
 
