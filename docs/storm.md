@@ -58,6 +58,7 @@ import {
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
   getMostExpensiveDisasters,
+  getTotalDisastersPerCountry
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -110,6 +111,47 @@ import { barChart } from "./components/bar_chart.js";
 ```js
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
+
+```js
+const countries = await FileAttachment("data/countries.json").json();
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
+
+const areasOfCountries = await FileAttachment("data/land-area-km.csv").csv({headers: true})
+const areaPerCountry = getAreaPerCountry(areasOfCountries)
+
+const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitude = Generators.input(longitudeSlider);
+
+const fullWorldCheckbox = Inputs.toggle({label: "Full world view", value: true})
+const fullWorld = Generators.input(fullWorldCheckbox);
+
+const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
+const logScale = Generators.input(logScaleCheckbox);
+
+import { choroplethWorldMap } from "./components/world_map_chart.js";
+```
+
+## Storms per country
+<div class="grid grid-cols-2">
+    <div>
+        ${fullWorldCheckbox}
+        ${logScaleCheckbox}
+        ${fullWorld ? "" : longitudeSlider}
+        <p>In the case that some country(s) have significantly more occurrences than the average amount, the difference between countries with an average amount vanishes. </p>
+        <p>To get a better idea of how these countries with an average amount relate to each other, you can use the logarithmic scale.</p>
+    </div>
+    <div class="">
+        ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
+            width, 
+            longitude: longitude,
+            fullWorld: fullWorld,
+            disaster: "Storm",
+            label: "Total storms",
+            scheme: "blues",
+            logScale: logScale
+        }))}
+    </div>
+</div>
 
 <div class="grid grid-cols-2">
     <div class="card">

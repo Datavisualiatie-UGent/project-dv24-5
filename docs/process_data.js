@@ -278,7 +278,14 @@ export function getAverageLengthOfDisasterPerYear(disasters, specificDisasterTyp
   }, []);
 }
 
-export function bundleDisasters(disasters) {
+export function getAreaPerCountry(areasOfCountries) {
+    const areaPerCountry = {};
+    for(let entry of areasOfCountries) {
+        areaPerCountry[entry["Entity"]] = entry["Land area (sq. km)"]
+    }
+    return areaPerCountry;
+
+  export function bundleDisasters(disasters) {
   return disasters.map((disaster) => {
     let amountOfDisasters = 0;
     if (disaster["year"] % 3 == 1) {
