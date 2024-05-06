@@ -54,8 +54,11 @@ import {
   getConfirmedAffectedPersonsPerYear,
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
+  getCorrelationBetweenTwoLists,
   getAverageLengthOfDisasterPerYear,
   getTotalDisastersPerCountry,
+  getMonthlyTemperatureChanges,
+  getYearlyTemperatureChanges,
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
 } from "./process_data.js";
@@ -67,12 +70,29 @@ const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   headers: true,
 });
 
+const temperatures = await FileAttachment("data/GISS_surface_temperature.csv").csv({
+  typed: false,
+  headers: true,
+});
+
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+
+// Get disasters per country
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
+import {
+  choroplethWorldMap,
+  scatterWorldMap,
+} from "./components/world_map_chart.js";
+
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Earthquake"]);
 const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Earthquake"]);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
   ["Earthquake"]
 );
+
+const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
 
 const counts = Object.keys(groupedDisasters)
   .reduce((acc, key) => {
@@ -102,7 +122,7 @@ const mostDeadlyDisasters = getMostDeadlyDisasters(
 ```
 
 ```js
-import { lineChart } from "./components/line_chart.js";
+import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
 ```
@@ -111,9 +131,9 @@ import { barChart } from "./components/bar_chart.js";
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
+
 ```js
 const countries = await FileAttachment("data/countries.json").json();
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
 
 const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
 const longitude = Generators.input(longitudeSlider);
@@ -123,8 +143,6 @@ const fullWorld = Generators.input(fullWorldCheckbox);
 
 const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
 const logScale = Generators.input(logScaleCheckbox);
-
-import { choroplethWorldMap, scatterWorldMap } from "./components/world_map_chart.js";
 ```
 ## Earthquakes per country
 
@@ -182,10 +200,10 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
     </div>
 </div>
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
-    </div>
+<div class="grid" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}
+  </div>
 </div>
 
 <div class="grid grid-cols-2">
