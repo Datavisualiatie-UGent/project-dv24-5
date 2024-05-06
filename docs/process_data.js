@@ -368,3 +368,42 @@ export function getDisasterMagnitudes(emdat_disasters, disasterType) {
     return acc;
   }, []);
 }
+
+export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=5) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
+  const disasters = groupedDisasters[disasterType];
+  return disasters.sort((a, b) => {
+    if (! a["Total Deaths"]) return 1;
+    if (! b["Total Deaths"]) return -1;
+    const deathsA = parseInt(a["Total Deaths"]);
+    const deathsB = parseInt(b["Total Deaths"]);
+    return deathsB - deathsA;
+  }).slice(0, nr).map(disaster => {
+    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} (${disaster["Start Year"]})`: `${disaster["Country"]} (${disaster["Start Year"]})`;
+    return {
+      disaster: disasterName,
+      year: disaster["Start Year"],
+      deaths: disaster["Total Deaths"],
+    };
+  });
+}
+
+export function getMostExpensiveDisasters(emdat_disasters, disasterType, nr=5) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
+  const disasters = groupedDisasters[disasterType];
+  let costStr = "Total Damage, Adjusted ('000 US$)";
+  return disasters.sort((a, b) => {
+    if (! a[costStr]) return 1;
+    if (! b[costStr]) return -1;
+    const costA = parseInt(a[costStr]);
+    const costB = parseInt(b[costStr]);
+    return costB - costA;
+  }).slice(0, nr).map(disaster => {
+    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} (${disaster["Start Year"]})`: `${disaster["Country"]} (${disaster["Start Year"]})`;
+    return {
+      disaster: disasterName,
+      year: disaster["Start Year"],
+      cost: disaster[costStr],
+    };
+  });
+}
