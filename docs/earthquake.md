@@ -110,8 +110,11 @@ const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
 const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
 const longitude = Generators.input(longitudeSlider);
 
-const fullWorldCheckbox = Inputs.checkbox([""], {label: "Full world view"})
+const fullWorldCheckbox = Inputs.toggle({label: "Full world view", value: true})
 const fullWorld = Generators.input(fullWorldCheckbox);
+
+const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
+const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap, scatterWorldMap } from "./components/world_map_chart.js";
 ```
@@ -120,17 +123,19 @@ import { choroplethWorldMap, scatterWorldMap } from "./components/world_map_char
 <div class="grid grid-cols-2">
     <div>
         ${fullWorldCheckbox}
-        ${longitudeSlider}
-        <p>Tekstje over welke gebieden het meest getroffen worden?</p>
+        ${logScaleCheckbox}
+        ${fullWorld ? "" : longitudeSlider}
+    <p>Tekstje over welke gebieden het meest getroffen worden?</p>
     </div>
     <div class="">
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
             width, 
             longitude: longitude,
-            fullWorld: fullWorld.includes(""),
+            fullWorld: fullWorld,
             disaster: "Earthquake",
             label: "Total earthquakes",
             scheme: "greens",
+            logScale: logScale
         }))}
     </div>
 </div>
@@ -139,15 +144,16 @@ import { choroplethWorldMap, scatterWorldMap } from "./components/world_map_char
 const longitudeSlider2 = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
 const longitude2 = Generators.input(longitudeSlider2);
 
-const fullWorldCheckbox2 = Inputs.checkbox([""], {label: "Full world view"})
+const fullWorldCheckbox2 = Inputs.toggle({label: "Full world view", value: true})
 const fullWorld2 = Generators.input(fullWorldCheckbox2);
+
 ```
 
 ## Most deadly earthquakes
 <div class="grid grid-cols-2">
     <div>
         ${fullWorldCheckbox2}
-        ${longitudeSlider2}
+        ${fullWorld2 ? "" : longitudeSlider2}
         <p>Tekstje over welke gebieden het meest getroffen worden?</p>
     </div>
     <div>
@@ -155,7 +161,7 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
             width, 
             label: "Total Deaths", 
             longitude: longitude2, 
-            fullWorld: fullWorld2.includes("")
+            fullWorld: fullWorld2
         }))}
     </div>
 </div>

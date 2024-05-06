@@ -20,22 +20,32 @@ const nameMapping = { // datasetName: countries.json name
     "United Kingdom of Great Britain and Northern Ireland": "United Kingdom"
 }
 
+
+function getDescription(disastersPerCountry, country, disaster) {
+    let amount = disastersPerCountry[country]?.[disaster];
+    if (amount === undefined) {
+        amount = 0;
+    }
+    return `Country: ${nameMapping[country] ?? country}\nAmount: ${amount}\n`
+}
+
 export function choroplethWorldMap(
     data,
     countries,
     {
         width,
-        disaster="Wildfire",
-        label="Total wildfires per country",
-        scheme="reds",
-        fullWorld= false,
-        longitude=0
+        disaster = "Wildfire",
+        label = "Total wildfires per country",
+        scheme = "reds",
+        fullWorld = false,
+        longitude = 0,
+        logScale = false
     } = {}
-    ) {
-    let byName = {};
+) {
+    let disastersPerCountry = {};
     for (let i = 0; i < data.length; i++) {
         let country = data[i].country;
-        byName[nameMapping[country] ?? country] = data[i];
+        disastersPerCountry[nameMapping[country] ?? country] = data[i];
     }
 
     // used to fill nameMapping
@@ -46,10 +56,10 @@ export function choroplethWorldMap(
         width,
         projection: {
             type: fullWorld ? "equal-earth" : "orthographic",
-            rotate: [-longitude, 0]
+            rotate: [fullWorld ? 0 : -longitude, 0]
         },
         color: {
-            type: "quantize",
+            type: logScale ? "log" : "quantize",
             n: 10,
             scheme: scheme,
             unknown: "#ddd",
@@ -61,12 +71,12 @@ export function choroplethWorldMap(
             Plot.graticule(),
             Plot.sphere(),
             Plot.geo(countries, {
-                fill: (d) => byName[d.properties.name]?.[disaster],
+                fill: (d) => disastersPerCountry[d.properties.name]?.[disaster]|0,
                 stroke: "grey",
                 strokeWidth: 0.25,
                 dx: 1,
                 dy: 1,
-                title: (d) => `${nameMapping[d.properties.name] ?? d.properties.name}: ${byName[d.properties.name]?.[disaster]}`
+                title: (d) => `${getDescription(disastersPerCountry, d.properties.name, disaster)}`
             })
         ]
     })
@@ -78,10 +88,10 @@ export function scatterWorldMap(
     countries,
     {
         width,
-        disaster="Earthquake",
-        label="Total Deaths",
-        fullWorld= false,
-        longitude= 0
+        disaster = "Earthquake",
+        label = "Total Deaths",
+        fullWorld = false,
+        longitude = 0
     } = {}
 ) {
 
@@ -90,7 +100,7 @@ export function scatterWorldMap(
         title: label,
         projection: {
             type: fullWorld ? "equal-earth" : "orthographic",
-            rotate: [-longitude, 0],
+            rotate: [fullWorld ? 0 : -longitude, 0],
         },
         r: {transform: (d) => label === "Magnitude" ? Math.pow(10, d) : d}, // convert Richter to amplitude
         marks: [

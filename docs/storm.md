@@ -56,6 +56,7 @@ import {
     getDisastersAmountPerCountryPerYear,
     getTypeCorrelations,
     getAverageLengthOfDisasterPerYear,
+    getAreaPerCountry
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -105,11 +106,17 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 const countries = await FileAttachment("data/countries.json").json();
 const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
 
+const areasOfCountries = await FileAttachment("data/land-area-km.csv").csv({headers: true})
+const areaPerCountry = getAreaPerCountry(areasOfCountries)
+
 const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
 const longitude = Generators.input(longitudeSlider);
 
-const fullWorldCheckbox = Inputs.checkbox([""], {label: "Full world view"})
+const fullWorldCheckbox = Inputs.toggle({label: "Full world view", value: true})
 const fullWorld = Generators.input(fullWorldCheckbox);
+
+const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
+const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap } from "./components/world_map_chart.js";
 ```
@@ -118,17 +125,19 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
 <div class="grid grid-cols-2">
     <div>
         ${fullWorldCheckbox}
-        ${longitudeSlider}
+        ${logScaleCheckbox}
+        ${fullWorld ? "" : longitudeSlider}
         <p>Tekstje over welke gebieden het meest getroffen worden?</p>
     </div>
     <div class="">
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
             width, 
             longitude: longitude,
-            fullWorld: fullWorld.includes(""),
+            fullWorld: fullWorld,
             disaster: "Storm",
             label: "Total storms",
             scheme: "blues",
+            logScale: logScale
         }))}
     </div>
 </div>
