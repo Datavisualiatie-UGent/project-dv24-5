@@ -1,4 +1,4 @@
-export function getDisastersPerColor(selectedDisasters) {
+export function getDisastersPerColor(selectedDisasters=["Flood", "Extreme temperature", "Earthquake", "Storm", "Mass Movement", "Volcanic activity", "Drought", "Wildfire"]) {
     const colorDisasters = {
         "Flood": "hsl(240, 50%, 50%)",        // Blue
         "Extreme temperature": "hsl(270, 50%, 50%)", // Purple
