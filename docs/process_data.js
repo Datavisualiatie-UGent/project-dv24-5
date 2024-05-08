@@ -34,12 +34,6 @@ export function getDisastersPerYear(disasters, specificDisasterType=[]) {
                 } else {
                     obj[y] = 1;
                 }
-                if (y < miny) {
-                    miny = y;
-                }
-                if (y > maxy) {
-                    maxy = y;
-                }
             });
             for (let i = miny; i < maxy; i++) {
                 const date = new Date();
@@ -139,6 +133,33 @@ export function getCorrelation(firstDisasterType, secondDisasterType, disastersA
     return 0;
   }
   return correlations.reduce((x, y) => x + y, 0.0) / correlations.length;
+}
+
+export function getCorrelationBetweenTwoLists(listx, listy) {
+    let x2 = [];
+    let y2 = [];
+    let xy = [];
+    let sigmaX = 0;
+    let sigmaY = 0;
+    let n = Math.min(listx.length, listy.length);
+    for (var i = 0; i < n; i++) {
+      const x = listx[i];
+      const y = listy[i];
+      sigmaX += x;
+      sigmaY += y;
+      x2.push(x*x);
+      y2.push(y*y);
+      xy.push(x*y);
+    }
+
+    let sigmaX2 = x2.reduce(((x, y) => x + y), 0);
+    let sigmaY2 = y2.reduce(((x, y) => x + y), 0);
+    let sigmaXY = xy.reduce(((x, y) => x + y), 0);
+
+    var correlation = 
+      ((n*sigmaXY) - (sigmaX*sigmaY))/
+      Math.sqrt((n*sigmaX2 - (sigmaX*sigmaX)) * (n*sigmaY2 - (sigmaY*sigmaY)));
+    return correlation;
 }
 
 export function getTypeCorrelations(disastersAmountPerCountryPerYear, emdat_disasters) {
@@ -280,6 +301,14 @@ export function getAverageLengthOfDisasterPerYear(disasters, specificDisasterTyp
   }, []);
 }
 
+export function getAreaPerCountry(areasOfCountries) {
+    const areaPerCountry = {};
+    for (let entry of areasOfCountries) {
+        areaPerCountry[entry["Entity"]] = entry["Land area (sq. km)"]
+    }
+    return areaPerCountry;
+}
+
 export function bundleDisasters(disasters) {
   return disasters.map((disaster) => {
     let amountOfDisasters = 0;
@@ -377,6 +406,69 @@ export function getDisasterMagnitudes(emdat_disasters, disasterType) {
   }, []);
 }
 
+export function getTotalDisastersPerYear(disasterCounts) {
+  var totalDisastersPerYear = [];
+  disasterCounts.forEach(e => {
+    const index = e["year"] - 1988;
+    const disasters = e["disasters"];
+    if (totalDisastersPerYear.length <= index) {
+      totalDisastersPerYear.push(disasters);
+    } else {
+      totalDisastersPerYear[index] = totalDisastersPerYear[index] += disasters;
+    }
+  });
+  var toReturn = [];
+  for (var i = 0; i < totalDisastersPerYear.length; i++) {
+    toReturn.push({year : (i + 1988), disasters : totalDisastersPerYear[i]});
+  }
+  return toReturn;
+}
+
+
+export function getMonthlyTemperatureChanges(giss_temperatures) {
+  var temps = [];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  for (var i = 0; i < giss_temperatures.length; i++) {
+    const obj = giss_temperatures[i];
+    const year = obj["Year"];
+    if (year < 1988 || year > 2022) {
+      continue;
+    }
+    for (var x = 0; x < months.length; x++) {
+      const month = months[x];
+      const temp = Number(obj[month]);
+      if (isNaN(temp)) {
+        continue;
+      }
+      const d = new Date(year, x);
+      var o = {date : d, temp: temp};
+      temps.push(o);    
+    }
+  }
+    
+  
+  return temps;
+}
+
+export function getYearlyTemperatureChanges(giss_temperatures) {
+  var temps = [];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  for (var i = 0; i < giss_temperatures.length; i++) {
+    const obj = giss_temperatures[i];
+    const year = obj["Year"];
+    if (year < 1988) {
+      continue;
+    }
+    const temp = Number(obj["J-D"]);
+    if (isNaN(temp)) {
+      continue;
+    }
+    var o = {date : year, temp: temp};
+    temps.push(o);    
+    
+  }
+  return temps;
+}
 export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=5) {
   const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
   const disasters = groupedDisasters[disasterType];

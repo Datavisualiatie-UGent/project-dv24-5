@@ -57,9 +57,13 @@ import {
   getConfirmedAffectedPersonsPerYear,
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
+  getCorrelationBetweenTwoLists,
   getAverageLengthOfDisasterPerYear,
   bundleDisasters,
   getDisasterCounts,
+  getTotalDisastersPerYear,
+  getMonthlyTemperatureChanges,
+  getYearlyTemperatureChanges
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -67,8 +71,20 @@ const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   headers: true,
 });
 
+const temperatures = await FileAttachment("data/GISS_surface_temperature.csv").csv({
+  typed: false,
+  headers: true,
+});
+
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+
 const groupedDisasters = getGroupedDisasters(emdat_disasters);
 const disastersPerYear = getDisastersPerYear(emdat_disasters);
+const totalDisasterPerYear = getTotalDisastersPerYear(disastersPerYear);
+
+const correlation = getCorrelationBetweenTwoLists(totalDisasterPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
+
 const confirmedAffectedPersonsPerYear =
   getConfirmedAffectedPersonsPerYear(emdat_disasters);
 
@@ -91,7 +107,7 @@ const bundledDisasters = bundleDisasters(disastersPerYear);
 ```js
 import { bumpChart } from "./components/bump_chart.js";
 import { areaChart } from "./components/area_chart.js";
-import { lineChart } from "./components/line_chart.js";
+import { lineChart, tempLineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
 import { correlationMatrix } from "./components/correlation_matrix.js";
 import { barChart } from "./components/bar_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
@@ -124,6 +140,12 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
         ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
             "disasters", "Amount of disasters", selectedAndColor)}
     </div>
+</div>
+
+<div class="grid" style="grid-auto-rows: 600px;">
+  <div class="card">
+  ${tempDisasterAmountLineChart(monthlyTemperatureChanges, totalDisasterPerYear, correlation)}
+  </div>
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">

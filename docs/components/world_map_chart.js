@@ -17,41 +17,57 @@ const nameMapping = { // datasetName: countries.json name
     "Taiwan (Province of China)": "Taiwan",
     "People's Democratic Republic of Yemen": "Yemen",
     "Netherlands (Kingdom of the)": "Netherlands",
-    "United Kingdom of Great Britain and Northern Ireland": "United Kingdom"
+    "United Kingdom of Great Britain and Northern Ireland": "United Kingdom",
+    "Czechia": "Czech Republic",
+    "North Macedonia": "Macedonia",
+    "Republic of Moldova": "Moldova",
+    "Syrian Arab Republic": "Syria",
+    "South Sudan": "Sudan",
+    "State of Palestine": "Palestine",
+    "Cabo Verde": "Cape Verde"
+}
+
+
+function getDescription(disastersPerCountry, country, disaster) {
+    let amount = disastersPerCountry[country]?.[disaster];
+    if (amount === undefined) {
+        amount = 0;
+    }
+    return `Country: ${nameMapping[country] ?? country}\nAmount: ${amount}\n`
 }
 
 export function choroplethWorldMap(
     data,
-    land,
     countries,
     {
         width,
-        disaster="Wildfire",
-        label="Total wildfires per country",
-        scheme="reds",
-        withSlider= true,
-        longitude=0
+        disaster = "Wildfire",
+        label = "Total wildfires per country",
+        scheme = "reds",
+        fullWorld = false,
+        longitude = 0,
+        logScale = false
     } = {}
-    ) {
-    let byName = {};
+) {
+    let disastersPerCountry = {};
     for (let i = 0; i < data.length; i++) {
         let country = data[i].country;
-        byName[nameMapping[country] ?? country] = data[i];
+        disastersPerCountry[nameMapping[country] ?? country] = data[i];
     }
 
     // used to fill nameMapping
-    //const allCountries = countries.features.map(feature => feature.properties.name);
-    //const mismatches = Object.keys(byName).filter(country => !allCountries.includes(country))
+    // const allCountries = countries.features.map(feature => feature.properties.name);
+    // const mismatches = Object.keys(disastersPerCountry).filter(country => !allCountries.includes(country))
 
     return Plot.plot({
         width,
         projection: {
-            type: withSlider ? "orthographic" : "equal-earth",
-            rotate: [-longitude, 0]
+            type: fullWorld ? "equal-earth" : "orthographic",
+            rotate: [fullWorld ? 0 : -longitude, 0]
         },
         color: {
-            type: "quantize",
-            //n: 10,
+            type: logScale ? "log" : "quantize",
+            n: 10,
             scheme: scheme,
             unknown: "#ddd",
             label: label,
@@ -62,12 +78,12 @@ export function choroplethWorldMap(
             Plot.graticule(),
             Plot.sphere(),
             Plot.geo(countries, {
-                fill: (d) => byName[d.properties.name]?.[disaster],
+                fill: (d) => disastersPerCountry[d.properties.name]?.[disaster]|0,
                 stroke: "grey",
                 strokeWidth: 0.25,
                 dx: 1,
                 dy: 1,
-                title: (d) => `${nameMapping[d.properties.name] ?? d.properties.name}: ${byName[d.properties.name]?.[disaster]}`
+                title: (d) => `${getDescription(disastersPerCountry, d.properties.name, disaster)}`
             })
         ]
     })
@@ -76,14 +92,13 @@ export function choroplethWorldMap(
 
 export function scatterWorldMap(
     data,
-    land,
     countries,
     {
         width,
-        disaster="Earthquake",
-        label="Total Deaths",
-        withSlider= true,
-        longitude= 0
+        disaster = "Earthquake",
+        label = "Total Deaths",
+        fullWorld = false,
+        longitude = 0
     } = {}
 ) {
 
@@ -91,8 +106,8 @@ export function scatterWorldMap(
         width,
         title: label,
         projection: {
-            type: withSlider ? "orthographic" : "equal-earth",
-            rotate: [-longitude, 0],
+            type: fullWorld ? "equal-earth" : "orthographic",
+            rotate: [fullWorld ? 0 : -longitude, 0],
         },
         r: {transform: (d) => label === "Magnitude" ? Math.pow(10, d) : d}, // convert Richter to amplitude
         marks: [
