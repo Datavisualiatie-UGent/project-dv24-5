@@ -42,11 +42,13 @@ export function getDisastersPerYear(disasters, specificDisasterType=[]) {
                 }
             });
             for (let i = miny; i < maxy; i++) {
+                const date = new Date();
                 let nrOfDisasters = 0;
                 if (i in obj) {
                     nrOfDisasters = obj[i];
                 }
-                acc.push({ disaster: disasterType, year: i, disasters: nrOfDisasters });
+                date.setFullYear(i);
+                acc.push({ disaster: disasterType, year: date, disasters: nrOfDisasters });
             }
             return acc;
         },
@@ -345,13 +347,15 @@ export function getDisasterMagnitudes(emdat_disasters, disasterType) {
     const deaths = disaster["Total Deaths"];
   
     const dInAcc = acc.find(e => e["year"] === year);
+    const date = new Date();
+    date.setFullYear(year);
     if (dInAcc) {
       const nrOfDisasters = dInAcc["nrOfDisasters"];
       const currentMagnitudeAverage = dInAcc["magnitude"];
       const currDeaths = dInAcc["deaths"];
       const newAverage = ((nrOfDisasters * currentMagnitudeAverage + magnitude) / (nrOfDisasters + 1));
       const newObj = {
-        year: year,
+        year: date,
         magnitude: newAverage,
         deaths: currDeaths + deaths,
         nrOfDisasters: nrOfDisasters + 1,
@@ -361,7 +365,7 @@ export function getDisasterMagnitudes(emdat_disasters, disasterType) {
       acc.push(newObj);
     } else {
       const obj = {
-        year: year,
+        year: date,
         magnitude: magnitude,
         deaths: deaths,
         nrOfDisasters: 1,
@@ -383,10 +387,12 @@ export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=5) {
     const deathsB = parseInt(b["Total Deaths"]);
     return deathsB - deathsA;
   }).slice(0, nr).map(disaster => {
+    const date = new Date();
+    date.setFullYear(disaster["Start Year"]);
     const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} (${disaster["Start Year"]})`: `${disaster["Country"]} (${disaster["Start Year"]})`;
     return {
       disaster: disasterName,
-      year: disaster["Start Year"],
+      year: date,
       deaths: disaster["Total Deaths"],
     };
   });
@@ -404,9 +410,11 @@ export function getMostExpensiveDisasters(emdat_disasters, disasterType, nr=5) {
     return costB - costA;
   }).slice(0, nr).map(disaster => {
     const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} (${disaster["Start Year"]})`: `${disaster["Country"]} (${disaster["Start Year"]})`;
+    const date = new Date();
+    date.setFullYear(disaster["Start Year"]);
     return {
       disaster: disasterName,
-      year: disaster["Start Year"],
+      year: date,
       cost: disaster[costStr],
     };
   });
@@ -430,9 +438,12 @@ export function getInfoDisaster(emdat_disasters, disasterType) {
     const disasterName = eventName ? `${eventName}, ${country} (${year})`: `${country} (${year})`;
     const deaths = disaster["Total Deaths"];
     const magnitude = disaster["Magnitude"];
+    if (deaths <= 0) return acc;
+    const date = new Date();
+    date.setFullYear(year);
     const obj = {
       disaster: disasterName,
-      year: year,
+      year: date,
       country: country,
       deaths: deaths,
       magnitude: magnitude,
@@ -443,9 +454,10 @@ export function getInfoDisaster(emdat_disasters, disasterType) {
 }
 
 
-export function getDateLengthDisaster(emdat_disasters, disasterType) {
+export function getDateLengthOrMagnitudeDisaster(emdat_disasters, disasterType, length=true) {
   const groupedDisasters = getGroupedDisasters(emdat_disasters, disasterType);
   return groupedDisasters[disasterType].reduce((acc, disaster) => {
+    if (length) {
       const startYear = parseInt(disaster["Start Year"]);
       const startMonth = parseInt(disaster["Start Month"]);
       let startDay = parseInt(disaster["Start Day"]);
@@ -464,14 +476,36 @@ export function getDateLengthDisaster(emdat_disasters, disasterType) {
       const startDate = new Date(startYear, startMonth, startDay);
       const endDate = new Date(endYear, endMonth, endDay);
       const length = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
-
+      const date = new Date();
+      date.setFullYear(startYear);
       const newobj = {
         date: startDate,
         length: length,
-        year: startYear,
+        year: date,
         disaster: disasterType
       };
       acc.push(newobj);
       return acc;
-  }, []).filter(d => d["length"] && d["year"] >= 2000);
+    } else {
+      const startYear = parseInt(disaster["Start Year"]);
+      let startMonth = parseInt(disaster["Start Month"]);
+      let startDay = parseInt(disaster["Start Day"]);
+      startMonth = startMonth ? startMonth : 1;
+      startDay = startDay ? startDay : 1;
+      
+      const startDate = new Date(startYear, startMonth, startDay);
+
+      const magnitude = disaster["Magnitude"];
+      const date = new Date();
+      date.setFullYear(startYear);
+      const newobj = {
+        date: startDate,
+        magnitude: magnitude,
+        year: date,
+        disaster: disasterType
+      };
+      acc.push(newobj);
+      return acc;
+    }
+  }, []).filter(d => d["year"] >= 2000);
 }

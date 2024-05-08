@@ -59,6 +59,7 @@ import {
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
   getInfoDisaster,
+  getDateLengthOrMagnitudeDisaster,
 } from "./process_data.js";
 // Get countries
 const land = await FileAttachment("data/land.json").json();
@@ -109,9 +110,11 @@ const mostDeadlyDisasters = getMostDeadlyDisasters(
   "Earthquake"
 );
 
-const infoDisaster = getInfoDisaster(emdat_disasters, "Earthquake").slice(
-  0,
-  10
+const infoDisaster = getInfoDisaster(emdat_disasters, "Earthquake");
+const lengthDisaster = getDateLengthOrMagnitudeDisaster(
+  emdat_disasters,
+  "Earthquake",
+  false
 );
 ```
 
@@ -119,18 +122,42 @@ const infoDisaster = getInfoDisaster(emdat_disasters, "Earthquake").slice(
 import { lineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
+import { scatterChart } from "./components/scatter_chart.js";
 ```
 
 ```js
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
+```js
+const availableCountries = [
+  "all",
+  ...new Set(infoDisaster.map((d) => d["country"])),
+];
+```
+
+```js
+const selectedCountries = view(
+  Inputs.select(
+    availableCountries,
+    { label: "Choose country:", value: availableCountries },
+    ""
+  )
+);
+```
+
 <div class="grid grid-cols-2">
     <div class="card">
-        ${barChart(infoDisaster, "Deaths with magnitude", "deaths", "disaster", {"scheme":{
+        ${barChart(infoDisaster.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 10), "Deaths with magnitude", "deaths", "disaster", {"scheme":{
           "color":"oranges",
           "map": "magnitude"
         }})}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${scatterChart(lengthDisaster, "date", "date", "magnitude", {map: "magnitude", color: "reds"})}
     </div>
 </div>
 

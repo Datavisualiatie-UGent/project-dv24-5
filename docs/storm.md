@@ -58,7 +58,7 @@ import {
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
   getMostExpensiveDisasters,
-  getDateLengthDisaster,
+  getDateLengthOrMagnitudeDisaster,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -94,9 +94,12 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   ["Storm"]
 );
 
-const disasterMagnitudes = getDisasterMagnitudes(emdat_disasters, "Storm");
 const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Storm");
 const mostExpensiveDisasters = getMostExpensiveDisasters(
+  emdat_disasters,
+  "Storm"
+);
+const lengthDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
   "Storm"
 );
@@ -121,6 +124,12 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 
 <div class="grid grid-cols-2">
     <div class="card">
+        ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "blues"})}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
         ${barChart(mostExpensiveDisasters, "Most costly storms", "cost")}
     </div>
 </div>
@@ -129,12 +138,6 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
     <div class="card">
         ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
     </div>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${lineChart(disasterMagnitudes, "magnitude", "Magnitude (kph)", selectedAndColor)}
-  </div>
 </div>
 
 <div class="grid grid-cols-2">

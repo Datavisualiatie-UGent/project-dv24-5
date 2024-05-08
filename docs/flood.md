@@ -58,6 +58,7 @@ import {
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
   getMostExpensiveDisasters,
+  getDateLengthOrMagnitudeDisaster,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -98,12 +99,17 @@ const mostExpensiveDisasters = getMostExpensiveDisasters(
   emdat_disasters,
   "Flood"
 );
+const lengthDisaster = getDateLengthOrMagnitudeDisaster(
+  emdat_disasters,
+  "Flood"
+);
 ```
 
 ```js
 import { lineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
+import { scatterChart } from "./components/scatter_chart.js";
 ```
 
 ```js
@@ -113,6 +119,12 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 <div class="grid grid-cols-2">
     <div class="card">
         ${barChart(mostDeadlyDisasters, "Most deadly floods", "deaths")}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "blues"})}
     </div>
 </div>
 

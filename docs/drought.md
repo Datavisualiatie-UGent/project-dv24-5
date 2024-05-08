@@ -55,7 +55,7 @@ import {
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
   getAverageLengthOfDisasterPerYear,
-  getDateLengthDisaster,
+  getDateLengthOrMagnitudeDisaster,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -90,7 +90,7 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
   ["Drought"]
 );
-const dateLength = getDateLengthDisaster(emdat_disasters, "Drought");
+const dateLength = getDateLengthOrMagnitudeDisaster(emdat_disasters, "Drought");
 ```
 
 ```js
