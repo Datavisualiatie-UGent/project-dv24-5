@@ -61,6 +61,7 @@ import {
   getYearlyTemperatureChanges,
   getMostDeadlyDisasters,
   getMostExpensiveDisasters,
+  getDateLengthOrMagnitudeDisaster,
   getTotalDisastersPerCountry
 } from "./process_data.js";
 
@@ -109,12 +110,17 @@ const mostExpensiveDisasters = getMostExpensiveDisasters(
   emdat_disasters,
   "Flood"
 );
+const lengthDisaster = getDateLengthOrMagnitudeDisaster(
+  emdat_disasters,
+  "Flood"
+);
 ```
 
 ```js
 import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
+import { scatterChart } from "./components/scatter_chart.js";
 ```
 
 ```js
@@ -160,6 +166,13 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
 
 <div class="grid grid-cols-2">
     <div class="card">
+        ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "blues"})}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${barChart(mostExpensiveDisasters, "Most costly storms", "cost")}
         ${barChart(mostDeadlyDisasters, "Most deadly floods", "deaths")}
     </div>
 </div>

@@ -61,6 +61,7 @@ import {
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
   getMostExpensiveDisasters,
+  getDateLengthOrMagnitudeDisaster,
   getTotalDisastersPerCountry
 } from "./process_data.js";
 
@@ -107,9 +108,12 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   ["Storm"]
 );
 
-const disasterMagnitudes = getDisasterMagnitudes(emdat_disasters, "Storm");
 const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Storm");
 const mostExpensiveDisasters = getMostExpensiveDisasters(
+  emdat_disasters,
+  "Storm"
+);
+const lengthDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
   "Storm"
 );
@@ -119,6 +123,7 @@ const mostExpensiveDisasters = getMostExpensiveDisasters(
 import { lineChart,tempDisasterAmountLineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
+import { scatterChart } from "./components/scatter_chart.js";
 ```
 
 ```js
@@ -165,6 +170,7 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
 
 <div class="grid grid-cols-2">
     <div class="card">
+        ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "blues"})}
         ${barChart(mostDeadlyDisasters, "Most deadly storms", "deaths")}
     </div>
 </div>
@@ -175,6 +181,10 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
     </div>
 </div>
 
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
+    </div>
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
     ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}

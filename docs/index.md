@@ -150,25 +150,25 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${barChart(disasterCounts, "Amount of disasters", "numberOfDisasters", "disaster", selectedAndColor)}
+    ${barChart(disasterCounts, "Amount of disasters", "numberOfDisasters", "disaster", {colorList: selectedAndColor})}
   </div>
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${barChart(disasterCounts, "Deaths per disaster", "deaths", "disaster", selectedAndColor, "numberOfDisasters")}
+    ${barChart(disasterCounts, "Deaths per disaster", "deaths", "disaster", {colorList: selectedAndColor}, "numberOfDisasters")}
   </div>
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${barChart(disasterCounts, "Affected per disaster", "affected", "disaster", selectedAndColor, "numberOfDisasters")}
+    ${barChart(disasterCounts, "Affected per disaster", "affected", "disaster", {colorList: selectedAndColor}, "numberOfDisasters")}
   </div>
 </div>
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${barChart(disasterCounts, "Injured per disaster", "injured", "disaster", selectedAndColor, "numberOfDisasters")}
+    ${barChart(disasterCounts, "Injured per disaster", "injured", "disaster", {colorList: selectedAndColor}, "numberOfDisasters")}
   </div>
 </div>
 

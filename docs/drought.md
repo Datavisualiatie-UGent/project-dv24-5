@@ -56,6 +56,7 @@ import {
   getTypeCorrelations,
   getCorrelationBetweenTwoLists,
   getAverageLengthOfDisasterPerYear,
+  getDateLengthOrMagnitudeDisaster,
   getMonthlyTemperatureChanges,
   getYearlyTemperatureChanges,
   getTotalDisastersPerCountry,
@@ -97,12 +98,13 @@ const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
   ["Drought"]
 );
+const dateLength = getDateLengthOrMagnitudeDisaster(emdat_disasters, "Drought");
 ```
 
 ```js
 import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
-
+import { scatterChart } from "./components/scatter_chart.js";
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
@@ -149,6 +151,12 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
   <div class="card">
   ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}
   </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${scatterChart(dateLength, "date", "date", "length", {map: "length", color: "oranges"})}
+    </div>
 </div>
 
 <div class="grid grid-cols-2">

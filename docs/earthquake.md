@@ -61,6 +61,8 @@ import {
   getYearlyTemperatureChanges,
   getDisasterMagnitudes,
   getMostDeadlyDisasters,
+  getInfoDisaster,
+  getDateLengthOrMagnitudeDisaster,
 } from "./process_data.js";
 
 
@@ -119,18 +121,49 @@ const mostDeadlyDisasters = getMostDeadlyDisasters(
   emdat_disasters,
   "Earthquake"
 );
+
+const infoDisaster = getInfoDisaster(emdat_disasters, "Earthquake");
+const lengthDisaster = getDateLengthOrMagnitudeDisaster(
+  emdat_disasters,
+  "Earthquake",
+  false
+);
 ```
 
 ```js
 import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
+import { scatterChart } from "./components/scatter_chart.js";
 ```
 
 ```js
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
+```js
+const availableCountries = [
+  "all",
+  ...new Set(infoDisaster.map((d) => d["country"])),
+];
+```
+
+```js
+const selectedCountries = view(
+  Inputs.select(
+    availableCountries,
+    { label: "Choose country:", value: availableCountries },
+    ""
+  )
+);
+```
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${barChart(infoDisaster.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 10), "Deaths with magnitude", "deaths", "disaster", {"scheme":{
+          "color":"oranges",
+          "map": "magnitude"
+        }})}
 
 ```js
 const countries = await FileAttachment("data/countries.json").json();
@@ -192,10 +225,15 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
     </div>
 </div>
 
-
+<div class="grid grid-cols-2">
+    <div class="card">
+      ${scatterChart(lengthDisaster, "date", "date", "magnitude", {map: "magnitude", color: "reds"})}
+    </div>
+</div
 
 <div class="grid grid-cols-2">
     <div class="card">
+        
         ${barChart(mostDeadlyDisasters, "Most deadly earthquakes", "deaths")}
     </div>
 </div>
@@ -208,16 +246,7 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
 
 <div class="grid grid-cols-2">
     <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "deaths", "Amount of deaths", selectedAndColor)}
-    </div>
-   <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "injured", "People injured", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid">
-     <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "affected", "People affected", selectedAndColor)}
+        ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
     </div>
 </div>
 
