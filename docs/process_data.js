@@ -35,7 +35,7 @@ export function getDisastersPerYear(disasters, specificDisasterType=[]) {
                     obj[y] = 1;
                 }
             });
-            for (let i = miny; i < maxy; i++) {
+            for (let i = 1988; i < 2020; i++) {
                 const date = new Date();
                 let nrOfDisasters = 0;
                 if (i in obj) {
