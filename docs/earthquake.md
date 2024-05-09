@@ -241,11 +241,6 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
     </div>
 </div
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${barChart(mostDeadlyDisasters, "Most deadly earthquakes", "deaths")}
-    </div>
-</div>
 
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
