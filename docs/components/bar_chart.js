@@ -3,15 +3,17 @@ import {nameMapping} from "./world_map_chart.js";
 
 function preProcessData(data) {
     for (let entry of data) {
-        entry["year"] = JSON.stringify(entry["year"]).split("-")[0].slice(1, 5)
-        entry["disaster"] = (nameMapping[entry["country"]] ?? entry["country"]) + " (" +  entry["year"] + ")"
+        if ("year" in entry) {
+            entry["year"] = JSON.stringify(entry["year"]).split("-")[0].slice(1, 5)
+            entry["disaster"] = (nameMapping[entry["country"]] ?? entry["country"]) + " (" +  entry["year"] + ")"
+        }
     }
 }
 
 export function barChart(counts,  {
     label="Total Deaths",
     x_val="deaths",
-    y="disaster",
+    y_val="disaster",
     scheme={},
     colorList=[],
     width = {}
@@ -19,11 +21,13 @@ export function barChart(counts,  {
     preProcessData(counts);
     let colorDict;
     const schemeExists = Object.keys(scheme).length > 0
+    const unitExists = scheme["unit"] !== undefined;
     if (schemeExists) {
         colorDict = {
             type: "quantize",
             scheme: scheme["color"],
             legend: true,
+            label: unitExists ? scheme["unit"] : "Year"
           };
     } else if (colorList) {
         const [disasters, colors] = colorList;
@@ -35,11 +39,10 @@ export function barChart(counts,  {
     } else {
         colorDict = {
             legend:true,
-            domain: counts.map(d => d[y]),
+            domain: counts.map(d => d[y_val]),
         }
     }
-    const unitExists = scheme["unit"] !== undefined;
-    colorDict["label"] = unitExists ? scheme["unit"] : "Year";
+
     return Plot.plot({
         width,
         marginLeft: 140,
@@ -53,14 +56,14 @@ export function barChart(counts,  {
                 counts,
                 {
                     x: x_val,
-                    y: y,
-                    fill: schemeExists ? scheme["map"] : y,
+                    y: y_val,
+                    fill: schemeExists ? scheme["map"] : y_val,
                     sort: { y: "x", reverse: true },
                     channels: {
-                        "Magnitude": (d) => schemeExists ? d[scheme["map"]] + " " + scheme["unit"] : d[y],
-                        "Total Deaths": x_val,
+                        "Magnitude": (d) => schemeExists ? (d[scheme["map"]] + " " + scheme["unit"]) : d[y_val],
+                        "Total Deaths": x_val, // TODO change for main page 
                         "Year": "year"},
-                    tip: {format: {Magnitude: unitExists, "Total Deaths": true, x: false, y: false, fill: false}}},
+                    tip: {format: {Magnitude: unitExists, label: true, x: false, y: false, fill: false}}},
             )
         ],
         color: colorDict,
