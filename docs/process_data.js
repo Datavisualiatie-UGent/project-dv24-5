@@ -469,7 +469,7 @@ export function getYearlyTemperatureChanges(giss_temperatures) {
   }
   return temps;
 }
-export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=5) {
+export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=15) {
   const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
   const disasters = groupedDisasters[disasterType];
   return disasters.sort((a, b) => {
@@ -478,7 +478,7 @@ export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=5) {
     const deathsA = parseInt(a["Total Deaths"]);
     const deathsB = parseInt(b["Total Deaths"]);
     return deathsB - deathsA;
-  }).slice(0, nr).map(disaster => {
+  }).map(disaster => {
     const date = new Date();
     date.setFullYear(disaster["Start Year"]);
     const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} (${disaster["Start Year"]})`: `${disaster["Country"]} (${disaster["Start Year"]})`;
@@ -486,6 +486,8 @@ export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=5) {
       disaster: disasterName,
       year: date,
       deaths: disaster["Total Deaths"],
+        country: disaster["Country"]
+
     };
   });
 }
@@ -507,7 +509,7 @@ export function getMostExpensiveDisasters(emdat_disasters, disasterType, nr=5) {
     return {
       disaster: disasterName,
       year: date,
-      cost: disaster[costStr],
+      cost: disaster[costStr]
     };
   });
 }

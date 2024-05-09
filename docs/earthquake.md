@@ -142,13 +142,18 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
 ```js
-const availableCountries = [
-  "all",
-  ...new Set(infoDisaster.map((d) => d["country"])),
-];
+
 ```
 
+
+## Most deadly earthquakes
+
 ```js
+const availableCountries = [
+    "all",
+    ...new Set(infoDisaster.map((d) => d["country"])),
+];
+
 const selectedCountries = view(
   Inputs.select(
     availableCountries,
@@ -158,12 +163,16 @@ const selectedCountries = view(
 );
 ```
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${barChart(infoDisaster.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 10), "Deaths with magnitude", "deaths", "disaster", {"scheme":{
-          "color":"oranges",
-          "map": "magnitude"
-        }})}
+<div>
+    <div>
+        ${resize((width) => barChart(infoDisaster.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+            {"scheme":{
+                "color":"greens",
+                "map": "magnitude",
+                "unit": "Richter",
+            }, width}))}
+    </div>
+</div>
 
 ```js
 const countries = await FileAttachment("data/countries.json").json();
@@ -185,7 +194,8 @@ const logScale = Generators.input(logScaleCheckbox);
         ${logScaleCheckbox}
         ${fullWorld ? "" : longitudeSlider}
         <p>In the case that some country(s) have significantly more occurrences than the average amount, the difference between countries with an average amount vanishes. </p>
-        <p>To get a better idea of how these countries with an average amount relate to each other, you can use the logarithmic scale.</p>    </div>
+        <p>To get a better idea of how these countries with an average amount relate to each other, you can use the logarithmic scale.</p>
+    </div>
     <div class="">
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
             width, 
@@ -233,7 +243,6 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
 
 <div class="grid grid-cols-2">
     <div class="card">
-        
         ${barChart(mostDeadlyDisasters, "Most deadly earthquakes", "deaths")}
     </div>
 </div>
