@@ -146,6 +146,34 @@ const logScale = Generators.input(logScaleCheckbox);
 import { choroplethWorldMap } from "./components/world_map_chart.js";
 ```
 
+## Most deadly storms
+
+```js
+const availableCountries = [
+    "all",
+    ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
+];
+
+const selectedCountries = view(
+  Inputs.select(
+    availableCountries,
+    { label: "Choose country:", value: availableCountries },
+    ""
+  )
+);
+```
+
+<div>
+    <div>
+        ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+            {"scheme":{
+                "color":"blues",
+                "map": "year"
+            }, width}))}
+    </div>
+</div>
+
+
 ## Storms per country
 <div class="grid grid-cols-2">
     <div>
@@ -171,15 +199,9 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
 <div class="grid grid-cols-2">
     <div class="card">
         ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "blues"})}
-        ${barChart(mostDeadlyDisasters, "Most deadly storms", "deaths")}
     </div>
 </div>
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${barChart(mostExpensiveDisasters, "Most costly storms", "cost")}
-    </div>
-</div>
 
 <div class="grid grid-cols-2">
     <div class="card">

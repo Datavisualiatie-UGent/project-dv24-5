@@ -49,17 +49,18 @@ font-size: 90px;
 
 ```js
 import {
-  getGroupedDisasters,
-  getDisastersPerYear,
-  getConfirmedAffectedPersonsPerYear,
-  getDisastersAmountPerCountryPerYear,
-  getTypeCorrelations,
-  getCorrelationBetweenTwoLists,
-  getAverageLengthOfDisasterPerYear,
-  getDateLengthOrMagnitudeDisaster,
-  getMonthlyTemperatureChanges,
-  getYearlyTemperatureChanges,
-  getTotalDisastersPerCountry,
+    getGroupedDisasters, 
+    getDisastersPerYear,
+    getConfirmedAffectedPersonsPerYear,
+    getDisastersAmountPerCountryPerYear,
+    getTypeCorrelations,
+    getCorrelationBetweenTwoLists,
+    getAverageLengthOfDisasterPerYear,
+    getDateLengthOrMagnitudeDisaster,
+    getMonthlyTemperatureChanges,
+    getYearlyTemperatureChanges,
+    getTotalDisastersPerCountry, 
+    getMostDeadlyDisasters
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -135,7 +136,39 @@ const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
 const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap } from "./components/world_map_chart.js";
+
+const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Wildfire");
+
+import { barChart } from "./components/bar_chart.js";
 ```
+
+## Most deadly wildfires
+
+```js
+const availableCountries = [
+    "all",
+    ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
+];
+
+const selectedCountries = view(
+  Inputs.select(
+    availableCountries,
+    { label: "Choose country:", value: availableCountries },
+    ""
+  )
+);
+```
+
+<div>
+    <div>
+        ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+            {"scheme":{
+                "color":"oranges",
+                "map": "year"
+            }, width}))}
+    </div>
+</div>
+
 
 ## Wildfires per country
 <div class="grid grid-cols-2">
@@ -152,7 +185,7 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
             fullWorld: fullWorld,
             disaster: "Wildfire",
             label: "Total wildfires",
-            scheme: "reds",
+            scheme: "oranges",
             logScale: logScale
         }))}
     </div>

@@ -1,7 +1,7 @@
 import * as Plot from "npm:@observablehq/plot";
 
 
-const nameMapping = { // datasetName: countries.json name
+export const nameMapping = { // datasetName: countries.json name
     "United States of America": "United States",
     "Germany Federal Republic": "Germany",
     "United Republic of Tanzania": "Tanzania",
@@ -104,7 +104,7 @@ export function scatterWorldMap(
 
     return Plot.plot({
         width,
-        title: label,
+        title: "",
         projection: {
             type: fullWorld ? "equal-earth" : "orthographic",
             rotate: [fullWorld ? 0 : -longitude, 0],

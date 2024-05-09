@@ -1,13 +1,33 @@
 import * as Plot from "npm:@observablehq/plot";
+import {nameMapping} from "./world_map_chart.js";
 
-export function barChart(counts, label, x_val="amount", y="disaster", {scheme={}, colorList=[]}={}, scale=1) {
-    let colorDict = {};
+function preProcessData(data) {
+    for (let entry of data) {
+        if ("year" in entry) {
+            entry["year"] = JSON.stringify(entry["year"]).split("-")[0].slice(1, 5)
+            entry["disaster"] = (nameMapping[entry["country"]] ?? entry["country"]) + " (" +  entry["year"] + ")"
+        }
+    }
+}
+
+export function barChart(counts,  {
+    label="Total Deaths",
+    x_val="deaths",
+    y_val="disaster",
+    scheme={},
+    colorList=[],
+    width = {}
+}={}) {
+    preProcessData(counts);
+    let colorDict;
     const schemeExists = Object.keys(scheme).length > 0
+    const unitExists = scheme["unit"] !== undefined;
     if (schemeExists) {
         colorDict = {
             type: "quantize",
             scheme: scheme["color"],
             legend: true,
+            label: unitExists ? scheme["unit"] : "Year"
           };
     } else if (colorList) {
         const [disasters, colors] = colorList;
@@ -19,33 +39,32 @@ export function barChart(counts, label, x_val="amount", y="disaster", {scheme={}
     } else {
         colorDict = {
             legend:true,
-            domain: counts.map(d => d[y]),
+            domain: counts.map(d => d[y_val]),
         }
     }
+
     return Plot.plot({
-        height: 500,
-        marginLeft: 150,
+        width,
+        marginLeft: 140,
         x: {
             label: label,
             labelAnchor: "center",
         },
+        y: {label: ""},
         marks: [
             Plot.barX(
                 counts,
-                Plot.groupY(
-                    { x: "max" },
-                    {
-                        x: (val) => val[x_val] / (Number.isInteger(scale) ? scale : val[scale]),
-                        y: y,
-                        sort: { y: "x", reverse: true },
-                        fill: schemeExists ? scheme["map"] : y,
-                    }
-                ),
-            ),
-            Plot.tip(counts, Plot.pointer({
-                x: (val) => val[x_val] / (Number.isInteger(scale) ? scale : val[scale]) | 0,
-                y: y,
-            }))
+                {
+                    x: x_val,
+                    y: y_val,
+                    fill: schemeExists ? scheme["map"] : y_val,
+                    sort: { y: "x", reverse: true },
+                    channels: {
+                        "Magnitude": (d) => schemeExists ? (d[scheme["map"]] + " " + scheme["unit"]) : d[y_val],
+                        "Amount": x_val,
+                        "Year": "year"},
+                    tip: {format: {Magnitude: unitExists, label: true, x: false, y: false, fill: false}}},
+            )
         ],
         color: colorDict,
     })

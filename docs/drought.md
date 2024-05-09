@@ -49,18 +49,19 @@ font-size: 90px;
 
 ```js
 import {
-  getGroupedDisasters,
-  getDisastersPerYear,
-  getConfirmedAffectedPersonsPerYear,
-  getDisastersAmountPerCountryPerYear,
-  getTypeCorrelations,
-  getCorrelationBetweenTwoLists,
-  getAverageLengthOfDisasterPerYear,
-  getDateLengthOrMagnitudeDisaster,
-  getMonthlyTemperatureChanges,
-  getYearlyTemperatureChanges,
-  getTotalDisastersPerCountry,
-  getAreaPerCountry
+    getGroupedDisasters,
+    getDisastersPerYear,
+    getConfirmedAffectedPersonsPerYear,
+    getDisastersAmountPerCountryPerYear,
+    getTypeCorrelations,
+    getCorrelationBetweenTwoLists,
+    getAverageLengthOfDisasterPerYear,
+    getDateLengthOrMagnitudeDisaster,
+    getMonthlyTemperatureChanges,
+    getYearlyTemperatureChanges,
+    getTotalDisastersPerCountry,
+    getAreaPerCountry,
+    getMostDeadlyDisasters
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -122,7 +123,39 @@ const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
 const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap } from "./components/world_map_chart.js";
+
+const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Wildfire");
+
+import { barChart } from "./components/bar_chart.js";
 ```
+
+
+## Most deadly droughts
+
+```js
+const availableCountries = [
+    "all",
+    ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
+];
+
+const selectedCountries = view(
+  Inputs.select(
+    availableCountries,
+    { label: "Choose country:", value: availableCountries },
+    ""
+  )
+);
+```
+
+<div>
+    <div>
+        ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+            {"scheme":{
+                "color":"blues",
+                "map": "year"
+            }, width}))}
+    </div>
+</div>
 
 
 ## Droughts per country
