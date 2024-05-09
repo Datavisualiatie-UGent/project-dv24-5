@@ -61,7 +61,7 @@ export function barChart(counts,  {
                     sort: { y: "x", reverse: true },
                     channels: {
                         "Magnitude": (d) => schemeExists ? (d[scheme["map"]] + " " + scheme["unit"]) : d[y_val],
-                        "Total Deaths": x_val, // TODO change for main page 
+                        "Amount": x_val,
                         "Year": "year"},
                     tip: {format: {Magnitude: unitExists, label: true, x: false, y: false, fill: false}}},
             )
