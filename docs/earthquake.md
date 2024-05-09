@@ -213,7 +213,7 @@ const logScale = Generators.input(logScaleCheckbox);
 const longitudeSlider2 = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
 const longitude2 = Generators.input(longitudeSlider2);
 
-const fullWorldCheckbox2 = Inputs.toggle({label: "Full world view", value: true})
+const fullWorldCheckbox2 = Inputs.toggle({label: "Full world view", value: false})
 const fullWorld2 = Generators.input(fullWorldCheckbox2);
 
 ```
