@@ -50,7 +50,7 @@ font-size: 90px;
 ```js
 import {
   getGroupedDisasters,
-  getDisastersPerYear,
+  getDisastersPerYearAsInt,
   getConfirmedAffectedPersonsPerYear,
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
@@ -89,7 +89,7 @@ import {
 } from "./components/world_map_chart.js";
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Earthquake"]);
-const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Earthquake"]);
+const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Earthquake"]);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
   ["Earthquake"]

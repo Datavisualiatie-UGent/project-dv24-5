@@ -20,13 +20,11 @@ export function getGroupedDisasters(disasters, specificDisasterType=[]) {
     );
 }
 
-export function getDisastersPerYear(disasters, specificDisasterType=[]) {
+export function getDisastersPerYearAsInt(disasters, specificDisasterType=[]) {
     const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType)
     return Object.entries(groupedDisasters).reduce(
         (acc, [disasterType, disasterList]) => {
             let obj = {};
-            let miny = Number.MAX_VALUE;
-            let maxy = Number.MIN_VALUE;
             disasterList.forEach((d) => {
                 let y = parseInt(d["Start Year"]);
                 if (y in obj) {
@@ -35,19 +33,45 @@ export function getDisastersPerYear(disasters, specificDisasterType=[]) {
                     obj[y] = 1;
                 }
             });
-            for (let i = 1988; i < 2020; i++) {
-                const date = new Date();
+            for (let i = 1988; i <= 2020; i++) {
                 let nrOfDisasters = 0;
                 if (i in obj) {
                     nrOfDisasters = obj[i];
                 }
-                date.setFullYear(i);
-                acc.push({ disaster: disasterType, year: date, disasters: nrOfDisasters });
+                acc.push({ disaster: disasterType, year: i, disasters: nrOfDisasters });
             }
             return acc;
         },
         []
     );
+}
+
+export function getDisastersPerYearAsDate(disasters, specificDisasterType = []) {
+  const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType)
+  return Object.entries(groupedDisasters).reduce(
+    (acc, [disasterType, disasterList]) => {
+      let obj = {};
+      disasterList.forEach((d) => {
+        let y = parseInt(d["Start Year"]);
+        if (y in obj) {
+          obj[y] += 1;
+        } else {
+          obj[y] = 1;
+        }
+      });
+      for (let i = 1988; i < 2020; i++) {
+        const date = new Date();
+        let nrOfDisasters = 0;
+        if (i in obj) {
+          nrOfDisasters = obj[i];
+        }
+        date.setFullYear(i);
+        acc.push({ disaster: disasterType, year: date, disasters: nrOfDisasters });
+      }
+      return acc;
+    },
+    []
+  );
 }
 
 export function getDisastersAmountPerCountryPerYear(emdat_disasters) {

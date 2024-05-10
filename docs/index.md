@@ -53,7 +53,8 @@ toc: false
 ```js
 import {
   getGroupedDisasters,
-  getDisastersPerYear,
+  getDisastersPerYearAsInt,
+  getDisastersPerYearAsDate,
   getConfirmedAffectedPersonsPerYear,
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
@@ -80,10 +81,10 @@ const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
 const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters);
-const disastersPerYear = getDisastersPerYear(emdat_disasters);
+const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters);
 const totalDisasterPerYear = getTotalDisastersPerYear(disastersPerYear);
 
-const correlation = getCorrelationBetweenTwoLists(totalDisasterPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
+const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
 
 const confirmedAffectedPersonsPerYear =
   getConfirmedAffectedPersonsPerYear(emdat_disasters);

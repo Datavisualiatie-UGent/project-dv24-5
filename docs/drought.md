@@ -49,19 +49,19 @@ font-size: 90px;
 
 ```js
 import {
-  getGroupedDisasters,
-  getDisastersPerYear,
-  getConfirmedAffectedPersonsPerYear,
-  getDisastersAmountPerCountryPerYear,
-  getTypeCorrelations,
-  getCorrelationBetweenTwoLists,
-  getAverageLengthOfDisasterPerYear,
-  getDateLengthOrMagnitudeDisaster,
-  getMonthlyTemperatureChanges,
-  getYearlyTemperatureChanges,
-  getTotalDisastersPerCountry,
-  getAreaPerCountry,
-  getMostDeadlyDisasters,
+    getGroupedDisasters,
+    getDisastersPerYearAsInt,
+    getConfirmedAffectedPersonsPerYear,
+    getDisastersAmountPerCountryPerYear,
+    getTypeCorrelations,
+    getCorrelationBetweenTwoLists,
+    getAverageLengthOfDisasterPerYear,
+    getDateLengthOrMagnitudeDisaster,
+    getMonthlyTemperatureChanges,
+    getYearlyTemperatureChanges,
+    getTotalDisastersPerCountry,
+    getAreaPerCountry,
+    getMostDeadlyDisasters
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -80,11 +80,8 @@ const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
 const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Drought"]);
-const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Drought"]);
-const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
-  emdat_disasters,
-  ["Drought"]
-);
+const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Drought"]);
+const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(emdat_disasters, ["Drought"]);
 
 const correlation = getCorrelationBetweenTwoLists(
   disastersPerYear.map((e) => e["disasters"]),
