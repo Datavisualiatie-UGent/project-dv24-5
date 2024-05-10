@@ -144,25 +144,17 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
     </div>
 </div>
 
+<div class="grid"">
+  <div class="card">
+  ${sunBurst(groupedDisasters, selectedDisasters)}
+  </div>
+</div>
+
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
   ${tempDisasterAmountLineChart(monthlyTemperatureChanges, totalDisasterPerYear, correlation)}
   </div>
 </div>
-
-<div class="grid" style="grid-auto-rows: 600px;">
-  <div class="card">
-  ${JSON.stringify(sunBurst(emdat_disasters))}
-  </div>
-</div>
-
-<div class="grid"">
-  <div class="card">
-  ${sunBurst(emdat_disasters)}
-  </div>
-</div>
-
-
 
 <div class="grid grid-cols-2">
   <div class="card">
