@@ -49,19 +49,19 @@ font-size: 90px;
 
 ```js
 import {
-    getGroupedDisasters,
-    getDisastersPerYearAsInt,
-    getConfirmedAffectedPersonsPerYear,
-    getDisastersAmountPerCountryPerYear,
-    getTypeCorrelations,
-    getCorrelationBetweenTwoLists,
-    getAverageLengthOfDisasterPerYear,
-    getDateLengthOrMagnitudeDisaster,
-    getMonthlyTemperatureChanges,
-    getYearlyTemperatureChanges,
-    getTotalDisastersPerCountry,
-    getAreaPerCountry,
-    getMostDeadlyDisasters
+  getGroupedDisasters,
+  getDisastersPerYearAsInt,
+  getConfirmedAffectedPersonsPerYear,
+  getDisastersAmountPerCountryPerYear,
+  getTypeCorrelations,
+  getCorrelationBetweenTwoLists,
+  getAverageLengthOfDisasterPerYear,
+  getDateLengthOrMagnitudeDisaster,
+  getMonthlyTemperatureChanges,
+  getYearlyTemperatureChanges,
+  getTotalDisastersPerCountry,
+  getAreaPerCountry,
+  getMostDeadlyDisasters,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -81,7 +81,6 @@ const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Drought"]);
 const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Drought"]);
-const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(emdat_disasters, ["Drought"]);
 
 const correlation = getCorrelationBetweenTwoLists(
   disastersPerYear.map((e) => e["disasters"]),
@@ -97,10 +96,6 @@ const counts = Object.keys(groupedDisasters)
 
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
-  emdat_disasters,
-  ["Drought"]
-);
-const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
   ["Drought"]
 );
@@ -204,26 +199,5 @@ const selectedCountries = view(
     <div class="card">
         ${scatterChart(dateLength, "date", "date", "length", {map: "length", color: "oranges"}, {channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}})}
     </div>
-</div>
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "deaths", "Amount of deaths", selectedAndColor)}
-    </div>
-   <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "injured", "People injured", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid">
-     <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "affected", "People affected", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
-  </div>
 </div>
 ---

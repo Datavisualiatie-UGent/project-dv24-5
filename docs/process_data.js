@@ -3,20 +3,29 @@ function filterDisasters(disasters, specificDisasterType=[]) {
         const nonBiological = el["Disaster Subgroup"] !== "Biological";
         const correctMeasurement = el["Start Year"] >= 1988 && el["Start Year"] < 2024;
         const isClimate = !["Volcanic activity", "Impact"].includes(el["Disaster Type"]);
-        const isSpecificDisasterType = specificDisasterType.length === 0 || specificDisasterType.includes(el["Disaster Type"]);
+        const isSpecificDisasterType = specificDisasterType.length === 0 || specificDisasterType.some(d => el["Disaster Type"].includes(d));
         return nonBiological && correctMeasurement && isClimate && isSpecificDisasterType;
     })
 }
 
 export function getGroupedDisasters(disasters, specificDisasterType=[]) {
-    return Object.groupBy(
+    const filteredD = Object.groupBy(
         // Filter based on necessary items
         filterDisasters(disasters, specificDisasterType),
         ({ "Disaster Type": type }) => {
-            if (type.includes("Mass movement")) return "Mass Movement";
+            if (type.includes("Mass movement")) return "Mass movement";
             if (type.includes("Glacial")) return "Flood";
             return type;
         }
+    );
+    return Object.fromEntries(
+      Object.entries(filteredD).map(([disasterType, disasters]) => {
+        if (disasterType.toLowerCase() !== "Mass movement") return [disasterType, disasters];
+        
+        return [disasterType, disasters.map((d) => {
+          return { ...d, "Disaster Type": "Mass movement" };
+        })];
+      })
     );
 }
 
@@ -573,7 +582,7 @@ export function getInfoDisaster(emdat_disasters, disasterType) {
 
 
 export function getDateLengthOrMagnitudeDisaster(emdat_disasters, disasterType, length=true) {
-  const groupedDisasters = getGroupedDisasters(emdat_disasters, disasterType);
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
   return groupedDisasters[disasterType].reduce((acc, disaster) => {
     const country = disaster["Country"];
     if (length) {
