@@ -36,6 +36,24 @@ toc: false
   color: var(--theme-foreground-muted);
 }
 
+.hero h3 {
+  margin: 0;
+  max-width: 34em;
+  font-size: 10px;
+  font-style: initial;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.hero p {
+  max-width: 180em;
+  /* font-size: 20px;
+  font-style: initial;
+  font-weight: 500;
+  line-height: 1.5; */
+  /* color: var(--theme-foreground-muted); */
+}
+
 @media (min-width: 640px) {
   .hero h1 {
     font-size: 90px;
@@ -45,9 +63,8 @@ toc: false
 </style>
 
 <div class="hero">
-  <h1>Hello, Observable Framework</h1>
-  <h2>Welcome to your new project! Edit&nbsp;<code style="font-size: 90%;">docs/index.md</code> to change this page.</h2>
-  <a href="https://observablehq.com/framework/getting-started" target="_blank">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+  <h1>Global Disasters</h1>
+  <h2>Relating the increase in global disasters to climate change.</h2>
 </div>
 
 ```js
@@ -113,13 +130,16 @@ import { correlationMatrix } from "./components/correlation_matrix.js";
 import { barChart } from "./components/bar_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { sunBurst } from "./components/sunburst.js";
+import { treeMap } from "./components/tree_map.js";
 ```
 
-<div class="grid">
-    <div class="card">
-        ${resize((width) => bumpChart(bundledDisasters, {width}, selectedAndColor))}
-    </div>
+---
+<div class="hero">
+  <p>In recent decades, out planet has borne witness to an inmense increase in the global temperature. The result of global warming can easily be seen in the increase of the severity and amount of disasters. Our goal is to see how strong this correlation is between the rising temperature and the impact of disasters.</p>
+  <p>To this end we used EM-DAT, a dataset created by Centre for Research on the Epidemiology of Disasters. This dataset contains data on the amount, severity and impact of disasters since 1900.</p>
 </div>
+
+---
 
 ```js
 const potDisasters = Object.keys(groupedDisasters);
@@ -137,18 +157,15 @@ const selectedDisasters = view(
 const selectedAndColor = getDisastersPerColor(selectedDisasters);
 ```
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
-            "disasters", "Amount of disasters", selectedAndColor)}
-    </div>
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div class="card">
+    ${sunBurst(groupedDisasters, selectedDisasters)}
+  </div>
+  <div><h3>The dataset</h3><p>The dataset contains 26000 disasters starting from 1990. These entries contain a wide range of different disasters. EM-DAT has reported on everything from Earthquakes to Hopper infestations. We are focussing on the climate disasters. This means we're only using around 15000 of the total entries. The organization also states that the dataset is subject to time bias. This means that the dataset suffers from unequal reporting quality and coverage over time.</p><p>EM-DAT has their own definition of a disaster: "A situation or event which overwhelms local capacity, necessitating a request to the national or international level for external assistance; an unforeseen and often sudden event that causes great damage, destruction, and human suffering." The entry requirements for a disastter are as follows: 1) >= 10 deaths 2) >= 100 affected 3) A call to international assistance.</p><p>As for the classification of disasters, this can be seen in the chart on the right. Each disaster has a type and a subtype, the size of the slice corresponds to how often the disasters appear. The definition of each disaster can be check by hovering over it. We can inmediatly see that floods and storms are the most common disasters.</p></div>
 </div>
 
-<div class="grid"">
-  <div class="card">
-  ${sunBurst(groupedDisasters, selectedDisasters)}
-  </div>
-</div>
+---
 
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
@@ -160,15 +177,9 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
   <div class="card">
     ${resize((width) => barChart(disasterCounts, {label: "Occurrences", x_val: "numberOfDisasters", y_val: "disaster", colorList: selectedAndColor, width}))}
   </div>
-<div class="card">
+  <div class="card">
     ${resize((width) => barChart(disasterCounts, {label: "Total Deaths", colorList: selectedAndColor, width}))}
   </div>
 </div>
 
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${correlationMatrix(correlations)}
-  </div>
-</div>
 ---

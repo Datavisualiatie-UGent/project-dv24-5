@@ -1,7 +1,7 @@
 function filterDisasters(disasters, specificDisasterType=[]) {
     return disasters.filter((el) => {
         const nonBiological = el["Disaster Subgroup"] !== "Biological";
-        const correctMeasurement = el["Start Year"] >= 1988 && el["Start Year"] < 2024;
+        const correctMeasurement = el["Start Year"] >= 1800 && el["Start Year"] < 2024;
         const isClimate = !["Volcanic activity", "Impact"].includes(el["Disaster Type"]);
         const isSpecificDisasterType = specificDisasterType.length === 0 || specificDisasterType.includes(el["Disaster Type"]);
         return nonBiological && correctMeasurement && isClimate && isSpecificDisasterType;
