@@ -49,19 +49,19 @@ font-size: 90px;
 
 ```js
 import {
-    getGroupedDisasters,
-    getDisastersPerYear,
-    getConfirmedAffectedPersonsPerYear,
-    getDisastersAmountPerCountryPerYear,
-    getTypeCorrelations,
-    getCorrelationBetweenTwoLists,
-    getAverageLengthOfDisasterPerYear,
-    getDateLengthOrMagnitudeDisaster,
-    getMonthlyTemperatureChanges,
-    getYearlyTemperatureChanges,
-    getTotalDisastersPerCountry,
-    getAreaPerCountry,
-    getMostDeadlyDisasters
+  getGroupedDisasters,
+  getDisastersPerYear,
+  getConfirmedAffectedPersonsPerYear,
+  getDisastersAmountPerCountryPerYear,
+  getTypeCorrelations,
+  getCorrelationBetweenTwoLists,
+  getAverageLengthOfDisasterPerYear,
+  getDateLengthOrMagnitudeDisaster,
+  getMonthlyTemperatureChanges,
+  getYearlyTemperatureChanges,
+  getTotalDisastersPerCountry,
+  getAreaPerCountry,
+  getMostDeadlyDisasters,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -69,7 +69,9 @@ const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   headers: true,
 });
 
-const temperatures = await FileAttachment("data/GISS_surface_temperature.csv").csv({
+const temperatures = await FileAttachment(
+  "data/GISS_surface_temperature.csv"
+).csv({
   typed: false,
   headers: true,
 });
@@ -79,9 +81,15 @@ const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Drought"]);
 const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Drought"]);
-const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(emdat_disasters, ["Drought"]);
+const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
+  emdat_disasters,
+  ["Drought"]
+);
 
-const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
+const correlation = getCorrelationBetweenTwoLists(
+  disastersPerYear.map((e) => e["disasters"]),
+  yearlyTemperatureChanges.map((e) => e["temp"])
+);
 
 const counts = Object.keys(groupedDisasters)
   .reduce((acc, key) => {
@@ -103,7 +111,10 @@ const dateLength = getDateLengthOrMagnitudeDisaster(emdat_disasters, "Drought");
 ```
 
 ```js
-import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
+import {
+  lineChart,
+  tempDisasterAmountLineChart,
+} from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { scatterChart } from "./components/scatter_chart.js";
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
@@ -111,15 +122,21 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 
 ```js
 const countries = await FileAttachment("data/countries.json").json();
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
 
-const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitudeSlider = Inputs.range([-180, 180], {
+  step: 1,
+  label: "Longitude",
+});
 const longitude = Generators.input(longitudeSlider);
 
-const fullWorldCheckbox = Inputs.toggle({label: "Full world view", value: true})
+const fullWorldCheckbox = Inputs.toggle({
+  label: "Full world view",
+  value: true,
+});
 const fullWorld = Generators.input(fullWorldCheckbox);
 
-const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
+const logScaleCheckbox = Inputs.toggle({ label: "Log scale", value: false });
 const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap } from "./components/world_map_chart.js";
@@ -129,13 +146,12 @@ const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Wildfire");
 import { barChart } from "./components/bar_chart.js";
 ```
 
-
 ## Most deadly droughts
 
 ```js
 const availableCountries = [
-    "all",
-    ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
+  "all",
+  ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
 ];
 
 const selectedCountries = view(
@@ -151,14 +167,14 @@ const selectedCountries = view(
     <div>
         ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
             {"scheme":{
-                "color":"blues",
+                "color":"oranges",
                 "map": "year"
             }, width}))}
     </div>
 </div>
 
-
 ## Droughts per country
+
 <div class="grid grid-cols-2">
     <div>
         ${fullWorldCheckbox}
@@ -180,6 +196,7 @@ const selectedCountries = view(
 </div>
 
 ## Line charts
+
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
   ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}
@@ -188,7 +205,7 @@ const selectedCountries = view(
 
 <div class="grid grid-cols-2">
     <div class="card">
-        ${scatterChart(dateLength, "date", "date", "length", {map: "length", color: "oranges"})}
+        ${scatterChart(dateLength, "date", "date", "length", {map: "length", color: "oranges"}, {channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}})}
     </div>
 </div>
 

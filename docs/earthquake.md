@@ -65,14 +65,15 @@ import {
   getDateLengthOrMagnitudeDisaster,
 } from "./process_data.js";
 
-
 // Get disasters
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   typed: true,
   headers: true,
 });
 
-const temperatures = await FileAttachment("data/GISS_surface_temperature.csv").csv({
+const temperatures = await FileAttachment(
+  "data/GISS_surface_temperature.csv"
+).csv({
   typed: false,
   headers: true,
 });
@@ -94,7 +95,10 @@ const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   ["Earthquake"]
 );
 
-const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
+const correlation = getCorrelationBetweenTwoLists(
+  disastersPerYear.map((e) => e["disasters"]),
+  yearlyTemperatureChanges.map((e) => e["temp"])
+);
 
 const counts = Object.keys(groupedDisasters)
   .reduce((acc, key) => {
@@ -131,7 +135,10 @@ const lengthDisaster = getDateLengthOrMagnitudeDisaster(
 ```
 
 ```js
-import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
+import {
+  lineChart,
+  tempDisasterAmountLineChart,
+} from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
 import { scatterChart } from "./components/scatter_chart.js";
@@ -145,13 +152,12 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 
 ```
 
-
 ## Most deadly earthquakes
 
 ```js
 const availableCountries = [
-    "all",
-    ...new Set(infoDisaster.map((d) => d["country"])),
+  "all",
+  ...new Set(infoDisaster.map((d) => d["country"])),
 ];
 
 const selectedCountries = view(
@@ -177,15 +183,22 @@ const selectedCountries = view(
 ```js
 const countries = await FileAttachment("data/countries.json").json();
 
-const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitudeSlider = Inputs.range([-180, 180], {
+  step: 1,
+  label: "Longitude",
+});
 const longitude = Generators.input(longitudeSlider);
 
-const fullWorldCheckbox = Inputs.toggle({label: "Full world view", value: true})
+const fullWorldCheckbox = Inputs.toggle({
+  label: "Full world view",
+  value: true,
+});
 const fullWorld = Generators.input(fullWorldCheckbox);
 
-const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
+const logScaleCheckbox = Inputs.toggle({ label: "Log scale", value: false });
 const logScale = Generators.input(logScaleCheckbox);
 ```
+
 ## Earthquakes per country
 
 <div class="grid grid-cols-2">
@@ -210,15 +223,21 @@ const logScale = Generators.input(logScaleCheckbox);
 </div>
 
 ```js
-const longitudeSlider2 = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitudeSlider2 = Inputs.range([-180, 180], {
+  step: 1,
+  label: "Longitude",
+});
 const longitude2 = Generators.input(longitudeSlider2);
 
-const fullWorldCheckbox2 = Inputs.toggle({label: "Full world view", value: false})
+const fullWorldCheckbox2 = Inputs.toggle({
+  label: "Full world view",
+  value: false,
+});
 const fullWorld2 = Generators.input(fullWorldCheckbox2);
-
 ```
 
 ## Most deadly earthquakes
+
 <div class="grid grid-cols-2">
     <div>
         ${fullWorldCheckbox2}
@@ -237,10 +256,9 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
 
 <div class="grid grid-cols-2">
     <div class="card">
-      ${scatterChart(lengthDisaster, "date", "date", "magnitude", {map: "magnitude", color: "reds"})}
+      ${scatterChart(lengthDisaster, "date", "date", "magnitude", {map: "magnitude", color: "reds"}, {channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} richter`, Country: true, y:false, x:false, stroke:false}})}
     </div>
 </div
-
 
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
@@ -260,10 +278,8 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
   </div>
 </div>
 
-
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
     ${lineChart(disasterMagnitudes, "magnitude", "Magnitude (richter)", selectedAndColor)}
   </div>
 </div>
-
