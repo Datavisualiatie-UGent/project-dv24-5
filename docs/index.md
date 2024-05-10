@@ -112,6 +112,7 @@ import { lineChart, tempLineChart, tempDisasterAmountLineChart } from "./compone
 import { correlationMatrix } from "./components/correlation_matrix.js";
 import { barChart } from "./components/bar_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
+import { sunBurst } from "./components/sunburst.js";
 ```
 
 <div class="grid">
@@ -148,6 +149,20 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
   ${tempDisasterAmountLineChart(monthlyTemperatureChanges, totalDisasterPerYear, correlation)}
   </div>
 </div>
+
+<div class="grid" style="grid-auto-rows: 600px;">
+  <div class="card">
+  ${JSON.stringify(sunBurst(emdat_disasters))}
+  </div>
+</div>
+
+<div class="grid"">
+  <div class="card">
+  ${sunBurst(emdat_disasters)}
+  </div>
+</div>
+
+
 
 <div class="grid grid-cols-2">
   <div class="card">
