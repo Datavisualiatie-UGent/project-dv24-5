@@ -1,9 +1,9 @@
 ---
-title: Extreme temperatures
+title: Extreme temperature
 toc: false
 ---
 
-# Wildfire
+# Extreme temperature
 
 <!-- Load and transform the data -->
 <style>
@@ -209,8 +209,8 @@ const selectedCountries = view(
             width, 
             longitude: longitude,
             fullWorld: fullWorld,
-            disaster: "Wildfire",
-            label: "Total wildfires",
+            disaster: "Extreme temperature",
+            label: "Amount of extreme temperatures",
             scheme: "purples",
             logScale: logScale
         }))}
