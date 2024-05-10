@@ -34,7 +34,7 @@ export function tempDisasterAmountLineChart(tempData, disasterData, correlation)
         style: "overflow: visible;",    
         marks: [
             Plot.barY(
-                disasterData, { x: "year", y: "disasters", fill: "#AAA", }),
+                disasterData, { x: "year", y: "disasters", fill: "#AAA" }),
             Plot.axisX({ticks: []}),
             (_, { x }, __, dimensions) => {
                 return Plot.plot({
@@ -51,12 +51,11 @@ export function tempDisasterAmountLineChart(tempData, disasterData, correlation)
                             x: "date",
                             y: "temp",
                             z : null,
-                            strokeWidth: 2,
+                            strokeWidth: 2.5,
                             stroke: "temp",
                             tip: {
                                 format: {
-                                    temp : true,
-                                    date : true,
+                                    stroke: false,
                                     y: (d) => d > 0 ? `˖${d}C°` : `${d}C°`,
                                     x: (d) => {
                                         const year = d.getFullYear();
@@ -68,6 +67,7 @@ export function tempDisasterAmountLineChart(tempData, disasterData, correlation)
                             },
                         }),
                     ],
+                    x: {label: "Date"},
                     y: { axis: "right", nice: true, line: true, label: "Temperature Anomaly" }    
                 });
             },
