@@ -1,6 +1,6 @@
 import * as Plot from "npm:@observablehq/plot";
 
-export function scatterChart(data, xlabel, x_val="date", y="length", scheme={}){
+export function scatterChart(data, xlabel, x_val="date", y="length", scheme={}, {channels={}, tip={}}){
     let colorDict = {};
     const schemeExists = Object.keys(scheme).length > 0
     if (schemeExists) {
@@ -25,7 +25,7 @@ export function scatterChart(data, xlabel, x_val="date", y="length", scheme={}){
         },
         marks: [
           Plot.ruleY([0]),
-          Plot.dot(data, {x:x_val, y: y, stroke: scheme["map"]})
+          Plot.dot(data, {x:x_val, y: y, stroke: scheme["map"], channels: channels, tip: { format: tip }}),
         ]
       })
 }

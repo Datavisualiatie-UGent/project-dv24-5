@@ -551,6 +551,7 @@ export function getInfoDisaster(emdat_disasters, disasterType) {
 export function getDateLengthOrMagnitudeDisaster(emdat_disasters, disasterType, length=true) {
   const groupedDisasters = getGroupedDisasters(emdat_disasters, disasterType);
   return groupedDisasters[disasterType].reduce((acc, disaster) => {
+    const country = disaster["Country"];
     if (length) {
       const startYear = parseInt(disaster["Start Year"]);
       const startMonth = parseInt(disaster["Start Month"]);
@@ -570,12 +571,14 @@ export function getDateLengthOrMagnitudeDisaster(emdat_disasters, disasterType, 
       const startDate = new Date(startYear, startMonth, startDay);
       const endDate = new Date(endYear, endMonth, endDay);
       const length = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
+      if (length < 0) return acc;
       const date = new Date();
       date.setFullYear(startYear);
       const newobj = {
         date: startDate,
         length: length,
         year: date,
+        country: country,
         disaster: disasterType
       };
       acc.push(newobj);
@@ -596,6 +599,7 @@ export function getDateLengthOrMagnitudeDisaster(emdat_disasters, disasterType, 
         date: startDate,
         magnitude: magnitude,
         year: date,
+        country: country,
         disaster: disasterType
       };
       acc.push(newobj);

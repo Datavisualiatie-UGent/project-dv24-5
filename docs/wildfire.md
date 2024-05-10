@@ -49,18 +49,18 @@ font-size: 90px;
 
 ```js
 import {
-    getGroupedDisasters, 
-    getDisastersPerYear,
-    getConfirmedAffectedPersonsPerYear,
-    getDisastersAmountPerCountryPerYear,
-    getTypeCorrelations,
-    getCorrelationBetweenTwoLists,
-    getAverageLengthOfDisasterPerYear,
-    getDateLengthOrMagnitudeDisaster,
-    getMonthlyTemperatureChanges,
-    getYearlyTemperatureChanges,
-    getTotalDisastersPerCountry, 
-    getMostDeadlyDisasters
+  getGroupedDisasters,
+  getDisastersPerYear,
+  getConfirmedAffectedPersonsPerYear,
+  getDisastersAmountPerCountryPerYear,
+  getTypeCorrelations,
+  getCorrelationBetweenTwoLists,
+  getAverageLengthOfDisasterPerYear,
+  getDateLengthOrMagnitudeDisaster,
+  getMonthlyTemperatureChanges,
+  getYearlyTemperatureChanges,
+  getTotalDisastersPerCountry,
+  getMostDeadlyDisasters,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -68,7 +68,9 @@ const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   headers: true,
 });
 
-const temperatures = await FileAttachment("data/GISS_surface_temperature.csv").csv({
+const temperatures = await FileAttachment(
+  "data/GISS_surface_temperature.csv"
+).csv({
   typed: false,
   headers: true,
 });
@@ -83,7 +85,10 @@ const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   ["Wildfire"]
 );
 
-const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
+const correlation = getCorrelationBetweenTwoLists(
+  disastersPerYear.map((e) => e["disasters"]),
+  yearlyTemperatureChanges.map((e) => e["temp"])
+);
 
 const counts = Object.keys(groupedDisasters)
   .reduce((acc, key) => {
@@ -113,7 +118,10 @@ const lengthDisaster = getDateLengthOrMagnitudeDisaster(
 ```
 
 ```js
-import { lineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
+import {
+  lineChart,
+  tempDisasterAmountLineChart,
+} from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { scatterChart } from "./components/scatter_chart.js";
 ```
@@ -124,15 +132,21 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 
 ```js
 const countries = await FileAttachment("data/countries.json").json();
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters)
+const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
 
-const longitudeSlider = Inputs.range([-180, 180], {step: 1, label: "Longitude"});
+const longitudeSlider = Inputs.range([-180, 180], {
+  step: 1,
+  label: "Longitude",
+});
 const longitude = Generators.input(longitudeSlider);
 
-const fullWorldCheckbox = Inputs.toggle({label: "Full world view", value: true})
+const fullWorldCheckbox = Inputs.toggle({
+  label: "Full world view",
+  value: true,
+});
 const fullWorld = Generators.input(fullWorldCheckbox);
 
-const logScaleCheckbox = Inputs.toggle({label: "Log scale", value: false})
+const logScaleCheckbox = Inputs.toggle({ label: "Log scale", value: false });
 const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap } from "./components/world_map_chart.js";
@@ -146,8 +160,8 @@ import { barChart } from "./components/bar_chart.js";
 
 ```js
 const availableCountries = [
-    "all",
-    ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
+  "all",
+  ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
 ];
 
 const selectedCountries = view(
@@ -169,8 +183,8 @@ const selectedCountries = view(
     </div>
 </div>
 
-
 ## Wildfires per country
+
 <div class="grid grid-cols-2">
     <div>
         ${fullWorldCheckbox}
@@ -199,7 +213,7 @@ const selectedCountries = view(
 
 <div class="grid grid-cols-2">
     <div class="card">
-        ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "reds"})}
+        ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "reds"}, {channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}})}
     </div>
 </div>
 
