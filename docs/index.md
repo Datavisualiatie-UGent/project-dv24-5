@@ -112,6 +112,7 @@ import { lineChart, tempLineChart, tempDisasterAmountLineChart } from "./compone
 import { correlationMatrix } from "./components/correlation_matrix.js";
 import { barChart } from "./components/bar_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
+import { sunBurst } from "./components/sunburst.js";
 ```
 
 <div class="grid">
@@ -141,6 +142,12 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
         ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
             "disasters", "Amount of disasters", selectedAndColor)}
     </div>
+</div>
+
+<div class="grid"">
+  <div class="card">
+  ${sunBurst(groupedDisasters, selectedDisasters)}
+  </div>
 </div>
 
 <div class="grid" style="grid-auto-rows: 600px;">
