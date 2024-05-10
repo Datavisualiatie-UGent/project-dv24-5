@@ -50,7 +50,7 @@ font-size: 90px;
 ```js
 import {
     getGroupedDisasters,
-    getDisastersPerYear,
+    getDisastersPerYearAsInt,
     getConfirmedAffectedPersonsPerYear,
     getDisastersAmountPerCountryPerYear,
     getTypeCorrelations,
@@ -78,7 +78,7 @@ const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
 const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Drought"]);
-const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Drought"]);
+const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Drought"]);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(emdat_disasters, ["Drought"]);
 
 const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));

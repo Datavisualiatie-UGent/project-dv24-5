@@ -50,7 +50,7 @@ font-size: 90px;
 ```js
 import {
     getGroupedDisasters, 
-    getDisastersPerYear,
+    getDisastersPerYearAsInt,
     getConfirmedAffectedPersonsPerYear,
     getDisastersAmountPerCountryPerYear,
     getTypeCorrelations,
@@ -77,7 +77,7 @@ const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
 const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Wildfire"]);
-const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Wildfire"]);
+const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Wildfire"]);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
   ["Wildfire"]

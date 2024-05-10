@@ -50,7 +50,7 @@ font-size: 90px;
 ```js
 import {
   getGroupedDisasters,
-  getDisastersPerYear,
+  getDisastersPerYearAsInt,
   getConfirmedAffectedPersonsPerYear,
   getDisastersAmountPerCountryPerYear,
   getTypeCorrelations,
@@ -79,7 +79,7 @@ const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
 const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
 
 const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Storm"]);
-const disastersPerYear = getDisastersPerYear(emdat_disasters, ["Storm"]);
+const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Storm"]);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
   ["Storm"]
@@ -202,11 +202,6 @@ const selectedCountries = view(
     </div>
 </div>
 
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
-    </div>
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
     ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}
