@@ -182,7 +182,7 @@ const filterBefore2000 = before2000.length === 0;
   <div>
     ${sunBurst(groupedDisasters, selectedDisasters)}
   </div>
-  <div><h3>The dataset</h3><p>The dataset contains 26,000 disasters starting from 1990. These entries contain a wide range of different disasters. EM-DAT has reported on everything from Earthquakes to Hopper infestations. We are focusing on the climate disasters. This means we're only using around 15,000 of the total entries. The organization also states that the dataset is subject to time bias. This means that the dataset suffers from unequal reporting quality and coverage over time. We can mitigate this bias by filtering the dataset to only include data after the year 2000. This can be done with the checkbox below. As EM-DAT has only started inventorying in 1988, we filter the dataset to all disasers after this date.</p>
+  <div><h3>The dataset</h3><p>The dataset contains 26,000 disasters starting from 1990. These entries contain a wide range of different disasters. EM-DAT has reported on everything from Earthquakes to Hopper infestations. We are focusing on the climate disasters. This means we're only using around 15,000 of the total entries. The organization also states that the dataset is subject to time bias. This means that the dataset suffers from unequal reporting quality and coverage over time. We can mitigate this bias by filtering the dataset to only include data after the year 1988.</p>
   <p>EM-DAT has its own definition of a disaster: "A situation or event which overwhelms local capacity, necessitating a request to the national or international level for external assistance; an unforeseen and often sudden event that causes great damage, destruction, and human suffering." A Disaster can be entered into the dataset if it has one of the following requirements: 
   
   1) ≥ 10 deaths 
@@ -193,13 +193,14 @@ const filterBefore2000 = before2000.length === 0;
 </div>
 
 ```js
-const before2000 = view(
-  Inputs.checkbox(
-    ["include"],
-    { label: "Include disasters before year 2000", value: ["include"] },
-    ""
-  )
-);
+const before2000 = true;
+// const before2000 = view(
+//   Inputs.checkbox(
+//     ["include"],
+//     { label: "Include disasters before year 2000", value: ["include"] },
+//     ""
+//   )
+// );
 ```
 
 ---
@@ -275,7 +276,7 @@ const selectedCountries = view(
   
   1. [2010 Haiti earthquake](https://en.wikipedia.org/wiki/2010_Haiti_earthquake)
   2. [2004 Indian Ocean earthquake and tsunami](https://en.wikipedia.org/wiki/2004_Indian_Ocean_earthquake_and_tsunami)
-  3. [Cyclone Gorky](https://en.wikipedia.org/wiki/1991_Bangladesh_cyclone) (Before 2000)
+  3. [Cyclone Gorky](https://en.wikipedia.org/wiki/1991_Bangladesh_cyclone)
   4. [Cyclone Nargis](https://en.wikipedia.org/wiki/Cyclone_Nargis)
   5. [2008 Sichuan earthquake](https://en.wikipedia.org/wiki/2008_Sichuan_earthquake)
   </p>
