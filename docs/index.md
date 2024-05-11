@@ -177,10 +177,6 @@ import { treeMap } from "./components/tree_map.js";
 const filterBefore2000 = before2000.length === 0;
 ```
 
-```js
-const selectedDisasters = Object.keys(groupedDisasters);
-```
-
 ---
 <div class="grid grid-cols-2">
   <div>
@@ -207,6 +203,18 @@ const before2000 = view(
 ```
 
 ---
+
+```js
+const potDisasters = Object.keys(groupedDisasters);
+
+const selectedDisasters = view(
+  Inputs.checkbox(
+    potDisasters,
+    { label: "Choose Disasters:", value: potDisasters },
+    ""
+  )
+);
+```
 
 ```js
 const selectedAndColor = getDisastersPerColor(selectedDisasters);
@@ -263,7 +271,14 @@ const selectedCountries = view(
 </div>
 
 <div>
-  <p><h3>Deadliest disasters</h3>In the bar chart above we see the deadliest disasters. If we look at the global disasters we can again see that earthquakes are the most deadly.</p>
+  <p><h3>Deadliest disasters</h3>In the bar chart above we see the deadliest disasters. If we look at the global disasters we can again see that earthquakes are the most deadly. The 5 most deadly disasters from 1988 are as follows:
+  
+  1. [2010 Haiti earthquake](https://en.wikipedia.org/wiki/2010_Haiti_earthquake)
+  2. [2004 Indian Ocean earthquake and tsunami](https://en.wikipedia.org/wiki/2004_Indian_Ocean_earthquake_and_tsunami)
+  3. [Cyclone Gorky](https://en.wikipedia.org/wiki/1991_Bangladesh_cyclone) (Before 2000)
+  4. [Cyclone Nargis](https://en.wikipedia.org/wiki/Cyclone_Nargis)
+  5. [2008 Sichuan earthquake](https://en.wikipedia.org/wiki/2008_Sichuan_earthquake)
+  </p>
 </div>
 
 
@@ -276,7 +291,7 @@ const selectedCountries = view(
   </div>
   <div>
     <h3>Correlation with temperature</h3>
-    <p>Finally, we can compare the number of disasters each year to the overall increase in temperature. The temperature data is taken from the GISS Surface Temperature Analysis dataset from NASA. We observe both the mentioned increase in disasters and the increase in temperature anomaly. This anomaly is calculated by comparing the mean temperatures from 1951-1980 to the current temperatures. A correlation factor can also be seen; this is calculated by correlating the annual global temperature anomalies with the annual number of disasters. This yields a correlation factor of 0.20694, which means there is some correlation but not a significant amount. As we will see in the pages about specific disasters, this can be explained by the fact that some disasters are less influenced by the temperature trend than expected.</p>
+    <p>Finally, we can compare the number of disasters each year to the overall increase in temperature. The temperature data is taken from the GISS Surface Temperature Analysis dataset from NASA. We observe both the mentioned increase in disasters and the increase in temperature anomaly. This anomaly is calculated by comparing the mean temperatures from 1951-1980 to the current temperatures. A correlation factor can also be seen; this is calculated by correlating the annual global temperature anomalies with the annual number of disasters. This yields a correlation factor of ${correlation.toFixed(5)}, which means there is some correlation but not a significant amount. As we will see in the pages about specific disasters, this can be explained by the fact that some disasters are less influenced by the temperature trend than expected.</p>
   </div>
 </div>
 
