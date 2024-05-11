@@ -1,27 +1,68 @@
-function filterDisasters(disasters, specificDisasterType=[]) {
+const nameMapping = { // datasetName: countries.json name
+  "United States of America": "United States",
+  "Germany Federal Republic": "Germany",
+  "United Republic of Tanzania": "Tanzania",
+  "Soviet Union": "Russia",
+  "T�rkiye": "Turkey",
+  "Venezuela (Bolivarian Republic of)": "Venezuela",
+  "Iran (Islamic Republic of)": "Iran",
+  "Viet Nam": "Vietnam",
+  "China, Hong Kong Special Administrative Region": "China",
+  "Bolivia (Plurinational State of)": "Bolivia",
+  "C�te d�Ivoire": "Cote d'Ivoire",
+  "Democratic Republic of the Congo": "Congo",
+  "Taiwan (Province of China)": "Taiwan",
+  "People's Democratic Republic of Yemen": "Yemen",
+  "Netherlands (Kingdom of the)": "Netherlands",
+  "United Kingdom of Great Britain and Northern Ireland": "United Kingdom",
+  "Czechia": "Czech Republic",
+  "North Macedonia": "Macedonia",
+  "Republic of Moldova": "Moldova",
+  "Syrian Arab Republic": "Syria",
+  "South Sudan": "Sudan",
+  "State of Palestine": "Palestine",
+  "Cabo Verde": "Cape Verde"
+}
+
+
+
+function filterDisasters(disasters, filterBefore2000, specificDisasterType=[]) {
     return disasters.filter((el) => {
+        const filterYear = filterBefore2000 ? 2000 : 1988;
+
         const nonBiological = el["Disaster Subgroup"] !== "Biological";
-        const correctMeasurement = el["Start Year"] >= 1988 && el["Start Year"] < 2024;
+        const correctMeasurement = el["Start Year"] >= filterYear && el["End Year"] <= 2022;
         const isClimate = !["Volcanic activity", "Impact"].includes(el["Disaster Type"]);
-        const isSpecificDisasterType = specificDisasterType.length === 0 || specificDisasterType.includes(el["Disaster Type"]);
-        return nonBiological && correctMeasurement && isClimate && isSpecificDisasterType;
+        const nonMassMovement = !el["Disaster Type"].includes("Mass movement");
+        const isSpecificDisasterType = specificDisasterType.length === 0 || specificDisasterType.some(d => el["Disaster Type"].includes(d));
+        return nonBiological && correctMeasurement && isClimate && isSpecificDisasterType && nonMassMovement;
     })
 }
 
-export function getGroupedDisasters(disasters, specificDisasterType=[]) {
-    return Object.groupBy(
+export function getGroupedDisasters(disasters, filterBefore2000=true, specificDisasterType=[]) {
+    const filteredD = Object.groupBy(
         // Filter based on necessary items
-        filterDisasters(disasters, specificDisasterType),
+        filterDisasters(disasters, filterBefore2000, specificDisasterType),
         ({ "Disaster Type": type }) => {
-            if (type.includes("Mass movement")) return "Mass Movement";
+            if (type.includes("Mass movement")) return "Mass movement";
             if (type.includes("Glacial")) return "Flood";
             return type;
         }
     );
+    return Object.fromEntries(
+      Object.entries(filteredD).map(([disasterType, disasters]) => {
+        if (disasterType.toLowerCase() !== "Mass movement") return [disasterType, disasters];
+        
+        return [disasterType, disasters.map((d) => {
+          return { ...d, "Disaster Type": "Mass movement" };
+        })];
+      })
+    );
 }
 
-export function getDisastersPerYearAsInt(disasters, specificDisasterType=[]) {
-    const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType)
+export function getDisastersPerYearAsInt(disasters, filterBefore2000=true, specificDisasterType=[]) {
+    const groupedDisasters = getGroupedDisasters(disasters, filterBefore2000, specificDisasterType);
+    const filterYear = filterBefore2000 ? 2000 : 1988;
     return Object.entries(groupedDisasters).reduce(
         (acc, [disasterType, disasterList]) => {
             let obj = {};
@@ -33,7 +74,7 @@ export function getDisastersPerYearAsInt(disasters, specificDisasterType=[]) {
                     obj[y] = 1;
                 }
             });
-            for (let i = 1988; i <= 2020; i++) {
+            for (let i = filterYear; i <= 2022; i++) {
                 let nrOfDisasters = 0;
                 if (i in obj) {
                     nrOfDisasters = obj[i];
@@ -46,8 +87,8 @@ export function getDisastersPerYearAsInt(disasters, specificDisasterType=[]) {
     );
 }
 
-export function getDisastersPerYearAsDate(disasters, specificDisasterType = []) {
-  const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType)
+export function getDisastersPerYearAsDate(disasters, filterBefore2000=true, specificDisasterType = []) {
+  const groupedDisasters = getGroupedDisasters(disasters, filterBefore2000, specificDisasterType)
   return Object.entries(groupedDisasters).reduce(
     (acc, [disasterType, disasterList]) => {
       let obj = {};
@@ -74,12 +115,14 @@ export function getDisastersPerYearAsDate(disasters, specificDisasterType = []) 
   );
 }
 
-export function getDisastersAmountPerCountryPerYear(emdat_disasters) {
+export function getDisastersAmountPerCountryPerYear(emdat_disasters, filterBefore2000=true) {
   let obj = new Object();
   emdat_disasters.forEach(d => {
     let country = d["Subregion"];
     let y = parseInt(d["Start Year"]);
     let disasterType = d["Disaster Type"];
+
+    if (filterBefore2000 && y < 2000) return;
     if (country in obj) {
       if (!(y in obj[country])) {
         obj[country][y] = new Object();
@@ -197,8 +240,8 @@ export function getTypeCorrelations(disastersAmountPerCountryPerYear, emdat_disa
   return correlations;
 }
 
-export function getConfirmedAffectedPersonsPerYear(disasters, specificDisasterType=[]){
-    const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType);
+export function getConfirmedAffectedPersonsPerYear(disasters, filterBefore2000=true, specificDisasterType=[]){
+    const groupedDisasters = getGroupedDisasters(disasters, filterBefore2000, specificDisasterType);
     return Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
 
         let json = {};
@@ -248,17 +291,17 @@ export function getConfirmedAffectedPersonsPerYear(disasters, specificDisasterTy
 
 
 
-function getGroupedDisastersByCountry(disasters, specificDisasterType=[]) {
+function getGroupedDisastersByCountry(disasters, filterBefore2000=true, specificDisasterType=[]) {
     return Object.groupBy(
-        filterDisasters(disasters, specificDisasterType),
+        filterDisasters(disasters, filterBefore2000, specificDisasterType),
         ({ "Country": country }) => {
             return country;
         }
     );
 }
 
-export function getTotalDisastersPerCountry(disasters, specificDisasterType=[]) {
-    const groupedDisastersByCountry = getGroupedDisastersByCountry(disasters, specificDisasterType);
+export function getTotalDisastersPerCountry(disasters, filterBefore2000=true, specificDisasterType=[]) {
+    const groupedDisastersByCountry = getGroupedDisastersByCountry(disasters, filterBefore2000, specificDisasterType);
     return Object.entries(groupedDisastersByCountry).reduce(
         (acc, [country, disasterList]) => {
             let disastersForCountry = {};
@@ -276,8 +319,8 @@ export function getTotalDisastersPerCountry(disasters, specificDisasterType=[]) 
 }
 
 
-export function getAverageLengthOfDisasterPerYear(disasters, specificDisasterType=[]) {
-  const groupedDisasters = getGroupedDisasters(disasters, specificDisasterType);
+export function getAverageLengthOfDisasterPerYear(disasters, filterBefore2000=true, specificDisasterType=[]) {
+  const groupedDisasters = getGroupedDisasters(disasters, filterBefore2000, specificDisasterType);
   return Object.entries(groupedDisasters).reduce((acc, [disasterType, disasterList]) => {
     let obj = new Object();
     let miny = Number.MAX_VALUE;
@@ -359,9 +402,9 @@ export function bundleDisasters(disasters) {
   * The amount of deaths, injured and affected people are summed over all years.
   * Useful for the bar charts.
 */
-export function getDisasterCounts(emdat_disasters) {
+export function getDisasterCounts(emdat_disasters, filterBefore2000=true) {
   const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
-    emdat_disasters
+    emdat_disasters, filterBefore2000
   );
   return confirmedAffectedPersonsPerYear.reduce((acc, disaster) => {
     const disasterName = disaster["disaster"];
@@ -392,8 +435,8 @@ export function getDisasterCounts(emdat_disasters) {
   }, []);
 }
 
-export function getDisasterMagnitudes(emdat_disasters, disasterType) {
-  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType])
+export function getDisasterMagnitudes(emdat_disasters, filterBefore2000=true, disasterType) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, filterBefore2000, [disasterType])
   return groupedDisasters[disasterType].filter(el => el["Magnitude"]).reduce((acc, disaster) => {
     const year = disaster["Start Year"];
     const magnitude = disaster["Magnitude"];
@@ -430,10 +473,11 @@ export function getDisasterMagnitudes(emdat_disasters, disasterType) {
   }, []);
 }
 
-export function getTotalDisastersPerYear(disasterCounts) {
+export function getTotalDisastersPerYear(disasterCounts, filterBefore2000=true) {
   var totalDisastersPerYear = [];
+  const filterYear = filterBefore2000 ? 2000 : 1988
   disasterCounts.forEach(e => {
-    const index = e["year"] - 1988;
+    const index = e["year"] - filterYear;
     const disasters = e["disasters"];
     if (totalDisastersPerYear.length <= index) {
       totalDisastersPerYear.push(disasters);
@@ -443,19 +487,20 @@ export function getTotalDisastersPerYear(disasterCounts) {
   });
   var toReturn = [];
   for (var i = 0; i < totalDisastersPerYear.length; i++) {
-    toReturn.push({year : (i + 1988), disasters : totalDisastersPerYear[i]});
+    toReturn.push({year : (i + filterYear), disasters : totalDisastersPerYear[i]});
   }
   return toReturn;
 }
 
 
-export function getMonthlyTemperatureChanges(giss_temperatures) {
+export function getMonthlyTemperatureChanges(giss_temperatures, filterBefore2000=true) {
   var temps = [];
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   for (var i = 0; i < giss_temperatures.length; i++) {
     const obj = giss_temperatures[i];
     const year = obj["Year"];
-    if (year < 1988 || year > 2022) {
+    const filterYear = filterBefore2000 ? 2000 : 1988
+    if (year < filterYear || year > 2022) {
       continue;
     }
     for (var x = 0; x < months.length; x++) {
@@ -474,13 +519,14 @@ export function getMonthlyTemperatureChanges(giss_temperatures) {
   return temps;
 }
 
-export function getYearlyTemperatureChanges(giss_temperatures) {
+export function getYearlyTemperatureChanges(giss_temperatures, filterBefore2000=true) {
   var temps = [];
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   for (var i = 0; i < giss_temperatures.length; i++) {
     const obj = giss_temperatures[i];
     const year = obj["Year"];
-    if (year < 1988) {
+    const filterYear = filterBefore2000 ? 2000 : 1988
+    if (year < filterYear) {
       continue;
     }
     const temp = Number(obj["J-D"]);
@@ -493,9 +539,11 @@ export function getYearlyTemperatureChanges(giss_temperatures) {
   }
   return temps;
 }
-export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=15) {
-  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
-  const disasters = groupedDisasters[disasterType];
+export function getMostDeadlyDisasters(emdat_disasters, filterBefore2000=true, disasterType="") {
+  let disasterList = [];
+  if (disasterType !== "") disasterList = [disasterType]
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, filterBefore2000, disasterList);
+  let disasters = disasterList.length <= 0 ? Object.values(groupedDisasters).flat() : groupedDisasters[disasterType];
   return disasters.sort((a, b) => {
     if (! a["Total Deaths"]) return 1;
     if (! b["Total Deaths"]) return -1;
@@ -505,19 +553,20 @@ export function getMostDeadlyDisasters(emdat_disasters, disasterType, nr=15) {
   }).map(disaster => {
     const date = new Date();
     date.setFullYear(disaster["Start Year"]);
-    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} (${disaster["Start Year"]})`: `${disaster["Country"]} (${disaster["Start Year"]})`;
+    const countryName = (nameMapping[disaster["Country"]] ?? disaster["Country"])
+    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} - ${countryName} (${disaster["Start Year"]})`: `${disasterType}${countryName} (${disaster["Start Year"]})`;
     return {
       disaster: disasterName,
+      disasterType: disaster["Disaster Type"],
       year: date,
       deaths: disaster["Total Deaths"],
-        country: disaster["Country"]
-
+      country: countryName
     };
   });
 }
 
-export function getMostExpensiveDisasters(emdat_disasters, disasterType, nr=5) {
-  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
+export function getMostExpensiveDisasters(emdat_disasters, filterBefore2000=true, disasterType, nr=5) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, filterBefore2000, [disasterType]);
   const disasters = groupedDisasters[disasterType];
   let costStr = "Total Damage, Adjusted ('000 US$)";
   return disasters.sort((a, b) => {
@@ -538,8 +587,8 @@ export function getMostExpensiveDisasters(emdat_disasters, disasterType, nr=5) {
   });
 }
 
-export function getInfoDisaster(emdat_disasters, disasterType) {
-  const groupedDisasters = getGroupedDisasters(emdat_disasters, [disasterType]);
+export function getInfoDisaster(emdat_disasters, filterBefore2000=true, disasterType) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, filterBefore2000, [disasterType]);
   return groupedDisasters[disasterType]
   .sort((a, b) => {
     if (! a["Total Deaths"]) return 1;
@@ -550,10 +599,9 @@ export function getInfoDisaster(emdat_disasters, disasterType) {
   })
   .filter(d => d["Magnitude"])
   .reduce((acc, disaster) => {
-    const country = disaster["Country"];
-    const eventName = disaster["Event Name"];
+    const country = (nameMapping[disaster["Country"]] ?? disaster["Country"]);
     const year = disaster["Start Year"];
-    const disasterName = eventName ? `${eventName}, ${country} (${year})`: `${country} (${year})`;
+    const disasterName = `${country} (${year})`;
     const deaths = disaster["Total Deaths"];
     const magnitude = disaster["Magnitude"];
     if (deaths <= 0) return acc;
@@ -572,8 +620,8 @@ export function getInfoDisaster(emdat_disasters, disasterType) {
 }
 
 
-export function getDateLengthOrMagnitudeDisaster(emdat_disasters, disasterType, length=true) {
-  const groupedDisasters = getGroupedDisasters(emdat_disasters, disasterType);
+export function getDateLengthOrMagnitudeDisaster(emdat_disasters, filterBefore2000=true, disasterType, length=true) {
+  const groupedDisasters = getGroupedDisasters(emdat_disasters, filterBefore2000, [disasterType]);
   return groupedDisasters[disasterType].reduce((acc, disaster) => {
     const country = disaster["Country"];
     if (length) {

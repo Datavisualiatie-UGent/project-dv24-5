@@ -49,19 +49,19 @@ font-size: 90px;
 
 ```js
 import {
-    getGroupedDisasters,
-    getDisastersPerYearAsInt,
-    getConfirmedAffectedPersonsPerYear,
-    getDisastersAmountPerCountryPerYear,
-    getTypeCorrelations,
-    getCorrelationBetweenTwoLists,
-    getAverageLengthOfDisasterPerYear,
-    getDateLengthOrMagnitudeDisaster,
-    getMonthlyTemperatureChanges,
-    getYearlyTemperatureChanges,
-    getTotalDisastersPerCountry,
-    getAreaPerCountry,
-    getMostDeadlyDisasters
+  getGroupedDisasters,
+  getDisastersPerYearAsInt,
+  getConfirmedAffectedPersonsPerYear,
+  getDisastersAmountPerCountryPerYear,
+  getTypeCorrelations,
+  getCorrelationBetweenTwoLists,
+  getAverageLengthOfDisasterPerYear,
+  getDateLengthOrMagnitudeDisaster,
+  getMonthlyTemperatureChanges,
+  getYearlyTemperatureChanges,
+  getTotalDisastersPerCountry,
+  getAreaPerCountry,
+  getMostDeadlyDisasters,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -76,12 +76,25 @@ const temperatures = await FileAttachment(
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Drought"]);
-const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Drought"]);
-const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(emdat_disasters, ["Drought"]);
+const groupedDisasters = getGroupedDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  ["Drought"]
+);
+const disastersPerYear = getDisastersPerYearAsInt(
+  emdat_disasters,
+  filterBefore2000,
+  ["Drought"]
+);
 
 const correlation = getCorrelationBetweenTwoLists(
   disastersPerYear.map((e) => e["disasters"]),
@@ -98,13 +111,14 @@ const counts = Object.keys(groupedDisasters)
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Drought"]
 );
-const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
+const dateLength = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
-  ["Drought"]
+  filterBefore2000,
+  "Drought"
 );
-const dateLength = getDateLengthOrMagnitudeDisaster(emdat_disasters, "Drought");
 ```
 
 ```js
@@ -119,7 +133,10 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 
 ```js
 const countries = await FileAttachment("data/countries.json").json();
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
+const totalDisastersPerCountry = getTotalDisastersPerCountry(
+  emdat_disasters,
+  filterBefore2000
+);
 
 const longitudeSlider = Inputs.range([-180, 180], {
   step: 1,
@@ -138,9 +155,27 @@ const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap } from "./components/world_map_chart.js";
 
-const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Wildfire");
+const mostDeadlyDisasters = getMostDeadlyDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  "Drought"
+);
 
 import { barChart } from "./components/bar_chart.js";
+```
+
+```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    { label: "Include droughts before year 2000", value: ["include"] },
+    ""
+  )
+);
+```
+
+```js
+const filterBefore2000 = before2000.length === 0;
 ```
 
 ## Most deadly droughts
@@ -204,26 +239,5 @@ const selectedCountries = view(
     <div class="card">
         ${scatterChart(dateLength, "date", "date", "length", {map: "length", color: "oranges"}, {channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}})}
     </div>
-</div>
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "deaths", "Amount of deaths", selectedAndColor)}
-    </div>
-   <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "injured", "People injured", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid">
-     <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "affected", "People affected", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
-  </div>
 </div>
 ---

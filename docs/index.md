@@ -81,7 +81,8 @@ import {
   getDisasterCounts,
   getTotalDisastersPerYear,
   getMonthlyTemperatureChanges,
-  getYearlyTemperatureChanges
+  getYearlyTemperatureChanges,
+  getMostDeadlyDisasters,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -89,33 +90,61 @@ const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   headers: true,
 });
 
-const temperatures = await FileAttachment("data/GISS_surface_temperature.csv").csv({
+const temperatures = await FileAttachment(
+  "data/GISS_surface_temperature.csv"
+).csv({
   typed: false,
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters);
-const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters);
-const totalDisasterPerYear = getTotalDisastersPerYear(disastersPerYear);
+const groupedDisasters = getGroupedDisasters(emdat_disasters, filterBefore2000);
+const disastersPerYear = getDisastersPerYearAsInt(
+  emdat_disasters,
+  filterBefore2000
+);
+const totalDisasterPerYear = getTotalDisastersPerYear(
+  disastersPerYear,
+  filterBefore2000
+);
 
-const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
+const correlation = getCorrelationBetweenTwoLists(
+  disastersPerYear.map((e) => e["disasters"]),
+  yearlyTemperatureChanges.map((e) => e["temp"])
+);
 
-const confirmedAffectedPersonsPerYear =
-  getConfirmedAffectedPersonsPerYear(emdat_disasters);
+const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
+  emdat_disasters,
+  filterBefore2000
+);
 
-const disasterCounts = getDisasterCounts(emdat_disasters);
+const disasterCounts = getDisasterCounts(emdat_disasters, filterBefore2000);
 
-const disastersAmountPerCountryPerYear =
-  getDisastersAmountPerCountryPerYear(emdat_disasters);
+const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
+  emdat_disasters,
+  filterBefore2000
+);
 const correlations = getTypeCorrelations(
   disastersAmountPerCountryPerYear,
   emdat_disasters
 );
-const averageLengthOfDisasterPerYear =
-  getAverageLengthOfDisasterPerYear(emdat_disasters);
+const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
+  emdat_disasters,
+  filterBefore2000
+);
+
+const mostDeadlyDisasters = getMostDeadlyDisasters(
+  emdat_disasters,
+  filterBefore2000
+);
 ```
 
 ```js
@@ -125,7 +154,11 @@ const bundledDisasters = bundleDisasters(disastersPerYear);
 ```js
 import { bumpChart } from "./components/bump_chart.js";
 import { areaChart } from "./components/area_chart.js";
-import { lineChart, tempLineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
+import {
+  lineChart,
+  tempLineChart,
+  tempDisasterAmountLineChart,
+} from "./components/line_chart.js";
 import { correlationMatrix } from "./components/correlation_matrix.js";
 import { barChart } from "./components/bar_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
@@ -138,6 +171,55 @@ import { treeMap } from "./components/tree_map.js";
   <p>In recent decades, our planet has borne witness to an immense increase in the global temperature. The result of global warming can easily be seen in the increase in the severity and frequency of disasters. Our goal is to see how strong the correlation is between the rising temperature and the impact of disasters.</p>
   <p>To this end, we used EM-DAT, a dataset created by the Centre for Research on the Epidemiology of Disasters. This dataset contains data on the amount, severity, and impact of disasters since 1900.</p> 
   <p>We demonstrate the correlation between natural disasters and global temperature by visualizing the dataset in specific ways. First, the natural disasters that are likely to be affected by the rising global temperature were chosen. For each of these disasters, we document some interesting aspects and examine whether there is a correlation.</p>
+
+```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    { label: "Include disasters before year 2000", value: ["include"] },
+    ""
+  )
+);
+```
+
+```js
+const filterBefore2000 = before2000.length === 0;
+```
+
+```js
+const availableCountries = [
+  "all",
+  ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
+];
+
+const selectedCountries = view(
+  Inputs.select(
+    availableCountries,
+    { label: "Choose country:", value: availableCountries },
+    ""
+  )
+);
+```
+
+<div>
+    <div>
+        ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+            {"catMapping": {
+              "domain": selectedAndColor[0],
+              "colors": selectedAndColor[1],
+              "map": "disasterType"
+            }, width}))}
+    </div>
+</div>
+
+```js
+const selectedDisasters = Object.keys(groupedDisasters);
+```
+
+<div class="grid">
+    <div class="card">
+        ${resize((width) => bumpChart(bundledDisasters, {width}, selectedAndColor))}
+    </div>
 </div>
 
 ---
@@ -160,20 +242,32 @@ import { treeMap } from "./components/tree_map.js";
 ---
 
 ```js
-const potDisasters = Object.keys(groupedDisasters);
-
-const selectedDisasters = view(
-  Inputs.checkbox(
-    potDisasters,
-    { label: "Choose Disasters:", value: potDisasters },
-    ""
-  )
-);
-```
-
-```js
 const selectedAndColor = getDisastersPerColor(selectedDisasters);
 ```
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "disasters", "Amount of disasters", selectedAndColor)}
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    ${resize((width) => barChart(disasterCounts, {label: "Occurrences", x_val: "numberOfDisasters", y_val: "disaster", "catMapping": {
+              "domain": selectedAndColor[0],
+              "colors": selectedAndColor[1],
+              "map": "disaster"
+            }, width}))}
+  </div>
+  <div class="card">
+    ${resize((width) => barChart(disasterCounts, {label: "Total Deaths", "catMapping": {
+              "domain": selectedAndColor[0],
+              "colors": selectedAndColor[1],
+              "map": "disaster"
+            }, width}))}
+  </div>
+</div>
 
 ---
 
