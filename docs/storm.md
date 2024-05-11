@@ -247,10 +247,16 @@ const selectedCountries = view(
     </div>
 </div>
 
-It is clear that there is an indication that the amount of storms are affected by the global temperature rise due to climate change. The data in the dataset didn't suggest that the storms where getting more powerful or had a longer duration.
+---
 
-<div class="grid" style="grid-auto-rows: 600px;">
-  <div class="card">
+<div class="grid grid-cols-2">
+  <div>
+    <p>
+    <h3>Climate change</h3>
+    It is clear that there is an indication that the amount of storms are affected by the global temperature rise due to climate change. The data in the dataset didn't suggest that the storms where getting more powerful or had a longer duration.
+    </p>
+  </div>
+  <div>
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
   </div>
 </div>
