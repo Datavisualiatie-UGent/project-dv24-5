@@ -140,11 +140,10 @@ const mostExpensiveDisasters = getMostExpensiveDisasters(
   filterBefore2000,
   "Storm"
 );
-const magnitudeDisaster = getDateLengthOrMagnitudeDisaster(
+const lengthDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
   filterBefore2000,
-  "Storm",
-  false
+  "Storm"
 );
 ```
 
@@ -248,9 +247,7 @@ const selectedCountries = view(
     </div>
 </div>
 
-<div>
-        ${resize(width => scatterChart(magnitudeDisaster.filter(d => d["magnitude"] < 500 && d["magnitude"] > 0), {xlabel:"date", x_val:"date", y:"magnitude", scheme:{map: "magnitude", color: "blues"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} kph`, Country: true, y:false, x:false, stroke:false}, width:width}))}
-</div>
+It is clear that there is an indication that the amount of storms are affected by the global temperature rise due to climate change. The data in the dataset didn't suggest that the storms where getting more powerful or had a longer duration.
 
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
