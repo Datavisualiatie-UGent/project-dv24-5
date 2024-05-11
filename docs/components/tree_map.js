@@ -33,18 +33,7 @@ export function treeMap(groupedDisasters, selectedDisasters = []) {
             return acc;
         }, []);
     const total = data.reduce((sum, xs) => sum += xs.children.reduce((sum, x) => sum += x.value, 0), 0);
-    for (var i = 0; i < data.length; i++) {
-        const children = data[i].children;
-        const other = children[index(children, "Other")];
-        data[i].occurences = children.reduce((sum, x) => sum += x.value, 0);
-        for (var j = 0; j < children.length; j++) {
-            if (children[j].value < total / 100 && children[j].name != "Other") {
-                other.value += children[j].value;
-                other.containing.push({ name: children[j].name, value: children[j].value });
-                children[j].value = 0;
-            }
-        }
-    }
+   
     data = { name: "disasters", occurences: total, children: data };
 
     return Treemap(data, {
@@ -184,9 +173,20 @@ function Treemap(data, { // data is either tabular (array of objects) or hierarc
         .attr("xlink:href", link == null ? null : (d, i) => link(d.data, d))
         .attr("target", link == null ? null : linkTarget)
         .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+    const colorDisasters = {
+        "Flood": "hsl(240, 50%, 50%)",        // Blue
+        "Extreme temperature": "hsl(270, 50%, 50%)", // Purple
+        "Earthquake": "hsl(30, 50%, 50%)",     // Brown
+        "Storm": "hsl(250, 10%, 50%)",            // Grey
+        "Mass movement": "hsl(120, 50%, 50%)", // Green
+        "Volcanic activity": "hsl(10, 50%, 50%)",  // Orange
+        "Drought": "hsl(52, 85%, 69%)",       // Yellow
+        "Wildfire": "hsl(360, 50%, 50%)"        // Red
+    };
   
     node.append("rect")
-        .attr("fill", color ? (d, i) => color(G[i]) : fill)
+        .attr("fill", (d, i) => colorDisasters[d.data.type])
         .attr("fill-opacity", fillOpacity)
         .attr("stroke", stroke)
         .attr("stroke-width", strokeWidth)
