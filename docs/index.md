@@ -262,7 +262,7 @@ const selectedCountries = view(
 ```
 
 <div>
-    ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+    ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("All") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
         {"catMapping": {
           "domain": selectedAndColor[0],
           "colors": selectedAndColor[1],
