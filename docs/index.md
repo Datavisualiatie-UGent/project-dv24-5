@@ -284,6 +284,11 @@ const selectedCountries = view(
 
 ---
 
+<div class="grid" style="grid-auto-rows: 600px;">
+  <div class="card">
+  ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, totalDisasterPerYear, correlation, width))}
+  </div>
+</div>
 
 <div class="grid grid-cols-2">
   <div>

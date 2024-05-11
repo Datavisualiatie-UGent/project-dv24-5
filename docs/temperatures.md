@@ -255,41 +255,16 @@ const selectedCountries = view(
 
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}
+    ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
   </div>
 </div>
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "purples"}, {channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}})}
-    </div>
+<div>
+        ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", scheme:{map: "length", color: "purples"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
 </div>
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${scatterChart(magnitudeDisaster, "date", "date", "magnitude", {map: "magnitude", color: "purples"}, {channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} °C`, Country: true, y:false, x:false, stroke:false}})}
-    </div>
-</div>
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "deaths", "Amount of deaths", selectedAndColor)}
-    </div>
-   <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "injured", "People injured", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid">
-     <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "affected", "People affected", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
-  </div>
+<div>
+        ${resize(width => scatterChart(magnitudeDisaster, {xlabel:"date", x_val:"date", y:"magnitude", scheme:{map: "magnitude", color: "purples"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} °C`, Country: true, y:false, x:false, stroke:false}, width:width}))}
 </div>
 
 ---

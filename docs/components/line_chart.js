@@ -29,8 +29,9 @@ export function lineChart(data, y, label, [disasters, colors]) {
     })
 }
 
-export function tempDisasterAmountLineChart(tempData, disasterData, correlation) {
+export function tempDisasterAmountLineChart(tempData, disasterData, correlation, width={}) {
     return Plot.plot({
+        width,
         style: "overflow: visible;",    
         marks: [
             Plot.barY(
