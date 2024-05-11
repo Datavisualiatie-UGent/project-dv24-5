@@ -1,3 +1,4 @@
+import { legend } from 'npm:@observablehq/plot';
 import * as d3 from 'https://unpkg.com/d3?module'
 
 function index(xs, x) {
@@ -10,13 +11,13 @@ function index(xs, x) {
     return -1;
 }
 
-export function sunBurst(groupedDisasters, selectedDisasters = []) {
+export function treeMap(groupedDisasters, selectedDisasters = []) {
     var data = Object.entries(groupedDisasters).reduce(
         (acc, [type, list]) => {
             if (!selectedDisasters.includes(type) && selectedDisasters.length != 0) {
                 return acc;
             }
-            acc.push({ name: type, value: 0, children: [{ name: "Other", value: 0, containing: [], children: [] }] });
+            acc.push({ name: type, value: 0, children: [{ name: "Other", type: type, value: 0, containing: [], children: [] }] });
 
             for (var i = 0; i < list.length; i++) {
                 const el = list[i];
@@ -24,7 +25,7 @@ export function sunBurst(groupedDisasters, selectedDisasters = []) {
                 if (subType == undefined) return;
                 var children = acc[index(acc, type)].children;
                 if (!children.map(x => x.name).includes(subType)) {
-                    children.push({ name: subType, value: 1, children: [] });
+                    children.push({ name: subType, type: type, value: 1, children: [] });
                 } else {
                     children[index(children, subType)].value += 1;
                 }
@@ -37,7 +38,7 @@ export function sunBurst(groupedDisasters, selectedDisasters = []) {
         const other = children[index(children, "Other")];
         data[i].occurences = children.reduce((sum, x) => sum += x.value, 0);
         for (var j = 0; j < children.length; j++) {
-            if (children[j].value < total / 200 && children[j].name != "Other") {
+            if (children[j].value < total / 100 && children[j].name != "Other") {
                 other.value += children[j].value;
                 other.containing.push({ name: children[j].name, value: children[j].value });
                 children[j].value = 0;
@@ -46,9 +47,10 @@ export function sunBurst(groupedDisasters, selectedDisasters = []) {
     }
     data = { name: "disasters", occurences: total, children: data };
 
-    return Sunburst(data, {
+    return Treemap(data, {
         value: d => d.value,
         label: d => (d.name == "Other" && d.containing.length == 1) ? d.containing[0].name : d.name,
+        group: d => d.type,
         title: (d, n) => {
             if (!d.value) {
                 d.value = d.occurences;
@@ -78,109 +80,148 @@ export function sunBurst(groupedDisasters, selectedDisasters = []) {
 
 // Copyright 2021-2023 Observable, Inc.
 // Released under the ISC license.
-// https://observablehq.com/@d3/sunburst
-function Sunburst(data, { // data is either tabular (array of objects) or hierarchy (nested objects)
+// https://observablehq.com/@d3/treemap
+function Treemap(data, { // data is either tabular (array of objects) or hierarchy (nested objects)
     path, // as an alternative to id and parentId, returns an array identifier, imputing internal nodes
     id = Array.isArray(data) ? d => d.id : null, // if tabular data, given a d in data, returns a unique identifier (string)
     parentId = Array.isArray(data) ? d => d.parentId : null, // if tabular data, given a node d, returns its parent’s identifier
     children, // if hierarchical data, given a d in data, returns its children
     value, // given a node d, returns a quantitative value (for area encoding; null for count)
     sort = (a, b) => d3.descending(a.value, b.value), // how to sort nodes prior to layout
-    label, // given a node d, returns the name to display on the rectangle
-    title, // given a node d, returns its hover text
-    link, // given a node d, its link (if any)
+    label, // given a leaf node d, returns the name to display on the rectangle
+    group, // given a leaf node d, returns a categorical value (for color encoding)
+    title, // given a leaf node d, returns its hover text
+    link, // given a leaf node d, its link (if any)
     linkTarget = "_blank", // the target attribute for links (if any)
+    tile = d3.treemapBinary, // treemap strategy
     width = 640, // outer width, in pixels
     height = 400, // outer height, in pixels
-    margin = 1, // shorthand for margins
+    margin = 0, // shorthand for margins
     marginTop = margin, // top margin, in pixels
     marginRight = margin, // right margin, in pixels
     marginBottom = margin, // bottom margin, in pixels
     marginLeft = margin, // left margin, in pixels
-    padding = 1, // separation between arcs
-    startAngle = 0, // the starting angle for the sunburst
-    endAngle = 2 * Math.PI, // the ending angle for the sunburst
-    radius = Math.min(width - marginLeft - marginRight, height - marginTop - marginBottom) / 2, // outer radius
-    color = d3.interpolateRainbow, // color scheme, if any
-    fill = "#ccc", // fill for arcs (if no color encoding)
-    fillOpacity = 0.6, // fill opacity for arcs
-} = {}) {
-
+    padding = 1, // shorthand for inner and outer padding
+    paddingInner = padding, // to separate a node from its adjacent siblings
+    paddingOuter = padding, // shorthand for top, right, bottom, and left padding
+    paddingTop = paddingOuter, // to separate a node’s top edge from its children
+    paddingRight = paddingOuter, // to separate a node’s right edge from its children
+    paddingBottom = paddingOuter, // to separate a node’s bottom edge from its children
+    paddingLeft = paddingOuter, // to separate a node’s left edge from its children
+    round = true, // whether to round to exact pixels
+    colors = d3.schemeTableau10, // array of colors
+    zDomain, // array of values for the color scale
+    fill = "#ccc", // fill for node rects (if no group color encoding)
+    fillOpacity = group == null ? null : 0.6, // fill opacity for node rects
+    stroke, // stroke for node rects
+    strokeWidth, // stroke width for node rects
+    strokeOpacity, // stroke opacity for node rects
+    strokeLinejoin, // stroke line join for node rects
+  } = {}) {
+  
     // If id and parentId options are specified, or the path option, use d3.stratify
     // to convert tabular data to a hierarchy; otherwise we assume that the data is
     // specified as an object {children} with nested objects (a.k.a. the “flare.json”
     // format), and use d3.hierarchy.
-    const root = path != null ? d3.stratify().path(path)(data)
+  
+    // We take special care of any node that has both a value and children, see
+    // https://observablehq.com/@d3/treemap-parent-with-value.
+    const stratify = data => (d3.stratify().path(path)(data)).each(node => {
+      if (node.children?.length && node.data != null) {
+        const child = new d3.Node(node.data);
+        node.data = null;
+        child.depth = node.depth + 1;
+        child.height = 0;
+        child.parent = node;
+        child.id = node.id + "/";
+        node.children.unshift(child);
+      }
+    });
+    const root = path != null ? stratify(data)
         : id != null || parentId != null ? d3.stratify().id(id).parentId(parentId)(data)
-            : d3.hierarchy(data, children);
-
+        : d3.hierarchy(data, children);
+  
     // Compute the values of internal nodes by aggregating from the leaves.
-    value == null ? root.count() : root.sum(d => Math.max(0, value(d)));
-
+    value == null ? root.count() : root.sum(d => Math.max(0, d ? value(d) : null));
+  
+    // Prior to sorting, if a group channel is specified, construct an ordinal color scale.
+    const leaves = root.leaves();
+    const G = group == null ? null : leaves.map(d => group(d.data, d));
+    if (zDomain === undefined) zDomain = G;
+    zDomain = new d3.InternSet(zDomain);
+    const color = group == null ? null : d3.scaleOrdinal(zDomain, colors);
+  
+    // Compute labels and titles.
+    const L = label == null ? null : leaves.map(d => label(d.data, d));
+    const T = title === undefined ? L : title == null ? null : leaves.map(d => title(d.data, d));
+  
     // Sort the leaves (typically by descending value for a pleasing layout).
     if (sort != null) root.sort(sort);
-
-    // Compute the partition layout. Note polar coordinates: x is angle and y is radius.
-    d3.partition().size([endAngle - startAngle, radius])(root);
-
-    // Construct a color scale.
-    if (color != null) {
-        color = d3.scaleSequential([0, root.children.length], color).unknown(fill);
-        root.children.forEach((child, i) => child.index = i);
-    }
-
-    // Construct an arc generator.
-    const arc = d3.arc()
-        .startAngle(d => d.x0 + startAngle)
-        .endAngle(d => d.x1 + startAngle)
-        .padAngle(d => Math.min((d.x1 - d.x0) / 2, 2 * padding / radius))
-        .padRadius(radius / 2)
-        .innerRadius(d => d.y0)
-        .outerRadius(d => d.y1 - padding);
-
+  
+    // Compute the treemap layout.
+    d3.treemap()
+        .tile(tile)
+        .size([width - marginLeft - marginRight, height - marginTop - marginBottom])
+        .paddingInner(paddingInner)
+        .paddingTop(paddingTop)
+        .paddingRight(paddingRight)
+        .paddingBottom(paddingBottom)
+        .paddingLeft(paddingLeft)
+        .round(round)
+      (root);
+  
     const svg = d3.create("svg")
-        .attr("viewBox", [
-            marginRight - marginLeft - width / 2,
-            marginBottom - marginTop - height / 2,
-            width,
-            height
-        ])
+        .attr("viewBox", [-marginLeft, -marginTop, width, height])
         .attr("width", width)
         .attr("height", height)
         .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
         .attr("font-family", "sans-serif")
-        .attr("font-size", 7.5)
-        .attr("text-anchor", "middle");
-
-    const cell = svg
-        .selectAll("a")
-        .data(root.descendants())
-        .join("a")
-        .attr("xlink:href", link == null ? null : d => link(d.data, d))
-        .attr("target", link == null ? null : linkTarget);
-
-    cell.append("path")
-        .attr("d", arc)
-        .attr("fill", color ? d => color(d.ancestors().reverse()[1]?.index) : fill)
-        .attr("fill-opacity", fillOpacity);
-
-    if (label != null) cell
-        .filter(d => (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > 10)
-        .append("text")
-        .attr("transform", d => {
-            if (!d.depth) return;
-            const x = ((d.x0 + d.x1) / 2 + startAngle) * 180 / Math.PI;
-            const y = (d.y0 + d.y1) / 2;
-            return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
-        })
-        .attr("dy", "0.32em")
-        .text(d => label(d.data, d));
-
-    if (title != null) cell.append("title")
-        .text(d => title(d.data, d));
-
-    return svg.node();
-}
+        .attr("font-size", 10);
+  
+    const node = svg.selectAll("a")
+      .data(leaves)
+      .join("a")
+        .attr("xlink:href", link == null ? null : (d, i) => link(d.data, d))
+        .attr("target", link == null ? null : linkTarget)
+        .attr("transform", d => `translate(${d.x0},${d.y0})`);
+  
+    node.append("rect")
+        .attr("fill", color ? (d, i) => color(G[i]) : fill)
+        .attr("fill-opacity", fillOpacity)
+        .attr("stroke", stroke)
+        .attr("stroke-width", strokeWidth)
+        .attr("stroke-opacity", strokeOpacity)
+        .attr("stroke-linejoin", strokeLinejoin)
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0);
+  
+    if (T) {
+      node.append("title").text((d, i) => T[i]);
+    }
+  
+    if (L) {
+      // A unique identifier for clip paths (to avoid conflicts).
+      const uid = `O-${Math.random().toString(16).slice(2)}`;
+  
+      node.append("clipPath")
+         .attr("id", (d, i) => `${uid}-clip-${i}`)
+       .append("rect")
+         .attr("width", d => d.x1 - d.x0)
+         .attr("height", d => d.y1 - d.y0);
+  
+      node.append("text")
+          .attr("clip-path", (d, i) => `url(${new URL(`#${uid}-clip-${i}`, location)})`)
+        .selectAll("tspan")
+        .data((d, i) => `${L[i]}`.split(/\n/g))
+        .join("tspan")
+          .attr("x", 3)
+          .attr("y", (d, i, D) => `${(i === D.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
+          .attr("fill-opacity", (d, i, D) => i === D.length - 1 ? 0.7 : null)
+          .text(d => d);   
+    }
+  
+    return Object.assign(svg.node(), {scales: {color}});
+  }
 
 const definitionTable = {
     "Earthquake": "Sudden movement of a block of the Earth’s crust along a geological fault and associated ground shaking.",
