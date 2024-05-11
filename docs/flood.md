@@ -111,6 +111,7 @@ const counts = Object.keys(groupedDisasters)
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Flood"]
 );
 
@@ -138,6 +139,13 @@ const lengthDisaster = getDateLengthOrMagnitudeDisaster(
   filterBefore2000,
   "Flood"
 );
+
+const magnitudeDisaster = getDateLengthOrMagnitudeDisaster(
+  emdat_disasters,
+  filterBefore2000,
+  "Flood",
+  false
+);
 ```
 
 ```js
@@ -147,7 +155,7 @@ import {
 } from "./components/line_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
-import { scatterChart } from "./components/scatter_chart.js";
+import { scatterChart, logScatterChart } from "./components/scatter_chart.js";
 ```
 
 ```js
@@ -243,13 +251,21 @@ const selectedCountries = view(
     </div>
 </div>
 
-<div>
-        ${resize( width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y: "length", scheme:{map: "length", color: "blues"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
-</div>
+There is a strong indication that the amount of floods and the global temperature rise due to climate change are correlated when plotting the data from 1988 onwards. This correlation however becomes negligible when plotting the data from 2000.
 
 <div class="grid" style="grid-auto-rows: 600px;">
-  <div class="card">
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
-  </div>
+</div>
+
+Below are 2 scatter charts plotted: The first scatter chart displays the duration of the flood. There can be an increase in the duration of floods observed, this is a potential gravity indicator which means that floods are often bigger & more catastrofic.
+
+<div>
+    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y: "length", scheme:{map: "length", color: "blues"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
+</div>
+
+The second scatter chart displays the magnitude, which for floods is the affected area size, in a logarithmic manner. The constantly rising regression line shows that the area size becomes larger.
+
+<div>
+    ${resize(width => logScatterChart(magnitudeDisaster, {xlabel:"date", x_val:"date", y: "magnitude", scheme:{map: "magnitude", color: "blues"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} km²`, Country: true, y:false, x:false, stroke:false}, width:width}))}
 </div>
 ---

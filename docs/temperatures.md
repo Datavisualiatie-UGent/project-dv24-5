@@ -259,12 +259,8 @@ const selectedCountries = view(
   </div>
 </div>
 
-<div>
-        ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", scheme:{map: "length", color: "purples"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
-</div>
+There are more and longer periods of extreme temperatures reported. This is something that almost all scientists agree on and will have a large impact on some regions in the world.
 
 <div>
-        ${resize(width => scatterChart(magnitudeDisaster, {xlabel:"date", x_val:"date", y:"magnitude", scheme:{map: "magnitude", color: "purples"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} °C`, Country: true, y:false, x:false, stroke:false}, width:width}))}
+    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", scheme:{map: "length", color: "purples"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
 </div>
-
----

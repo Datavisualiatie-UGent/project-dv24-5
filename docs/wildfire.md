@@ -252,6 +252,5 @@ const selectedCountries = view(
 </div>
 
 <div>
-        ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", scheme:{map: "length", color: "reds"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
+    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", scheme:{map: "length", color: "reds"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
 </div>
----

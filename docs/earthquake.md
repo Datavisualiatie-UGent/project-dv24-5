@@ -294,12 +294,8 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
     </div>
 </div>
 
-<div>
-    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"magnitude", scheme:{map: "magnitude", color: "reds"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} richter`, Country: true, y:false, x:false, stroke:false}, width:width}))}
-</div>
+There is no correlation between the amount of disasters and the global temperature rise. In the EMDAT-dataset there also is not any indication that the earthquakes are getting more intense.
 
 <div class="grid" style="grid-auto-rows: 600px;">
-  <div class="card">
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
-  </div>
 </div>
