@@ -182,21 +182,29 @@ const selectedDisasters = Object.keys(groupedDisasters);
 ```
 
 ---
-
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+<div class="grid grid-cols-2">
   <div>
     ${sunBurst(groupedDisasters, selectedDisasters)}
   </div>
-  <div><h3>The dataset</h3><p>The dataset contains 26,000 disasters starting from 1990. These entries contain a wide range of different disasters. EM-DAT has reported on everything from Earthquakes to Hopper infestations. We are focusing on the climate disasters. This means we're only using around 15,000 of the total entries. The organization also states that the dataset is subject to time bias. This means that the dataset suffers from unequal reporting quality and coverage over time.</p>
-  <p>EM-DAT has its own definition of a disaster: "A situation or event which overwhelms local capacity, necessitating a request to the national or international level for external assistance; an unforeseen and often sudden event that causes great damage, destruction, and human suffering." The entry requirements for a disaster are as follows: 
+  <div><h3>The dataset</h3><p>The dataset contains 26,000 disasters starting from 1990. These entries contain a wide range of different disasters. EM-DAT has reported on everything from Earthquakes to Hopper infestations. We are focusing on the climate disasters. This means we're only using around 15,000 of the total entries. The organization also states that the dataset is subject to time bias. This means that the dataset suffers from unequal reporting quality and coverage over time. We can mitigate this bias by filtering the dataset to only include data after the year 2000. This can be done with the checkbox below. As EM-DAT has only started inventorying in 1988, we filter the dataset to all disasers after this date.</p>
+  <p>EM-DAT has its own definition of a disaster: "A situation or event which overwhelms local capacity, necessitating a request to the national or international level for external assistance; an unforeseen and often sudden event that causes great damage, destruction, and human suffering." A Disaster can be entered into the dataset if it has one of the following requirements: 
   
   1) ≥ 10 deaths 
   2) ≥ 100 affected 
-  3) A call for international assistance.</p>
-  <p>As for the classification of disasters, this can be seen in the chart on the left. Each disaster has a type and a subtype; the size of the slice corresponds to how often the disaster appears. The definition of each disaster can be checked by hovering over it. We can immediately see that floods and storms are the most common disasters. Comparing specific disasters can be done by selected them below.</p>
+  3) A call for international assistance</p>
+  <p>As for the classification of disasters, this can be seen in the chart on the left. Each disaster has a type and a subtype; the size of the slice corresponds to how often the disaster appears. The definition of each disaster can be checked by hovering over it. We can immediately see that floods and storms are the most common disasters. Comparing specific disasters can be done by selecting them below.</p>
   </div>
 </div>
+
+```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    { label: "Include disasters before year 2000", value: ["include"] },
+    ""
+  )
+);
+```
 
 ---
 
@@ -231,16 +239,6 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
 ---
 
 ```js
-const before2000 = view(
-  Inputs.checkbox(
-    ["include"],
-    { label: "Include disasters before year 2000", value: ["include"] },
-    ""
-  )
-);
-```
-
-```js
 const availableCountries = [
   "all",
   ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
@@ -256,15 +254,18 @@ const selectedCountries = view(
 ```
 
 <div>
-    <div>
-        ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
-            {"catMapping": {
-              "domain": selectedAndColor[0],
-              "colors": selectedAndColor[1],
-              "map": "disasterType"
-            }, width}))}
-    </div>
+    ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+        {"catMapping": {
+          "domain": selectedAndColor[0],
+          "colors": selectedAndColor[1],
+          "map": "disasterType"
+        }, width}))}
 </div>
+
+<div>
+  <p><h3>Deadliest disasters</h3>In the bar chart above we see the deadliest disasters. If we look at the global disasters we can again see that earthquakes are the most deadly.</p>
+</div>
+
 
 ---
 
