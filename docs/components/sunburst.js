@@ -37,7 +37,7 @@ export function sunBurst(groupedDisasters, selectedDisasters = []) {
         const other = children[index(children, "Other")];
         data[i].occurences = children.reduce((sum, x) => sum += x.value, 0);
         for (var j = 0; j < children.length; j++) {
-            if (children[j].value < total / 100 && children[j].name != "Other") {
+            if (children[j].value < total / 200 && children[j].name != "Other") {
                 other.value += children[j].value;
                 other.containing.push({ name: children[j].name, value: children[j].value });
                 children[j].value = 0;
