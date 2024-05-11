@@ -78,20 +78,38 @@ const temperatures = await FileAttachment(
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
 // Get disasters per country
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
+const totalDisastersPerCountry = getTotalDisastersPerCountry(
+  emdat_disasters,
+  filterBefore2000
+);
 import {
   choroplethWorldMap,
   scatterWorldMap,
 } from "./components/world_map_chart.js";
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Earthquake"]);
-const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Earthquake"]);
+const groupedDisasters = getGroupedDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  ["Earthquake"]
+);
+const disastersPerYear = getDisastersPerYearAsInt(
+  emdat_disasters,
+  filterBefore2000,
+  ["Earthquake"]
+);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Earthquake"]
 );
 
@@ -110,6 +128,7 @@ const counts = Object.keys(groupedDisasters)
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Earthquake"]
 );
 const correlations = getTypeCorrelations(
@@ -118,17 +137,28 @@ const correlations = getTypeCorrelations(
 );
 const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Earthquake"]
 );
-const disasterMagnitudes = getDisasterMagnitudes(emdat_disasters, "Earthquake");
+const disasterMagnitudes = getDisasterMagnitudes(
+  emdat_disasters,
+  filterBefore2000,
+  "Earthquake"
+);
 const mostDeadlyDisasters = getMostDeadlyDisasters(
   emdat_disasters,
+  filterBefore2000,
   "Earthquake"
 );
 
-const infoDisaster = getInfoDisaster(emdat_disasters, "Earthquake");
+const infoDisaster = getInfoDisaster(
+  emdat_disasters,
+  filterBefore2000,
+  "Earthquake"
+);
 const lengthDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
+  filterBefore2000,
   "Earthquake",
   false
 );
@@ -149,7 +179,17 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
 ```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    { label: "Include earthquakes before year 2000", value: ["include"] },
+    ""
+  )
+);
+```
 
+```js
+const filterBefore2000 = before2000.length === 0;
 ```
 
 ## Most deadly earthquakes

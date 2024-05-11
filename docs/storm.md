@@ -77,13 +77,28 @@ const temperatures = await FileAttachment(
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Storm"]);
-const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Storm"]);
+const groupedDisasters = getGroupedDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  ["Storm"]
+);
+const disastersPerYear = getDisastersPerYearAsInt(
+  emdat_disasters,
+  filterBefore2000,
+  ["Storm"]
+);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Storm"]
 );
 
@@ -102,6 +117,7 @@ const counts = Object.keys(groupedDisasters)
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Storm"]
 );
 const correlations = getTypeCorrelations(
@@ -110,16 +126,23 @@ const correlations = getTypeCorrelations(
 );
 const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Storm"]
 );
 
-const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Storm");
+const mostDeadlyDisasters = getMostDeadlyDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  "Storm"
+);
 const mostExpensiveDisasters = getMostExpensiveDisasters(
   emdat_disasters,
+  filterBefore2000,
   "Storm"
 );
 const lengthDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
+  filterBefore2000,
   "Storm"
 );
 ```
@@ -132,6 +155,20 @@ import {
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { barChart } from "./components/bar_chart.js";
 import { scatterChart } from "./components/scatter_chart.js";
+```
+
+```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    { label: "Include storms before year 2000", value: ["include"] },
+    ""
+  )
+);
+```
+
+```js
+const filterBefore2000 = before2000.length === 0;
 ```
 
 ```js

@@ -49,18 +49,18 @@ font-size: 90px;
 
 ```js
 import {
-    getGroupedDisasters, 
-    getDisastersPerYearAsInt,
-    getConfirmedAffectedPersonsPerYear,
-    getDisastersAmountPerCountryPerYear,
-    getTypeCorrelations,
-    getCorrelationBetweenTwoLists,
-    getAverageLengthOfDisasterPerYear,
-    getDateLengthOrMagnitudeDisaster,
-    getMonthlyTemperatureChanges,
-    getYearlyTemperatureChanges,
-    getTotalDisastersPerCountry, 
-    getMostDeadlyDisasters
+  getGroupedDisasters,
+  getDisastersPerYearAsInt,
+  getConfirmedAffectedPersonsPerYear,
+  getDisastersAmountPerCountryPerYear,
+  getTypeCorrelations,
+  getCorrelationBetweenTwoLists,
+  getAverageLengthOfDisasterPerYear,
+  getDateLengthOrMagnitudeDisaster,
+  getMonthlyTemperatureChanges,
+  getYearlyTemperatureChanges,
+  getTotalDisastersPerCountry,
+  getMostDeadlyDisasters,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -75,13 +75,28 @@ const temperatures = await FileAttachment(
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Wildfire"]);
-const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Wildfire"]);
+const groupedDisasters = getGroupedDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  ["Wildfire"]
+);
+const disastersPerYear = getDisastersPerYearAsInt(
+  emdat_disasters,
+  filterBefore2000,
+  ["Wildfire"]
+);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Wildfire"]
 );
 
@@ -100,19 +115,23 @@ const counts = Object.keys(groupedDisasters)
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Wildfire"]
 );
 const correlations = getTypeCorrelations(
   disastersAmountPerCountryPerYear,
+  filterBefore2000,
   emdat_disasters
 );
 const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Wildfire"]
 );
 
 const lengthDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
+  filterBefore2000,
   "Wildfire"
 );
 ```
@@ -151,9 +170,30 @@ const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap } from "./components/world_map_chart.js";
 
-const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Wildfire");
+const mostDeadlyDisasters = getMostDeadlyDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  "Wildfire"
+);
 
 import { barChart } from "./components/bar_chart.js";
+```
+
+```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    {
+      label: "Include wildfires before year 2000",
+      value: ["include"],
+    },
+    ""
+  )
+);
+```
+
+```js
+const filterBefore2000 = before2000.length === 0;
 ```
 
 ## Most deadly wildfires

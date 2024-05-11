@@ -76,11 +76,25 @@ const temperatures = await FileAttachment(
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters, ["Drought"]);
-const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, ["Drought"]);
+const groupedDisasters = getGroupedDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  ["Drought"]
+);
+const disastersPerYear = getDisastersPerYearAsInt(
+  emdat_disasters,
+  filterBefore2000,
+  ["Drought"]
+);
 
 const correlation = getCorrelationBetweenTwoLists(
   disastersPerYear.map((e) => e["disasters"]),
@@ -97,9 +111,14 @@ const counts = Object.keys(groupedDisasters)
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Drought"]
 );
-const dateLength = getDateLengthOrMagnitudeDisaster(emdat_disasters, "Drought");
+const dateLength = getDateLengthOrMagnitudeDisaster(
+  emdat_disasters,
+  filterBefore2000,
+  "Drought"
+);
 ```
 
 ```js
@@ -114,7 +133,10 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 
 ```js
 const countries = await FileAttachment("data/countries.json").json();
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
+const totalDisastersPerCountry = getTotalDisastersPerCountry(
+  emdat_disasters,
+  filterBefore2000
+);
 
 const longitudeSlider = Inputs.range([-180, 180], {
   step: 1,
@@ -133,9 +155,27 @@ const logScale = Generators.input(logScaleCheckbox);
 
 import { choroplethWorldMap } from "./components/world_map_chart.js";
 
-const mostDeadlyDisasters = getMostDeadlyDisasters(emdat_disasters, "Wildfire");
+const mostDeadlyDisasters = getMostDeadlyDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  "Drought"
+);
 
 import { barChart } from "./components/bar_chart.js";
+```
+
+```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    { label: "Include droughts before year 2000", value: ["include"] },
+    ""
+  )
+);
+```
+
+```js
+const filterBefore2000 = before2000.length === 0;
 ```
 
 ## Most deadly droughts
