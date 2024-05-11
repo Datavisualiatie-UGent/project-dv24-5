@@ -1,11 +1,9 @@
 import * as Plot from "npm:@observablehq/plot";
-import {nameMapping} from "./world_map_chart.js";
 
 function preProcessData(data) {
     for (let entry of data) {
         if ("year" in entry) {
             entry["year"] = JSON.stringify(entry["year"]).split("-")[0].slice(1, 5)
-            entry["disaster"] = (nameMapping[entry["country"]] ?? entry["country"]) + " (" +  entry["year"] + ")"
         }
     }
 }
@@ -15,12 +13,13 @@ export function barChart(counts,  {
     x_val="deaths",
     y_val="disaster",
     scheme={},
-    colorList=[],
+    catMapping={},
     width = {}
 }={}) {
     preProcessData(counts);
-    let colorDict;
-    const schemeExists = Object.keys(scheme).length > 0
+    let colorDict = {};
+    const schemeExists = Object.keys(scheme).length > 0;
+    const catMappingExists = Object.keys(catMapping).length > 0;
     const unitExists = scheme["unit"] !== undefined;
     if (schemeExists) {
         colorDict = {
@@ -29,11 +28,10 @@ export function barChart(counts,  {
             legend: true,
             label: unitExists ? scheme["unit"] : "Year"
           };
-    } else if (colorList) {
-        const [disasters, colors] = colorList;
+    } else if (catMappingExists) {
         colorDict = {
-            domain:disasters,
-            range:colors,
+            domain: catMapping["domain"],
+            range: catMapping["colors"],
             legend: true,
         };
     } else {
@@ -42,10 +40,10 @@ export function barChart(counts,  {
             domain: counts.map(d => d[y_val]),
         }
     }
-
+    const fillScheme = catMappingExists ? catMapping["map"] : y_val;
     return Plot.plot({
         width,
-        marginLeft: 140,
+        marginLeft: 200,
         x: {
             label: label,
             labelAnchor: "center",
@@ -57,11 +55,11 @@ export function barChart(counts,  {
                 {
                     x: x_val,
                     y: y_val,
-                    fill: schemeExists ? scheme["map"] : y_val,
+                    fill: schemeExists ? scheme["map"] : fillScheme,
                     sort: { y: "x", reverse: true },
                     channels: {
                         "Magnitude": (d) => schemeExists ? (d[scheme["map"]] + " " + scheme["unit"]) : d[y_val],
-                        "Amount": x_val,
+                        "Deaths": x_val,
                         "Year": "year"},
                     tip: {format: {Magnitude: unitExists, label: true, x: false, y: false, fill: false}}},
             )

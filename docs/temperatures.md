@@ -75,17 +75,28 @@ const temperatures = await FileAttachment(
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters, [
-  "Extreme temperature",
-]);
-const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters, [
-  "Extreme temperature",
-]);
+const groupedDisasters = getGroupedDisasters(
+  emdat_disasters,
+  filterBefore2000,
+  ["Extreme temperature"]
+);
+const disastersPerYear = getDisastersPerYearAsInt(
+  emdat_disasters,
+  filterBefore2000,
+  ["Extreme temperature"]
+);
 const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Extreme temperature"]
 );
 
@@ -104,6 +115,7 @@ const counts = Object.keys(groupedDisasters)
 const totalCount = counts.reduce((acc, dic) => acc + dic["amount"], 0);
 const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Extreme temperature"]
 );
 const correlations = getTypeCorrelations(
@@ -112,15 +124,18 @@ const correlations = getTypeCorrelations(
 );
 const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
   emdat_disasters,
+  filterBefore2000,
   ["Extreme temperature"]
 );
 
 const lengthDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
+  filterBefore2000,
   "Extreme temperature"
 );
 const magnitudeDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
+  filterBefore2000,
   "Extreme temperature",
   false
 );
@@ -141,7 +156,10 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 
 ```js
 const countries = await FileAttachment("data/countries.json").json();
-const totalDisastersPerCountry = getTotalDisastersPerCountry(emdat_disasters);
+const totalDisastersPerCountry = getTotalDisastersPerCountry(
+  emdat_disasters,
+  filterBefore2000
+);
 
 const longitudeSlider = Inputs.range([-180, 180], {
   step: 1,
@@ -162,10 +180,28 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
 
 const mostDeadlyDisasters = getMostDeadlyDisasters(
   emdat_disasters,
+  filterBefore2000,
   "Extreme temperature"
 );
 
 import { barChart } from "./components/bar_chart.js";
+```
+
+```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    {
+      label: "Include extreme temperatures before year 2000",
+      value: ["include"],
+    },
+    ""
+  )
+);
+```
+
+```js
+const filterBefore2000 = before2000.length === 0;
 ```
 
 ## Most deadly extreme temperatures

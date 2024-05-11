@@ -64,7 +64,8 @@ import {
   getDisasterCounts,
   getTotalDisastersPerYear,
   getMonthlyTemperatureChanges,
-  getYearlyTemperatureChanges
+  getYearlyTemperatureChanges,
+  getMostDeadlyDisasters,
 } from "./process_data.js";
 
 const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
@@ -72,33 +73,61 @@ const emdat_disasters = await FileAttachment("data/emdat_disasters.csv").csv({
   headers: true,
 });
 
-const temperatures = await FileAttachment("data/GISS_surface_temperature.csv").csv({
+const temperatures = await FileAttachment(
+  "data/GISS_surface_temperature.csv"
+).csv({
   typed: false,
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
-const groupedDisasters = getGroupedDisasters(emdat_disasters);
-const disastersPerYear = getDisastersPerYearAsInt(emdat_disasters);
-const totalDisasterPerYear = getTotalDisastersPerYear(disastersPerYear);
+const groupedDisasters = getGroupedDisasters(emdat_disasters, filterBefore2000);
+const disastersPerYear = getDisastersPerYearAsInt(
+  emdat_disasters,
+  filterBefore2000
+);
+const totalDisasterPerYear = getTotalDisastersPerYear(
+  disastersPerYear,
+  filterBefore2000
+);
 
-const correlation = getCorrelationBetweenTwoLists(disastersPerYear.map(e => e["disasters"]), yearlyTemperatureChanges.map(e => e["temp"]));
+const correlation = getCorrelationBetweenTwoLists(
+  disastersPerYear.map((e) => e["disasters"]),
+  yearlyTemperatureChanges.map((e) => e["temp"])
+);
 
-const confirmedAffectedPersonsPerYear =
-  getConfirmedAffectedPersonsPerYear(emdat_disasters);
+const confirmedAffectedPersonsPerYear = getConfirmedAffectedPersonsPerYear(
+  emdat_disasters,
+  filterBefore2000
+);
 
-const disasterCounts = getDisasterCounts(emdat_disasters);
+const disasterCounts = getDisasterCounts(emdat_disasters, filterBefore2000);
 
-const disastersAmountPerCountryPerYear =
-  getDisastersAmountPerCountryPerYear(emdat_disasters);
+const disastersAmountPerCountryPerYear = getDisastersAmountPerCountryPerYear(
+  emdat_disasters,
+  filterBefore2000
+);
 const correlations = getTypeCorrelations(
   disastersAmountPerCountryPerYear,
   emdat_disasters
 );
-const averageLengthOfDisasterPerYear =
-  getAverageLengthOfDisasterPerYear(emdat_disasters);
+const averageLengthOfDisasterPerYear = getAverageLengthOfDisasterPerYear(
+  emdat_disasters,
+  filterBefore2000
+);
+
+const mostDeadlyDisasters = getMostDeadlyDisasters(
+  emdat_disasters,
+  filterBefore2000
+);
 ```
 
 ```js
@@ -108,11 +137,61 @@ const bundledDisasters = bundleDisasters(disastersPerYear);
 ```js
 import { bumpChart } from "./components/bump_chart.js";
 import { areaChart } from "./components/area_chart.js";
-import { lineChart, tempLineChart, tempDisasterAmountLineChart } from "./components/line_chart.js";
+import {
+  lineChart,
+  tempLineChart,
+  tempDisasterAmountLineChart,
+} from "./components/line_chart.js";
 import { correlationMatrix } from "./components/correlation_matrix.js";
 import { barChart } from "./components/bar_chart.js";
 import { getDisastersPerColor } from "./components/color_matching.js";
 import { sunBurst } from "./components/sunburst.js";
+```
+
+```js
+const before2000 = view(
+  Inputs.checkbox(
+    ["include"],
+    { label: "Include disasters before year 2000", value: ["include"] },
+    ""
+  )
+);
+```
+
+```js
+const filterBefore2000 = before2000.length === 0;
+```
+
+## Most deadly droughts
+
+```js
+const availableCountries = [
+  "all",
+  ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
+];
+
+const selectedCountries = view(
+  Inputs.select(
+    availableCountries,
+    { label: "Choose country:", value: availableCountries },
+    ""
+  )
+);
+```
+
+<div>
+    <div>
+        ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+            {"catMapping": {
+              "domain": selectedAndColor[0],
+              "colors": selectedAndColor[1],
+              "map": "disasterType"
+            }, width}))}
+    </div>
+</div>
+
+```js
+const selectedDisasters = Object.keys(groupedDisasters);
 ```
 
 <div class="grid">
@@ -120,18 +199,6 @@ import { sunBurst } from "./components/sunburst.js";
         ${resize((width) => bumpChart(bundledDisasters, {width}, selectedAndColor))}
     </div>
 </div>
-
-```js
-const potDisasters = Object.keys(groupedDisasters);
-
-const selectedDisasters = view(
-  Inputs.checkbox(
-    potDisasters,
-    { label: "Choose Disasters:", value: potDisasters },
-    ""
-  )
-);
-```
 
 ```js
 const selectedAndColor = getDisastersPerColor(selectedDisasters);
@@ -144,7 +211,7 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
     </div>
 </div>
 
-<div class="grid"">
+<div class="grid">
   <div class="card">
   ${sunBurst(groupedDisasters, selectedDisasters)}
   </div>
@@ -158,13 +225,20 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
 
 <div class="grid grid-cols-2">
   <div class="card">
-    ${resize((width) => barChart(disasterCounts, {label: "Occurrences", x_val: "numberOfDisasters", y_val: "disaster", colorList: selectedAndColor, width}))}
+    ${resize((width) => barChart(disasterCounts, {label: "Occurrences", x_val: "numberOfDisasters", y_val: "disaster", "catMapping": {
+              "domain": selectedAndColor[0],
+              "colors": selectedAndColor[1],
+              "map": "disaster"
+            }, width}))}
   </div>
 <div class="card">
-    ${resize((width) => barChart(disasterCounts, {label: "Total Deaths", colorList: selectedAndColor, width}))}
+    ${resize((width) => barChart(disasterCounts, {label: "Total Deaths", "catMapping": {
+              "domain": selectedAndColor[0],
+              "colors": selectedAndColor[1],
+              "map": "disaster"
+            }, width}))}
   </div>
 </div>
-
 
 <div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
   <div class="card">
