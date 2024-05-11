@@ -171,6 +171,64 @@ import { treeMap } from "./components/tree_map.js";
   <p>In recent decades, our planet has borne witness to an immense increase in the global temperature. The result of global warming can easily be seen in the increase in the severity and frequency of disasters. Our goal is to see how strong the correlation is between the rising temperature and the impact of disasters.</p>
   <p>To this end, we used EM-DAT, a dataset created by the Centre for Research on the Epidemiology of Disasters. This dataset contains data on the amount, severity, and impact of disasters since 1900.</p> 
   <p>We demonstrate the correlation between natural disasters and global temperature by visualizing the dataset in specific ways. First, the natural disasters that are likely to be affected by the rising global temperature were chosen. For each of these disasters, we document some interesting aspects and examine whether there is a correlation.</p>
+</div>
+
+```js
+const filterBefore2000 = before2000.length === 0;
+```
+
+```js
+const selectedDisasters = Object.keys(groupedDisasters);
+```
+
+---
+
+
+<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
+  <div>
+    ${sunBurst(groupedDisasters, selectedDisasters)}
+  </div>
+  <div><h3>The dataset</h3><p>The dataset contains 26,000 disasters starting from 1990. These entries contain a wide range of different disasters. EM-DAT has reported on everything from Earthquakes to Hopper infestations. We are focusing on the climate disasters. This means we're only using around 15,000 of the total entries. The organization also states that the dataset is subject to time bias. This means that the dataset suffers from unequal reporting quality and coverage over time.</p>
+  <p>EM-DAT has its own definition of a disaster: "A situation or event which overwhelms local capacity, necessitating a request to the national or international level for external assistance; an unforeseen and often sudden event that causes great damage, destruction, and human suffering." The entry requirements for a disaster are as follows: 
+  
+  1) ≥ 10 deaths 
+  2) ≥ 100 affected 
+  3) A call for international assistance.</p>
+  <p>As for the classification of disasters, this can be seen in the chart on the left. Each disaster has a type and a subtype; the size of the slice corresponds to how often the disaster appears. The definition of each disaster can be checked by hovering over it. We can immediately see that floods and storms are the most common disasters. Comparing specific disasters can be done by selected them below.</p>
+  </div>
+</div>
+
+---
+
+```js
+const selectedAndColor = getDisastersPerColor(selectedDisasters);
+```
+
+<div class="grid grid-cols-2">
+  <div>
+    <p><h3>Trends</h3>The overall trend in the number of disasters can be seen in the graph on the right. We can clearly see an increase in disasters, especially from 1995 to 2000. That said, there are some types of disasters that remain consistent throughout the years. Earthquakes, Mass Movements, and Droughts barely change. Other types of disasters, like Floods, contribute to this overall increasing trend. Focusing on specific disasters can be done by selecting the corresponding checkboxes.</p>
+  </div>
+  <div>
+        ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+            "disasters", "Amount of disasters", selectedAndColor)}
+  </div>
+</div>
+
+---
+
+<div>
+    ${resize((width) => barChart(disasterCounts, {label: "Total Deaths", "catMapping": {
+              "domain": selectedAndColor[0],
+              "colors": selectedAndColor[1],
+              "map": "disaster"
+            }, width}))}
+</div>
+
+<div>
+  <p><h3>Death tolls</h3>The graph above shows the total death toll across all disaster types. Even though Earthquakes only represent a small portion of the total number of disasters, they are clearly the most devastating. Storms are the second most devastating, and Extreme temperatures and Floods come in third and fourth. Mass Movements, Droughts, and Wildfires are quite far behind as they often don't cause many casualties.</p>
+</div>
+
+---
 
 ```js
 const before2000 = view(
@@ -180,10 +238,6 @@ const before2000 = view(
     ""
   )
 );
-```
-
-```js
-const filterBefore2000 = before2000.length === 0;
 ```
 
 ```js
@@ -212,85 +266,8 @@ const selectedCountries = view(
     </div>
 </div>
 
-```js
-const selectedDisasters = Object.keys(groupedDisasters);
-```
-
-<div class="grid">
-    <div class="card">
-        ${resize((width) => bumpChart(bundledDisasters, {width}, selectedAndColor))}
-    </div>
-</div>
-
 ---
 
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div>
-    ${sunBurst(groupedDisasters, selectedDisasters)}
-  </div>
-  <div><h3>The dataset</h3><p>The dataset contains 26,000 disasters starting from 1990. These entries contain a wide range of different disasters. EM-DAT has reported on everything from Earthquakes to Hopper infestations. We are focusing on the climate disasters. This means we're only using around 15,000 of the total entries. The organization also states that the dataset is subject to time bias. This means that the dataset suffers from unequal reporting quality and coverage over time.</p>
-  <p>EM-DAT has its own definition of a disaster: "A situation or event which overwhelms local capacity, necessitating a request to the national or international level for external assistance; an unforeseen and often sudden event that causes great damage, destruction, and human suffering." The entry requirements for a disaster are as follows: 
-  
-  1) ≥ 10 deaths 
-  2) ≥ 100 affected 
-  3) A call for international assistance.</p>
-  <p>As for the classification of disasters, this can be seen in the chart on the left. Each disaster has a type and a subtype; the size of the slice corresponds to how often the disaster appears. The definition of each disaster can be checked by hovering over it. We can immediately see that floods and storms are the most common disasters. Comparing specific disasters can be done by selected them below.</p>
-  </div>
-</div>
-
----
-
-```js
-const selectedAndColor = getDisastersPerColor(selectedDisasters);
-```
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
-            "disasters", "Amount of disasters", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid grid-cols-2">
-  <div class="card">
-    ${resize((width) => barChart(disasterCounts, {label: "Occurrences", x_val: "numberOfDisasters", y_val: "disaster", "catMapping": {
-              "domain": selectedAndColor[0],
-              "colors": selectedAndColor[1],
-              "map": "disaster"
-            }, width}))}
-  </div>
-  <div class="card">
-    ${resize((width) => barChart(disasterCounts, {label: "Total Deaths", "catMapping": {
-              "domain": selectedAndColor[0],
-              "colors": selectedAndColor[1],
-              "map": "disaster"
-            }, width}))}
-  </div>
-</div>
-
----
-
-<div class="grid grid-cols-2">
-  <div>
-    <p><h3>Trends</h3>The overall trend in the number of disasters can be seen in the graph on the right. We can clearly see an increase in disasters, especially from 1995 to 2000. That said, there are some types of disasters that remain consistent throughout the years. Earthquakes, Mass Movements, and Droughts barely change. Other types of disasters, like Floods, contribute to this overall increasing trend. Focusing on specific disasters can be done by selecting the corresponding checkboxes.</p>
-  </div>
-  <div>
-    ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])), "disasters", "Amount of disasters", selectedAndColor)}
-  </div>
-</div>
-
----
-
-<div>
-    ${resize((width) => barChart(disasterCounts, {label: "Total Deaths", colorList: getDisastersPerColor(), width}))}
-</div>
-
-<div>
-  <p><h3>Death tolls</h3>The graph above shows the total death toll across all disaster types. Even though Earthquakes only represent a small portion of the total number of disasters, they are clearly the most devastating. Storms are the second most devastating, and Extreme temperatures and Floods come in third and fourth. Mass Movements, Droughts, and Wildfires are quite far behind as they often don't cause many casualties.</p>
-</div>
-
----
 
 <div class="grid grid-cols-2">
   <div>
