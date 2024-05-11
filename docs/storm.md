@@ -140,10 +140,11 @@ const mostExpensiveDisasters = getMostExpensiveDisasters(
   filterBefore2000,
   "Storm"
 );
-const lengthDisaster = getDateLengthOrMagnitudeDisaster(
+const magnitudeDisaster = getDateLengthOrMagnitudeDisaster(
   emdat_disasters,
   filterBefore2000,
-  "Storm"
+  "Storm",
+  false
 );
 ```
 
@@ -247,36 +248,13 @@ const selectedCountries = view(
     </div>
 </div>
 
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${scatterChart(lengthDisaster, "date", "date", "length", {map: "length", color: "blues"}, {channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}})}
-    </div>
+<div>
+        ${resize(width => scatterChart(magnitudeDisaster.filter(d => d["magnitude"] < 500 && d["magnitude"] > 0), {xlabel:"date", x_val:"date", y:"magnitude", scheme:{map: "magnitude", color: "blues"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} kph`, Country: true, y:false, x:false, stroke:false}, width:width}))}
 </div>
 
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}
-  </div>
-</div>
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "deaths", "Amount of deaths", selectedAndColor)}
-    </div>
-   <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "injured", "People injured", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid">
-     <div class="card">
-        ${lineChart(confirmedAffectedPersonsPerYear, "affected", "People affected", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
+    ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
   </div>
 </div>
 

@@ -294,32 +294,12 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
     </div>
 </div>
 
-<div class="grid grid-cols-2">
-    <div class="card">
-      ${scatterChart(lengthDisaster, "date", "date", "magnitude", {map: "magnitude", color: "reds"}, {channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} richter`, Country: true, y:false, x:false, stroke:false}})}
-    </div>
-</div
+<div>
+    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"magnitude", scheme:{map: "magnitude", color: "reds"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} richter`, Country: true, y:false, x:false, stroke:false}, width:width}))}
+</div>
 
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
-    ${tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation)}
-  </div>
-</div>
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        ${lineChart(disastersPerYear, "disasters", "Amount of disasters", selectedAndColor)}
-    </div>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${lineChart(averageLengthOfDisasterPerYear, "avgLength", "Length of disaster", selectedAndColor)}
-  </div>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 600px;">
-  <div class="card">
-    ${lineChart(disasterMagnitudes, "magnitude", "Magnitude (richter)", selectedAndColor)}
+    ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
   </div>
 </div>
