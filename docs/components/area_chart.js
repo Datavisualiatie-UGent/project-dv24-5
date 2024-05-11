@@ -19,14 +19,17 @@ export function areaChart(data, y, label, [disasters, colors]) {
                     stroke: "#ddd"
                 })
             ),
-            Plot.ruleY([0])
+            Plot.ruleY([0]),
+            Plot.axisX({
+                tickFormat: (d, i, _) => (d.toString())
+            }),
         ],
         style: {
             pointerEvents: "all"
         },
         color: {
-            domain:disasters,
-            range:colors,
+            domain: disasters,
+            range: colors,
             legend: true,
             columns: "110px",
             width: 640
