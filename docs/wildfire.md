@@ -245,12 +245,16 @@ const selectedCountries = view(
     </div>
 </div>
 
+There isn't any indicator that suggests that there are more wildfires in the world each year. This, however, doesn't mean that climate change doesn't have any effect on the wildfires.
+
 <div class="grid" style="grid-auto-rows: 600px;">
   <div class="card">
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
   </div>
 </div>
 
+The duration of wildfires increased in the last couple of years. It becomes more and more difficult to extinguish these fires. These wildfires have a big impact on natural wildlife and biodiversity.
+
 <div>
-    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", scheme:{map: "length", color: "reds"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
+    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", ylabel:"Duration (days)", scheme:{map: "length", color: "reds"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
 </div>

@@ -240,6 +240,6 @@ Below is the chart with the temperature increase of the world due to climate cha
 Due to climate change, the length of the droughts has also increased dramatically. While in the 2000s there weren't a lot of droughts that spanned for over a year. In recent years more and more droughts last longer and longer. While the amount of droughts in the world hasn't increased, the length and thus the severity of droughts keeps getting bigger. This leads to more deaths and more people affected.
 
 <div>
-    ${resize(width => scatterChart(dateLength, {xlabel:"date", x_val:"date", y:"length", scheme: {map: "length", color: "oranges"}, channels: {Country: "country", Year: "year", Length: "length"}, tip: {Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false, date:false}, width:width}))}
+    ${resize(width => scatterChart(dateLength, {xlabel:"date", x_val:"date", y:"length", ylabel:"Duration (days)", scheme: {map: "length", color: "oranges"}, channels: {Country: "country", Year: "year", Length: "length"}, tip: {Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false, date:false}, width:width}))}
 </div>
 ---

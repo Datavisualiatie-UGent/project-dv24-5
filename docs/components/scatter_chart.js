@@ -1,6 +1,6 @@
 import * as Plot from "npm:@observablehq/plot";
 
-export function scatterChart(data, {xlabel, x_val="date", y="length", scheme={}, channels={}, tip={}, width={}, regLine=false}){
+export function scatterChart(data, {xlabel, x_val="date", y="length", ylabel=y, scheme={}, channels={}, tip={}, width={}, regLine=false}){
     let colorDict = {};
     const schemeExists = Object.keys(scheme).length > 0
     if (schemeExists) {
@@ -30,12 +30,15 @@ export function scatterChart(data, {xlabel, x_val="date", y="length", scheme={},
             label: xlabel,
             labelAnchor: "center",
         },
+        y: {
+            label: ylabel,
+        },
         marks:marks 
       })
 }
 
 
-export function logScatterChart(data, {xlabel, x_val="date", y="length", scheme={}, channels={}, tip={}, width={}}){
+export function logScatterChart(data, {xlabel, x_val="date", y="length", ylabel=y, scheme={}, channels={}, tip={}, width={}}){
     let colorDict = {};
     const schemeExists = Object.keys(scheme).length > 0
     if (schemeExists) {
@@ -60,7 +63,9 @@ export function logScatterChart(data, {xlabel, x_val="date", y="length", scheme=
             labelAnchor: "center",
         },
         y: {
-            type: "log"
+            type: "log",
+            label: ylabel,
+            labelAnchor: "center",
         },
         marks: [
           Plot.ruleY([0]),
