@@ -262,5 +262,5 @@ const selectedCountries = view(
 There are more and longer periods of extreme temperatures reported. This is something that almost all scientists agree on and will have a large impact on some regions in the world.
 
 <div>
-    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", scheme:{map: "length", color: "purples"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
+    ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", ylabel:"Duration (days)", scheme:{map: "length", color: "purples"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
 </div>
