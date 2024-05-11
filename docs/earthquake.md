@@ -294,8 +294,18 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
     </div>
 </div>
 
-There is no correlation between the amount of disasters and the global temperature rise. In the EMDAT-dataset there also is not any indication that the earthquakes are getting more intense.
+---
 
-<div class="grid" style="grid-auto-rows: 600px;">
+<div class="grid grid-cols-2">
+  <div>
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
+  </div>
+  <div>
+    <p>
+    <h3>Climate change</h3>
+    There is no correlation between the amount of disasters and the global temperature rise. In the EMDAT-dataset there also is not any indication that the earthquakes are getting more intense.
+    </p>
+  </div>
 </div>
+
+---

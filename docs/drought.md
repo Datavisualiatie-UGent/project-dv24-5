@@ -167,8 +167,8 @@ import { barChart } from "./components/bar_chart.js";
 ```js
 const before2000 = view(
   Inputs.checkbox(
-    ["include"],
-    { label: "Include droughts before year 2000", value: ["include"] },
+    ["Include droughts before year 2000"],
+    { label: "", value: ["Include droughts before year 2000"] },
     ""
   )
 );
@@ -227,19 +227,29 @@ const selectedCountries = view(
     </div>
 </div>
 
-## Climate change
+---
 
-Below is the chart with the temperature increase of the world due to climate change together with the amount of droughts per year. As is visible, there isn't a direct correlation between the amount of droughts and the constantly increasing temperature. In 2016, there were a lot of droughts when the global temperature also increased to an all time high.
-
-<div>
-  ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
+<div class="grid grid-cols-2">
+  <div>
+    <p><h3>Climate change</h3>The chart to the right displays the temperature increase of the world due to climate change together with the amount of droughts per year. As is visible, there isn't a direct correlation between the amount of droughts and the constantly increasing temperature. In 2016, there were a lot of droughts when the global temperature also increased to an all time high.</p>
+  </div>
+  <div>
+    ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
+  </div>
 </div>
 
-## Length of droughts
+---
 
-Due to climate change, the length of the droughts has also increased dramatically. While in the 2000s there weren't a lot of droughts that spanned for over a year. In recent years more and more droughts last longer and longer. While the amount of droughts in the world hasn't increased, the length and thus the severity of droughts keeps getting bigger. This leads to more deaths and more people affected.
-
-<div>
+<div class="grid grid-cols-2">
+  <div>
     ${resize(width => scatterChart(dateLength, {xlabel:"date", x_val:"date", y:"length", ylabel:"Duration (days)", scheme: {map: "length", color: "oranges"}, channels: {Country: "country", Year: "year", Length: "length"}, tip: {Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false, date:false}, width:width}))}
+  </div>
+  <div>
+    <p>
+    <h3>Length of droughts</h3>
+    Due to climate change, the length of the droughts has also increased dramatically. While in the 2000s there weren't a lot of droughts that spanned for over a year. In recent years more and more droughts last longer and longer. While the amount of droughts in the world hasn't increased, the length and thus the severity of droughts keeps getting bigger. This leads to more deaths and more people affected.
+    </p>
+  </div>
 </div>
+
 ---

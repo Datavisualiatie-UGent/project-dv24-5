@@ -253,14 +253,32 @@ const selectedCountries = view(
     </div>
 </div>
 
-<div class="grid" style="grid-auto-rows: 600px;">
-  <div class="card">
+---
+
+<div class="grid grid-cols-2">
+  <div>
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
+  </div>
+  <div>
+    <p>
+    <h3>Climate change</h3>
+    
+    </p>
   </div>
 </div>
 
-There are more and longer periods of extreme temperatures reported. This is something that almost all scientists agree on and will have a large impact on some regions in the world.
+---
 
-<div>
+<div class="grid grid-cols-2">
+  <div>
+    <p>
+    <h3>Duration of extreme temperatures</h3>
+    There are more and longer periods of extreme temperatures reported. This is something that almost all scientists agree on and will have a large impact on some regions in the world.
+    </p>
+  </div>
+  <div>
     ${resize(width => scatterChart(lengthDisaster, {xlabel:"date", x_val:"date", y:"length", ylabel:"Duration (days)", scheme:{map: "length", color: "purples"}, channels: {Country: "country", Year: "year", Length: "length"}, tip:{Year: d => d.getFullYear(), Length: d => `${d} days`, Country: true, y:false, x:false, stroke:false}, width:width}))}
+  </div>
 </div>
+
+---

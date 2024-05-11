@@ -65,7 +65,6 @@ export function logScatterChart(data, {xlabel, x_val="date", y="length", ylabel=
         y: {
             type: "log",
             label: ylabel,
-            labelAnchor: "center",
         },
         marks: [
           Plot.ruleY([0]),
