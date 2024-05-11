@@ -249,14 +249,13 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
 
 ```js
 const availableCountries = [
-  "all",
   ...new Set(mostDeadlyDisasters.map((d) => d["country"])),
 ];
 
 const selectedCountries = view(
   Inputs.select(
     availableCountries,
-    { label: "Choose country:", value: availableCountries },
+    { label: "Choose country:", value: availableCountries.sort().unshift("All")},
     ""
   )
 );
