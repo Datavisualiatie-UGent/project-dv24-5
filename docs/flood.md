@@ -77,8 +77,14 @@ const temperatures = await FileAttachment(
   headers: true,
 });
 
-const monthlyTemperatureChanges = getMonthlyTemperatureChanges(temperatures);
-const yearlyTemperatureChanges = getYearlyTemperatureChanges(temperatures);
+const monthlyTemperatureChanges = getMonthlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
+const yearlyTemperatureChanges = getYearlyTemperatureChanges(
+  temperatures,
+  filterBefore2000
+);
 
 const groupedDisasters = getGroupedDisasters(
   emdat_disasters,
@@ -191,8 +197,11 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
 ```js
 const before2000 = view(
   Inputs.checkbox(
-    ["include"],
-    { label: "Include floods before year 2000", value: ["include"] },
+    ["Include droughts before year 2000"],
+    {
+      label: "",
+      value: ["Include droughts before year 2000"],
+    },
     ""
   )
 );
@@ -256,11 +265,25 @@ const selectedCountries = view(
 <div class="grid grid-cols-2">
   <div>
     <h3>Affected area size of floods</h3>
-    There is a strong indication that the amount of floods and the global temperature rise due to climate change are correlated when plotting the data from 1988 onwards. This correlation however becomes negligible when plotting the data from 2000.
+    There is a strong indication that the amount of floods and the global temperature rise due to climate change are correlated when plotting the data from 1988 onwards. This correlation however becomes negligible when plotting the data from 2000. Still it is visible that there is a huge increase in the amount of floods per year from the 1990s to more recent years.
     </p>
   </div>
   <div>
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
+  </div>
+</div>
+
+---
+
+<div class="grid grid-cols-2">
+  <div>
+  <p>
+    <h3>Affected area size of floods</h3>
+    This chart displays the affected area size in a logarithmic manner. The constantly rising regression line shows that the affected area size of floods becomes larger. Each year a larger area is affected by floods, this has a disasterous impact on the environment and the people living in these areas. An example of such a major flood that happened in our region was the <a href="https://en.wikipedia.org/wiki/2021_European_floods#:~:text=Floods%20started%20in%20Belgium%2C%20Germany,rivers%20to%20burst%20their%20banks">European floods in 2021</a>.
+    </p>
+  </div>
+  <div>
+    ${resize(width => logScatterChart(magnitudeDisaster, {xlabel:"date", x_val:"date", y: "magnitude", ylabel:"Area size (km²)", scheme:{map: "magnitude", color: "blues"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} km²`, Country: true, y:false, x:false, stroke:false}, width:width}))}
   </div>
 </div>
 
@@ -273,21 +296,8 @@ const selectedCountries = view(
   <div>
     <p>
     <h3>Duration of floods</h3>
-    This scatter plot displays the duration of the flood. An increase in the duration of floods can be observed. This is a potential gravity indicator which means that floods are often bigger & more catastrofic.
+    This scatter plot displays the duration of the flood. An increase in the duration of floods can be observed. This is a potential gravity indicator which means that floods are often bigger and more catastrofic. This can also indicate how much water is being released by the flood. How longer a flood lasts, the more water that has to be drained by the soil.
     </p>
-  </div>
-</div>
-
----
-
-<div class="grid grid-cols-2">
-  <div>
-    <h3>Affected area size of floods</h3>
-    This chart displays the affected area size in a logarithmic manner. The constantly rising regression line shows that the affected area size becomes larger. Each year a larger area is affected by floods, this has a disasterous impact on the environment and the people living in these areas. 
-    </p>
-  </div>
-  <div>
-    ${resize(width => logScatterChart(magnitudeDisaster, {xlabel:"date", x_val:"date", y: "magnitude", ylabel:"Area size (km²)", scheme:{map: "magnitude", color: "blues"}, channels: {Country: "country", Year: "year", Magnitude: "magnitude"}, tip:{Year: d => d.getFullYear(), Magnitude: d => `${d} km²`, Country: true, y:false, x:false, stroke:false}, width:width}))}
   </div>
 </div>
 
