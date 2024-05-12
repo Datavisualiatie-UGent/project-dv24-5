@@ -182,7 +182,7 @@ const filterBefore2000 = before2000.length === 0;
 
 <div class="grid grid-cols-2">
   <div>
-    ${sunBurst(groupedDisasters, selectedDisasters)}
+    ${sunBurst(groupedDisasters, Object.keys(groupedDisasters))}
   </div>
   <div><h3>The dataset</h3><p>The dataset contains 26,000 disasters starting from 1990. These entries contain a wide range of different disasters. EM-DAT has reported on everything from Earthquakes to Hopper infestations. We are focusing on the climate disasters. This means we're only using around 15,000 of the total entries. The organization also states that the dataset is subject to time bias. This means that the dataset suffers from unequal reporting quality and coverage over time. We can mitigate this bias by filtering the dataset to only include data after the year 1988.</p>
   <p>EM-DAT has its own definition of a disaster: "A situation or event which overwhelms local capacity, necessitating a request to the national or international level for external assistance; an unforeseen and often sudden event that causes great damage, destruction, and human suffering." A Disaster can be entered into the dataset if it has one of the following requirements: 
@@ -207,33 +207,23 @@ const before2000 = true;
 
 ---
 
-```js
-const potDisasters = Object.keys(groupedDisasters);
-
-const selectedDisasters = view(
-  Inputs.checkbox(
-    potDisasters,
-    { label: "Choose Disasters:", value: potDisasters },
-    ""
-  )
-);
-```
 
 ```js
-const selectedAndColor = getDisastersPerColor(selectedDisasters);
+const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
 <div class="grid grid-cols-2">
   <div>
-    <p><h3>Trends</h3>The overall trend in the number of disasters can be seen in the graph on the right. We can clearly see an increase in disasters, especially from 1995 to 2000. That said, there are some types of disasters that remain consistent throughout the years. Earthquakes, Mass Movements, and Droughts barely change. Other types of disasters, like Floods, contribute to this overall increasing trend. Focusing on specific disasters can be done by selecting the corresponding checkboxes.</p>
+    <p><h3>Trends</h3>The overall trend in the number of disasters can be seen in the graph on the right. We can clearly see an increase in disasters, especially from 1995 to 2000. That said, there are some types of disasters that remain consistent throughout the years. Earthquakes and Droughts barely change. Other types of disasters, like Floods, contribute to this overall increasing trend. Focusing on specific disasters can be done by selecting the corresponding checkboxes.</p>
   </div>
   <div>
-        ${areaChart(disastersPerYear.filter(disaster => selectedDisasters.includes(disaster["disaster"])),
+        ${areaChart(disastersPerYear,
             "disasters", "Amount of disasters", selectedAndColor)}
   </div>
 </div>
 
 ---
+<h3>Death tolls</h3>
 
 <div>
     ${resize((width) => barChart(disasterCounts, {label: "Total Deaths", "catMapping": {
@@ -244,10 +234,12 @@ const selectedAndColor = getDisastersPerColor(selectedDisasters);
 </div>
 
 <div>
-  <p><h3>Death tolls</h3>The graph above shows the total death toll across all disaster types. Even though Earthquakes only represent a small portion of the total number of disasters, they are clearly the most devastating. Storms are the second most devastating, and Extreme temperatures and Floods come in third and fourth. Mass Movements, Droughts, and Wildfires are quite far behind as they often don't cause many casualties.</p>
+  <p><h3></h3>The graph above shows the total death toll across all disaster types. Even though Earthquakes only represent a small portion of the total number of disasters, they are clearly the most devastating. Storms are the second most devastating, and Extreme temperatures and Floods come in third and fourth. Droughts, and Wildfires are quite far behind as they often don't cause many casualties.</p>
 </div>
 
 ---
+
+<h3>Deadliest disasters</h3>
 
 ```js
 const availableCountries = [
@@ -269,9 +261,8 @@ const selectedCountries = view(
 <div>
     ${resize((width) => barChart(mostDeadlyDisasters.filter(d => {
       const isCountry = selectedCountries.includes("All") ? true : selectedCountries.includes(d["country"]);
-      const isDisaster = selectedDisasters.includes(d["disasterType"]);
       const hasDeaths = d["deaths"] > 0;
-      return isCountry && isDisaster && hasDeaths;
+      return isCountry && hasDeaths;
     }).slice(0, 15),
         {"catMapping": {
           "domain": selectedAndColor[0],
@@ -281,7 +272,7 @@ const selectedCountries = view(
 </div>
 
 <div>
-  <p><h3>Deadliest disasters</h3>In the bar chart above we see the deadliest disasters. If we look at the global disasters we can again see that earthquakes are the most deadly. The 5 most deadly disasters from 1988 are as follows:
+  <p><h3></h3>In the bar chart above we see the deadliest disasters. If we look at the global disasters we can again see that earthquakes are the most deadly. The 5 most deadly disasters from 1988 are as follows:
   
   1. [2010 Haiti earthquake](https://en.wikipedia.org/wiki/2010_Haiti_earthquake)
   2. [2004 Indian Ocean earthquake and tsunami](https://en.wikipedia.org/wiki/2004_Indian_Ocean_earthquake_and_tsunami)
