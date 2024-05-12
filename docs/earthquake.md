@@ -251,7 +251,7 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
 <div class="grid grid-cols-2">
     <div>
         <p>This chart gives you a better idea of where the most deadly earthquakes occurred. The disk size represent the total amount of deaths and you can hover over them to see the exact number and what the magnitude of the earthquake was.</p>
-        <p>It is clear to see that with the exception of Haiti, all the most deadly earthquakes occur in Asia.</p>
+        <p>It is clear to see that with the exception of Haiti, all the most deadly earthquakes occur in Asia. You can also notice the <a href="https://en.wikipedia.org/wiki/Ring_of_Fire">ring of fire</a> on this world map.</p>
     </div>
     <div>
         ${fullWorldCheckbox2}
@@ -283,6 +283,8 @@ const fullWorld = Generators.input(fullWorldCheckbox);
 const logScaleCheckbox = Inputs.toggle({ label: "Log scale", value: false });
 const logScale = Generators.input(logScaleCheckbox);
 ```
+
+---
 
 <h3> Earthquakes per country </h3>
 

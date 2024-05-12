@@ -251,6 +251,8 @@ const selectedCountries = view(
     </div>
 </div>
 
+---
+
 <h3> Floods per country </h3>
 
 <div class="grid grid-cols-2">
