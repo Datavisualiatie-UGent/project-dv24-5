@@ -202,7 +202,10 @@ const before2000 = view(
 const filterBefore2000 = before2000.length === 0;
 ```
 
-## Most deadly floods
+
+<div>
+    <p><h3>Most deadly floods</h3>Disasters pose significant dangers and often result in fatalities. The following chart illustrates the locations and timing of the most deadly droughts. The length of the bar is equal to the total amount of deaths and the colour represents the magnitude. If you wish to explore the deadliest incidents in a particular country, you can utilize the filter. It is important to note that the filter only includes countries with recorded fatal occurrences.</p>
+</div>
 
 ```js
 const availableCountries = [
@@ -229,15 +232,16 @@ const selectedCountries = view(
     </div>
 </div>
 
-## Floods per country
+<h3> Floods per country </h3>
 
 <div class="grid grid-cols-2">
     <div>
         ${fullWorldCheckbox}
         ${logScaleCheckbox}
         ${fullWorld ? "" : longitudeSlider}
-        <p>In the case that some country(s) have significantly more occurrences than the average amount, the difference between countries with an average amount vanishes. </p>
-        <p>To get a better idea of how these countries with an average amount relate to each other, you can use the logarithmic scale.</p>    </div>
+        <p>The colour of a country represents the amount of floods that occurred in this country. By hovering over a country, you can see the name of the country and the exact amount of occurrences.</p>
+        <p>When certain countries have a lot more occurrences than the average, it's tough to distinguish between countries with average occurrences. To understand how these average countries compare to each other more clearly, using a logarithmic scale can help.</p>
+    </div>
     <div class="">
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
             width, 

@@ -554,7 +554,7 @@ export function getMostDeadlyDisasters(emdat_disasters, filterBefore2000=true, d
     const date = new Date();
     date.setFullYear(disaster["Start Year"]);
     const countryName = (nameMapping[disaster["Country"]] ?? disaster["Country"])
-    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} - ${countryName} (${disaster["Start Year"]})`: `${disasterType}${countryName} (${disaster["Start Year"]})`;
+    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} - ${countryName} (${disaster["Start Year"]})`: `${countryName} (${disaster["Start Year"]})`;
     return {
       disaster: disasterName,
       disasterType: disaster["Disaster Type"],

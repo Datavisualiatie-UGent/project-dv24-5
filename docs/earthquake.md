@@ -192,7 +192,13 @@ const before2000 = view(
 const filterBefore2000 = before2000.length === 0;
 ```
 
-## Most deadly earthquakes
+---
+
+<div>
+    <p><h3>Most deadly earthquakes</h3>Disasters pose significant dangers and often result in fatalities. The following chart illustrates the locations and timing of the most deadly earthquakes. The length of the bar is equal to the total amount of deaths and the colour represents the magnitude. If you wish to explore the deadliest incidents in a particular country, you can utilize the filter. It is important to note that the filter only includes countries with recorded fatal occurrences.</p>
+</div>
+
+
 
 ```js
 const availableCountries = [
@@ -220,6 +226,41 @@ const selectedCountries = view(
     </div>
 </div>
 
+
+```js
+const longitudeSlider2 = Inputs.range([-180, 180], {
+  step: 1,
+  label: "Longitude",
+});
+const longitude2 = Generators.input(longitudeSlider2);
+
+const fullWorldCheckbox2 = Inputs.toggle({
+  label: "Full world view",
+  value: true,
+});
+const fullWorld2 = Generators.input(fullWorldCheckbox2);
+```
+
+---
+
+<div class="grid grid-cols-2">
+    <div>
+        <p>This chart gives you a better idea of where the most deadly earthquakes occurred. The disk size represent the total amount of deaths and you can hover over them to see the exact number and what the magnitude of the earthquake was.</p>
+        <p>It is clear to see that with the exception of Haiti, all the most deadly earthquakes occur in Asia.</p>
+    </div>
+    <div>
+        ${fullWorldCheckbox2}
+        ${fullWorld2 ? "" : longitudeSlider2}
+        ${resize((width) => scatterWorldMap(groupedDisasters, countries, {
+            width, 
+            label: "Total Deaths", 
+            longitude: longitude2, 
+            fullWorld: fullWorld2
+        }))}
+    </div>
+</div>
+
+
 ```js
 const countries = await FileAttachment("data/countries.json").json();
 
@@ -239,15 +280,15 @@ const logScaleCheckbox = Inputs.toggle({ label: "Log scale", value: false });
 const logScale = Generators.input(logScaleCheckbox);
 ```
 
-## Earthquakes per country
+<h3> Earthquakes per country </h3>
 
 <div class="grid grid-cols-2">
     <div>
         ${fullWorldCheckbox}
         ${logScaleCheckbox}
         ${fullWorld ? "" : longitudeSlider}
-        <p>In the case that some country(s) have significantly more occurrences than the average amount, the difference between countries with an average amount vanishes. </p>
-        <p>To get a better idea of how these countries with an average amount relate to each other, you can use the logarithmic scale.</p>
+        <p>The colour of a country represents the amount of earthquakes that occurred in this country. By hovering over a country, you can see the name of the country and the exact amount of occurrences.</p>
+        <p>When certain countries have a lot more occurrences than the average, it's tough to distinguish between countries with average occurrences. To understand how these average countries compare to each other more clearly, using a logarithmic scale can help.</p>
     </div>
     <div class="">
         ${resize((width) => choroplethWorldMap(totalDisastersPerCountry, countries, {
@@ -262,37 +303,6 @@ const logScale = Generators.input(logScaleCheckbox);
     </div>
 </div>
 
-```js
-const longitudeSlider2 = Inputs.range([-180, 180], {
-  step: 1,
-  label: "Longitude",
-});
-const longitude2 = Generators.input(longitudeSlider2);
-
-const fullWorldCheckbox2 = Inputs.toggle({
-  label: "Full world view",
-  value: false,
-});
-const fullWorld2 = Generators.input(fullWorldCheckbox2);
-```
-
-## Most deadly earthquakes
-
-<div class="grid grid-cols-2">
-    <div>
-        ${fullWorldCheckbox2}
-        ${fullWorld2 ? "" : longitudeSlider2}
-        <p>The disks represent the total amount of deaths. Hover over them to see the exact number and what the magnitude of the eartquake was.</p>
-    </div>
-    <div>
-        ${resize((width) => scatterWorldMap(groupedDisasters, countries, {
-            width, 
-            label: "Total Deaths", 
-            longitude: longitude2, 
-            fullWorld: fullWorld2
-        }))}
-    </div>
-</div>
 
 ---
 
