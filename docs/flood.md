@@ -195,13 +195,22 @@ import { choroplethWorldMap } from "./components/world_map_chart.js";
 ```
 
 ```js
+const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
+```
+
+<div>
+    <p><h3></h3>A <b>flood</b> is a general term for the overflow of water from a stream channel onto normally dry land in the floodplain (riverine flooding), higher-than-normal levels along the coast (coastal flooding) and in lakes or reservoirs as well as ponding of water at or near the point where the rain fell (flash floods). There have been <b>4834 occurences of floods</b> between 1988 and 2022.</p>
+</div>
+
+<div>
+    <p><h3></h3><i>Below you can filter if you want to include the floods before the year 2000:</i></p>
+</div>
+
+```js
 const before2000 = view(
   Inputs.checkbox(
-    ["Include droughts before year 2000"],
-    {
-      label: "",
-      value: ["Include droughts before year 2000"],
-    },
+    ["Include floods before year 2000"],
+    { label: "", value: ["Include floods before year 2000"] },
     ""
   )
 );
@@ -211,6 +220,7 @@ const before2000 = view(
 const filterBefore2000 = before2000.length === 0;
 ```
 
+---
 
 <div>
     <p><h3>Most deadly floods</h3>Disasters pose significant dangers and often result in fatalities. The following chart illustrates the locations and timing of the most deadly droughts. The length of the bar is equal to the total amount of deaths and the colour represents the magnitude. If you wish to explore the deadliest incidents in a particular country, you can utilize the filter. It is important to note that the filter only includes countries with recorded fatal occurrences.</p>

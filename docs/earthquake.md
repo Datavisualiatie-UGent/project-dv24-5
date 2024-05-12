@@ -178,14 +178,19 @@ import { scatterChart } from "./components/scatter_chart.js";
 const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```
 
+<div>
+    <p><h3></h3>An <b>earthquake</b> is a sudden movement of a block of the Earth’s crust along a geological fault and associated ground shaking. There have been <b>925 occurences of earthquake</b> between 1988 and 2022.</p>
+</div>
+
+<div>
+    <p><h3></h3><i>Below you can filter if you want to include the earthquakes before the year 2000:</i></p>
+</div>
+
 ```js
 const before2000 = view(
   Inputs.checkbox(
-    ["Include droughts before year 2000"],
-    {
-      label: "",
-      value: ["Include droughts before year 2000"],
-    },
+    ["Include earthquakes before year 2000"],
+    { label: "", value: ["Include earthquakes before year 2000"] },
     ""
   )
 );
@@ -200,8 +205,6 @@ const filterBefore2000 = before2000.length === 0;
 <div>
     <p><h3>Most deadly earthquakes</h3>Disasters pose significant dangers and often result in fatalities. The following chart illustrates the locations and timing of the most deadly earthquakes. The length of the bar is equal to the total amount of deaths and the colour represents the magnitude. If you wish to explore the deadliest incidents in a particular country, you can utilize the filter. It is important to note that the filter only includes countries with recorded fatal occurrences.</p>
 </div>
-
-
 
 ```js
 const availableCountries = [
@@ -228,7 +231,6 @@ const selectedCountries = view(
             }, width}))}
     </div>
 </div>
-
 
 ```js
 const longitudeSlider2 = Inputs.range([-180, 180], {
@@ -262,7 +264,6 @@ const fullWorld2 = Generators.input(fullWorldCheckbox2);
         }))}
     </div>
 </div>
-
 
 ```js
 const countries = await FileAttachment("data/countries.json").json();
@@ -305,7 +306,6 @@ const logScale = Generators.input(logScaleCheckbox);
         }))}
     </div>
 </div>
-
 
 ---
 
