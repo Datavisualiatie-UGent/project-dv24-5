@@ -190,7 +190,7 @@ const filterBefore2000 = before2000.length === 0;
   1) ≥ 10 deaths 
   2) ≥ 100 affected 
   3) A call for international assistance</p>
-  <p>As for the classification of disasters, this can be seen in the chart on the left. Each disaster has a type and a subtype; the size of the slice corresponds to how often the disaster appears. The definition of each disaster can be checked by hovering over it. We can immediately see that floods and storms are the most common disasters. Comparing specific disasters can be done by selecting them below.</p>
+  <p>As for the classification of disasters, this can be seen in the chart on the left. Each disaster has a type and a subtype; the size of the slice corresponds to how often the disaster appears. The definition of each disaster can be checked by hovering over it. We can immediately see that floods and storms are the most common disasters.</p>
   </div>
 </div>
 
