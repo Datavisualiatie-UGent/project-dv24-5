@@ -182,10 +182,10 @@ import { barChart } from "./components/bar_chart.js";
 ```js
 const before2000 = view(
   Inputs.checkbox(
-    ["include"],
+    ["Include droughts before year 2000"],
     {
-      label: "Include wildfires before year 2000",
-      value: ["include"],
+      label: "",
+      value: ["Include droughts before year 2000"],
     },
     ""
   )
@@ -269,7 +269,7 @@ const selectedCountries = view(
   <div>
     <p>
     <h3>Duration of wildfires</h3>
-    The duration of wildfires increased in the last couple of years. It becomes more and more difficult to extinguish these fires. These wildfires have a big impact on natural wildlife and biodiversity.
+    The duration of wildfires increased in the last couple of years. It becomes more and more difficult to extinguish these fires. The causes for wildifres can be human error but could also be linked to other disasters such as droughts. Long periods of no rain can cause wildfires to exist and makes it more difficult to extinguish these fires. These wildfires have a big impact on natural wildlife and biodiversity. 
     </p>
   </div>
   <div>

@@ -181,8 +181,11 @@ const selectedAndColor = getDisastersPerColor(Object.keys(groupedDisasters));
 ```js
 const before2000 = view(
   Inputs.checkbox(
-    ["include"],
-    { label: "Include earthquakes before year 2000", value: ["include"] },
+    ["Include droughts before year 2000"],
+    {
+      label: "",
+      value: ["Include droughts before year 2000"],
+    },
     ""
   )
 );
@@ -313,7 +316,7 @@ const logScale = Generators.input(logScaleCheckbox);
   <div>
     <p>
     <h3>Climate change</h3>
-    There is no correlation between the amount of disasters and the global temperature rise. In the EMDAT-dataset there also is not any indication that the earthquakes are getting more intense.
+    There is no correlation between the amount of disasters and the global temperature rise. In the EMDAT-dataset there also is not any indication that the earthquakes are getting more intense. This doesn't mean that this can't change in the future since the weight of watter on the earths crust is increasing due to the melting of the ice caps and glaciers. This could lead to more earthquakes especially in the regions that are already seismically active (e.g. the ring of fire).
     </p>
   </div>
 </div>

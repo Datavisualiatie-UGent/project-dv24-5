@@ -34,8 +34,9 @@ function filterDisasters(disasters, filterBefore2000, specificDisasterType=[]) {
         const correctMeasurement = el["Start Year"] >= filterYear && el["End Year"] <= 2022;
         const isClimate = !["Volcanic activity", "Impact"].includes(el["Disaster Type"]);
         const nonMassMovement = !el["Disaster Type"].includes("Mass movement");
+        const nonExtremeTemperature = !el["Disaster Type"].includes("Extreme temperature");
         const isSpecificDisasterType = specificDisasterType.length === 0 || specificDisasterType.some(d => el["Disaster Type"].includes(d));
-        return nonBiological && correctMeasurement && isClimate && isSpecificDisasterType && nonMassMovement;
+        return nonBiological && correctMeasurement && isClimate && isSpecificDisasterType && nonMassMovement && nonExtremeTemperature;
     })
 }
 
@@ -554,7 +555,7 @@ export function getMostDeadlyDisasters(emdat_disasters, filterBefore2000=true, d
     const date = new Date();
     date.setFullYear(disaster["Start Year"]);
     const countryName = (nameMapping[disaster["Country"]] ?? disaster["Country"])
-    const disasterName = disaster["Event Name"] ? `${disaster["Event Name"]} - ${countryName} (${disaster["Start Year"]})`: `${countryName} (${disaster["Start Year"]})`;
+    const disasterName = `${countryName} (${disaster["Start Year"]})`;
     return {
       disaster: disasterName,
       disasterType: disaster["Disaster Type"],
