@@ -164,6 +164,14 @@ const mostDeadlyDisasters = getMostDeadlyDisasters(
 import { barChart } from "./components/bar_chart.js";
 ```
 
+<div>
+    <p><h3></h3>A <b>drought</b> is an extended period of unusually low precipitation that produces a shortage of water for people, animals, and plants. Drought is different from most other hazards in that it develops slowly, sometimes even over the years, and its onset is generally difficult to detect. Drought is not solely a physical phenomenon because its impacts can be exacerbated by human activities and water supply demands. Drought is therefore often defined both conceptually and operationally. Operational definitions of drought, i.e., the degree of precipitation reduction that constitutes a drought, vary by locality, climate, and environmental sector. There have been <b>547 occurences of droughts</b> between 1988 and 2022.</p>
+</div>
+
+<div>
+    <p><h3></h3><i>Below you can filter if you want to include the droughts before the year 2000:</i></p>
+</div>
+
 ```js
 const before2000 = view(
   Inputs.checkbox(
@@ -178,6 +186,7 @@ const before2000 = view(
 const filterBefore2000 = before2000.length === 0;
 ```
 
+---
 
 <div>
     <p><h3>Most deadly droughts</h3>Disasters pose significant dangers and often result in fatalities. The following chart illustrates the locations and timing of the most deadly droughts. The length of the bar is equal to the total amount of deaths and the colour represents the magnitude. If you wish to explore the deadliest incidents in a particular country, you can utilize the filter. It is important to note that the filter only includes countries with recorded fatal occurrences.</p>
@@ -207,6 +216,8 @@ const selectedCountries = view(
             }, width}))}
     </div>
 </div>
+
+---
 
 <h3> Droughts per country </h3>
 

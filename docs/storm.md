@@ -157,14 +157,19 @@ import { barChart } from "./components/bar_chart.js";
 import { scatterChart } from "./components/scatter_chart.js";
 ```
 
+<div>
+    <p><h3></h3>A <b>storm</b> is a general term that can be divided in a number of categories. A storm is a meteorological disaster that can be of a type: wind, rain, hail, lightning, thunder, tornado, blizzard, sand and cyclone. A combination could also be possible. There have been <b>3426 occurences of storms</b> between 1988 and 2022.</p>
+</div>
+
+<div>
+    <p><h3></h3><i>Below you can filter if you want to include the storms before the year 2000:</i></p>
+</div>
+
 ```js
 const before2000 = view(
   Inputs.checkbox(
-    ["Include droughts before year 2000"],
-    {
-      label: "",
-      value: ["Include droughts before year 2000"],
-    },
+    ["Include storms before year 2000"],
+    { label: "", value: ["Include storms before year 2000"] },
     ""
   )
 );
@@ -200,6 +205,7 @@ const logScale = Generators.input(logScaleCheckbox);
 import { choroplethWorldMap } from "./components/world_map_chart.js";
 ```
 
+---
 
 <div>
     <p><h3>Most deadly storms</h3>Disasters pose significant dangers and often result in fatalities. The following chart illustrates the locations and timing of the most deadly storms. The length of the bar is equal to the total amount of deaths and the colour represents the magnitude. If you wish to explore the deadliest incidents in a particular country, you can utilize the filter. It is important to note that the filter only includes countries with recorded fatal occurrences.</p>
@@ -224,11 +230,13 @@ const selectedCountries = view(
     <div>
         ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
             {"scheme":{
-                "color":"blues",
+                "color":"greys",
                 "map": "year"
             }, width}))}
     </div>
 </div>
+
+---
 
 <h3> Storms per country </h3>
 
@@ -247,7 +255,7 @@ const selectedCountries = view(
             fullWorld: fullWorld,
             disaster: "Storm",
             label: "Total storms",
-            scheme: "blues",
+            scheme: "greys",
             logScale: logScale
         }))}
     </div>

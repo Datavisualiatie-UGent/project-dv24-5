@@ -179,14 +179,19 @@ const mostDeadlyDisasters = getMostDeadlyDisasters(
 import { barChart } from "./components/bar_chart.js";
 ```
 
+<div>
+    <p><h3></h3>A <b>wildfire</b> is defined as any uncontrolled and non-prescribed combustion or burning of plants in a natural setting such as a forest, grassland, brush land or tundra, which consumes natural fuels and spreads based on environmental conditions (e.g., wind, or topography). Wildfires can be triggered by lightning,  and extreme temperatures or human actions. There have been <b>384 occurences of wildfires</b> between 1988 and 2022.</p>
+</div>
+
+<div>
+    <p><h3></h3><i>Below you can filter if you want to include the wildfires before the year 2000:</i></p>
+</div>
+
 ```js
 const before2000 = view(
   Inputs.checkbox(
-    ["Include droughts before year 2000"],
-    {
-      label: "",
-      value: ["Include droughts before year 2000"],
-    },
+    ["Include wildfires before year 2000"],
+    { label: "", value: ["Include wildfires before year 2000"] },
     ""
   )
 );
@@ -196,6 +201,7 @@ const before2000 = view(
 const filterBefore2000 = before2000.length === 0;
 ```
 
+---
 
 <div>
     <p><h3>Most deadly wildfires</h3>Disasters pose significant dangers and often result in fatalities. The following chart illustrates the locations and timing of the most deadly wildfires. The length of the bar is equal to the total amount of deaths and the colour represents the magnitude. If you wish to explore the deadliest incidents in a particular country, you can utilize the filter. It is important to note that the filter only includes countries with recorded fatal occurrences.</p>
@@ -220,11 +226,13 @@ const selectedCountries = view(
     <div>
         ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
             {"scheme":{
-                "color":"oranges",
+                "color":"reds",
                 "map": "year"
             }, width}))}
     </div>
 </div>
+
+---
 
 <h3> Wildfires per country </h3>
 
@@ -243,7 +251,7 @@ const selectedCountries = view(
             fullWorld: fullWorld,
             disaster: "Wildfire",
             label: "Total wildfires",
-            scheme: "oranges",
+            scheme: "reds",
             logScale: logScale
         }))}
     </div>
