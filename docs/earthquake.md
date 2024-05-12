@@ -225,7 +225,7 @@ const selectedCountries = view(
     <div>
         ${resize((width) => barChart(infoDisaster.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
             {"scheme":{
-                "color":"oranges",
+                "color":"purples",
                 "map": "magnitude",
                 "unit": "Richter",
             }, width}))}
@@ -301,7 +301,7 @@ const logScale = Generators.input(logScaleCheckbox);
             fullWorld: fullWorld,
             disaster: "Earthquake",
             label: "Total earthquakes",
-            scheme: "oranges",
+            scheme: "purples",
             logScale: logScale
         }))}
     </div>
