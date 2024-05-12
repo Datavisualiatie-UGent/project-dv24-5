@@ -201,6 +201,8 @@ const before2000 = view(
 const filterBefore2000 = before2000.length === 0;
 ```
 
+---
+
 <div>
     <p><h3>Most deadly wildfires</h3>Disasters pose significant dangers and often result in fatalities. The following chart illustrates the locations and timing of the most deadly wildfires. The length of the bar is equal to the total amount of deaths and the colour represents the magnitude. If you wish to explore the deadliest incidents in a particular country, you can utilize the filter. It is important to note that the filter only includes countries with recorded fatal occurrences.</p>
 </div>
@@ -224,7 +226,7 @@ const selectedCountries = view(
     <div>
         ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
             {"scheme":{
-                "color":"oranges",
+                "color":"reds",
                 "map": "year"
             }, width}))}
     </div>
@@ -247,7 +249,7 @@ const selectedCountries = view(
             fullWorld: fullWorld,
             disaster: "Wildfire",
             label: "Total wildfires",
-            scheme: "oranges",
+            scheme: "reds",
             logScale: logScale
         }))}
     </div>
