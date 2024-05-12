@@ -230,7 +230,7 @@ const selectedCountries = view(
     <div>
         ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("all") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
             {"scheme":{
-                "color":"greys",
+                "color":"purples",
                 "map": "year"
             }, width}))}
     </div>
@@ -255,7 +255,7 @@ const selectedCountries = view(
             fullWorld: fullWorld,
             disaster: "Storm",
             label: "Total storms",
-            scheme: "greys",
+            scheme: "purples",
             logScale: logScale
         }))}
     </div>
