@@ -167,6 +167,7 @@ import { treeMap } from "./components/tree_map.js";
 ```
 
 ---
+
 <div class="hero">
   <p>In recent decades, our planet has borne witness to an immense increase in the global temperature. The result of global warming can easily be seen in the increase in the severity and frequency of disasters. Our goal is to see how strong the correlation is between the rising temperature and the impact of disasters.</p>
   <p>To this end, we used EM-DAT, a dataset created by the Centre for Research on the Epidemiology of Disasters. This dataset contains data on the amount, severity, and impact of disasters since 1900.</p> 
@@ -178,6 +179,7 @@ const filterBefore2000 = before2000.length === 0;
 ```
 
 ---
+
 <div class="grid grid-cols-2">
   <div>
     ${sunBurst(groupedDisasters, selectedDisasters)}
@@ -255,14 +257,22 @@ const availableCountries = [
 const selectedCountries = view(
   Inputs.select(
     availableCountries,
-    { label: "Choose country:", value: availableCountries.sort().unshift("All")},
+    {
+      label: "Choose country:",
+      value: availableCountries.sort().unshift("All"),
+    },
     ""
   )
 );
 ```
 
 <div>
-    ${resize((width) => barChart(mostDeadlyDisasters.filter(d => selectedCountries.includes("All") ? true : selectedCountries.includes(d["country"])).slice(0, 15),
+    ${resize((width) => barChart(mostDeadlyDisasters.filter(d => {
+      const isCountry = selectedCountries.includes("All") ? true : selectedCountries.includes(d["country"]);
+      const isDisaster = selectedDisasters.includes(d["disasterType"]);
+      const hasDeaths = d["deaths"] > 0;
+      return isCountry && isDisaster && hasDeaths;
+    }).slice(0, 15),
         {"catMapping": {
           "domain": selectedAndColor[0],
           "colors": selectedAndColor[1],
@@ -281,7 +291,6 @@ const selectedCountries = view(
   </p>
 </div>
 
-
 ---
 
 <div class="grid grid-cols-2">
@@ -299,6 +308,6 @@ const selectedCountries = view(
 <div class="card">
   <h3>Dataset Links</h3>
 
-  - [Disaster Data](https://www.emdat.be/): Delforge, D. et al.: EM-DAT: The Emergency Events Database, Preprint, https://doi.org/10.21203/rs.3.rs-3807553/v1, 2023.
-  - [Temperature Data](https://data.giss.nasa.gov/gistemp/): GISTEMP Team, 2024: GISS Surface Temperature Analysis (GISTEMP), version 4. NASA Goddard Institute for Space Studies. Dataset accessed 20YY-MM-DD at https://data.giss.nasa.gov/gistemp/.
+- [Disaster Data](https://www.emdat.be/): Delforge, D. et al.: EM-DAT: The Emergency Events Database, Preprint, https://doi.org/10.21203/rs.3.rs-3807553/v1, 2023.
+- [Temperature Data](https://data.giss.nasa.gov/gistemp/): GISTEMP Team, 2024: GISS Surface Temperature Analysis (GISTEMP), version 4. NASA Goddard Institute for Space Studies. Dataset accessed 20YY-MM-DD at https://data.giss.nasa.gov/gistemp/.
 </div>

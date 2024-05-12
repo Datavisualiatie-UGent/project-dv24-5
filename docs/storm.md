@@ -160,8 +160,11 @@ import { scatterChart } from "./components/scatter_chart.js";
 ```js
 const before2000 = view(
   Inputs.checkbox(
-    ["include"],
-    { label: "Include storms before year 2000", value: ["include"] },
+    ["Include droughts before year 2000"],
+    {
+      label: "",
+      value: ["Include droughts before year 2000"],
+    },
     ""
   )
 );
@@ -253,7 +256,7 @@ const selectedCountries = view(
   <div>
     <p>
     <h3>Climate change</h3>
-    It is clear that there is an indication that the amount of storms are affected by the global temperature rise due to climate change. The data in the dataset didn't suggest that the storms where getting more powerful or had a longer duration.
+    It is clear that there is an indication that the amount of storms are affected by the global temperature rise due to climate change. Storms are getting more and more frequent. The data in the dataset didn't suggest that the storms where getting more powerful or had a longer duration.
     </p>
   </div>
   <div>

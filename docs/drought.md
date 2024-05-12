@@ -231,7 +231,7 @@ const selectedCountries = view(
 
 <div class="grid grid-cols-2">
   <div>
-    <p><h3>Climate change</h3>The chart to the right displays the temperature increase of the world due to climate change together with the amount of droughts per year. As is visible, there isn't a direct correlation between the amount of droughts and the constantly increasing temperature. In 2016, there were a lot of droughts when the global temperature also increased to an all time high.</p>
+    <p><h3>Climate change</h3>The chart to the right displays the temperature increase of the world due to climate change together with the amount of droughts per year. As is visible, there isn't a direct correlation between the amount of droughts and the constantly increasing temperature. What is noticable is that the amount of droughts has increased compared to the early 1990s. In 2016, the amount of droughts increased to an all time high.</p>
   </div>
   <div>
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}
@@ -246,8 +246,8 @@ const selectedCountries = view(
   </div>
   <div>
     <p>
-    <h3>Length of droughts</h3>
-    Due to climate change, the length of the droughts has also increased dramatically. While in the 2000s there weren't a lot of droughts that spanned for over a year. In recent years more and more droughts last longer and longer. While the amount of droughts in the world hasn't increased, the length and thus the severity of droughts keeps getting bigger. This leads to more deaths and more people affected.
+    <h3>Duration of droughts</h3>
+    Due to climate change, the duration of the droughts has also increased dramatically. While in the 2000s there weren't a lot of droughts that spanned for over a year. In recent years more and more droughts last longer and longer. The duration and thus the severity of droughts keeps getting bigger. This leads to more deaths and more people affected.
     </p>
   </div>
 </div>
