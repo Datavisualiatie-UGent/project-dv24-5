@@ -246,7 +246,7 @@ const selectedCountries = view(
 
 <div class="grid grid-cols-2">
   <div>
-    <p><h3>Climate change</h3>The chart to the right displays the temperature increase of the world due to climate change together with the amount of droughts per year. As is visible, there isn't a direct correlation between the amount of droughts and the constantly increasing temperature. What is noticable is that the amount of droughts has increased compared to the early 1990s. In 2016, the amount of droughts increased to an all time high.</p>
+    <p><h3>Correlation with temperature</h3>The chart to the right displays the temperature increase of the world due to climate change together with the amount of droughts per year. As is visible, there isn't a direct correlation between the amount of droughts and the constantly increasing temperature. What is noticable is that the amount of droughts has increased compared to the early 1990s. In 2016, the amount of droughts increased to an all time high.</p>
   </div>
   <div>
     ${resize( width => tempDisasterAmountLineChart(monthlyTemperatureChanges, disastersPerYear, correlation, width))}

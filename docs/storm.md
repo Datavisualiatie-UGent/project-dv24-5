@@ -266,7 +266,7 @@ const selectedCountries = view(
 <div class="grid grid-cols-2">
   <div>
     <p>
-    <h3>Climate change</h3>
+    <h3>Correlation with temperature</h3>
     It is clear that there is an indication that the amount of storms are affected by the global temperature rise due to climate change. Storms are getting more and more frequent. The data in the dataset didn't suggest that the storms where getting more powerful or had a longer duration.
     </p>
   </div>

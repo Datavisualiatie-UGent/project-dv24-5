@@ -280,7 +280,7 @@ const selectedCountries = view(
 
 <div class="grid grid-cols-2">
   <div>
-    <h3>Affected area size of floods</h3>
+    <h3>Correlation with temperature</h3>
     There is a strong indication that the amount of floods and the global temperature rise due to climate change are correlated when plotting the data from 1988 onwards. This correlation however becomes negligible when plotting the data from 2000. Still it is visible that there is a huge increase in the amount of floods per year from the 1990s to more recent years.
     </p>
   </div>

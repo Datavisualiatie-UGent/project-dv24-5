@@ -265,7 +265,7 @@ const selectedCountries = view(
   </div>
   <div>
     <p>
-    <h3>Climate change</h3>
+    <h3>Correlation with temperature</h3>
     There isn't any indicator that suggests that there are more wildfires in the world each year. This, however, doesn't mean that climate change doesn't have any effect on the wildfires.
     </p>
   </div>
