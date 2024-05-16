@@ -15,6 +15,8 @@ Over alle rampen is niet alle info beschikbaar, het is dus zo dat het mogelijk i
 
 Aangezien onze onderzoeksvraag gaat over natuurrampen filteren we de onnatuurlijke rampen uit deze dataset weg. 
 
+EM-DAT stelt ook dat het dataset onderhevig is aan tijdsbias. Dit betekent dat het dataset lijdt aan ongelijke rapportagekwaliteit en dekkingsgraad in de loop van de tijd. We kunnen deze bias verminderen door het dataset te filteren om alleen gegevens na het jaar 1988 op te nemen.
+
 ## Roadmap
 
 Om een goed beeld te krijgen van welke data beschikbaar was in de dataset doorzochten we deze eerst goed. Hier waren enkele initiële ideeën uit ontstaan:
@@ -24,8 +26,26 @@ Om een goed beeld te krijgen van welke data beschikbaar was in de dataset doorzo
 
 Na deze initiële inspectie van de dataset besloten we ons the focussen op deze 7 natuurrampen: **overstromingen, stormen, aardbevingen, aardverschuivingen, droogtes, extreme temperaturen en branden**.
 
+## Grafieken
+### Sunburst
+Om een idee te geven hoe onze dataset eruit ziet hadden we 1 centrale grafiek nodig. We hadden een grafiek nodig die de Types en Subtypes duidelijk toonde. Uiteindelijk hebben we gekozen voor de sunburst grafiek. De eerst implementatie is hieronder te zien. Op deze manier konden we de verschillende natuurrampen weergeven en het aandeel van elke natuuramp in de dataset. Om de defenitie van elk type weer te geven hebben we de definities van EM-DAT genomen en een feature toegevoegd waar de definities getoond worden als je over het type in de graph hovered.
+
+![Sunburst, eerste implementatie](/Assets/Selection_015.png)
+
+We kregen hier wel het probleem dat een aantal subtypes een veel te klein aandeel hadden om deze duidelijk te weergeven in de sunburst.
+
+![Sunburst, te klein aandeel](/Assets/Selection_016.png)
+
+Dit hebben we uiteindelijk opgelost door een categorie: other te maken en de subtypes met een te klein aandeel in deze categorie te zetten.
+
+![Sunburst, Final](/Assets/Selection_014.png)
+
+We hadden ook gekeken naar de TreeMap grafiek om onze dataset weer te geven maar vonden dat deze onduidelijker was dan de sunburst.
+![Sunburst, TreeMap](/Assets/image.png)
 
 
+### Trend area chart
+de area chart was een van de eerste grafieken die we hadden gemaakt, deze geeft de trend weer van iedere disaster type en de totale trend van alle disasters samen.
 
-
+![Area chart](/Assets/area-chart.png)
 
