@@ -45,7 +45,19 @@ We hadden ook gekeken naar de TreeMap grafiek om onze dataset weer te geven maar
 
 
 ### Trend area chart
-de area chart was een van de eerste grafieken die we hadden gemaakt, deze geeft de trend weer van iedere disaster type en de totale trend van alle disasters samen.
+De area chart was een van de eerste grafieken die we hadden gemaakt, deze geeft de trend weer van iedere disaster type en de totale trend van alle disasters samen.
 
 ![Area chart](/Assets/area-chart.png)
 
+### Death toll bar chart
+
+![Death tolls bar chart](/Assets/Death-tolls.png)
+
+### Correlatie met temperature
+Om de correlatie tussen de opwarming van de aarde en het aantal disasters te bekijken hadden we eerst het idee om een line chart te nemen van de temperatuur en deze naast de trend are chart te zetten. het resultaat was de grafiek hieronder.
+
+![alt text](/Assets/temp_line.png)
+
+We hadden door dat het vrij moeilijk was om de trends objectief met elkaar te kunnen vergelijken. Het idee was een nieuwe graph te maken met beide de trend van het aantal disasters en de temperatuur anomaly. Het resultaat is hieronder te zien. Om de trend ieets minder subjectief te maken hebben we ook een correlatie-factor in de graph geplaatst.
+
+![Correlation with temperature](/Assets/corr_all.png)
