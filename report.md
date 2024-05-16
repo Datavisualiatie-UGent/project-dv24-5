@@ -62,6 +62,9 @@ Om de correlatie tussen de opwarming van de aarde en het aantal disasters te bek
 
 ![temp line](/Assets/temp_line.png)
 
-We hadden door dat het vrij moeilijk was om de trends objectief met elkaar te kunnen vergelijken. Het idee was een nieuwe graph te maken met beide de trend van het aantal disasters en de temperatuur anomaly. Het resultaat is hieronder te zien. Om de trend ieets minder subjectief te maken hebben we ook een correlatie-factor in de graph geplaatst.
+We hadden door dat het vrij moeilijk was om de trends objectief met elkaar te kunnen vergelijken. Het idee was een nieuwe graph te maken met beide de trend van het aantal disasters en de temperatuur anomaly. Het resultaat is hieronder te zien. Om de correlatie minder subjectief te maken hebben we ook een correlatie-factor in de graph geplaatst.
 
 ![Correlation with temperature](/Assets/corr_all.png)
+
+## Grafieken niet in het resultaat
+### Correlatie matrix
