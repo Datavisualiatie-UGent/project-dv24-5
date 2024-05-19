@@ -541,6 +541,7 @@ export function getYearlyTemperatureChanges(giss_temperatures, filterBefore2000=
   return temps;
 }
 export function getMostDeadlyDisasters(emdat_disasters, filterBefore2000=true, disasterType="") {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   let disasterList = [];
   if (disasterType !== "") disasterList = [disasterType]
   const groupedDisasters = getGroupedDisasters(emdat_disasters, filterBefore2000, disasterList);
@@ -554,8 +555,9 @@ export function getMostDeadlyDisasters(emdat_disasters, filterBefore2000=true, d
   }).map(disaster => {
     const date = new Date();
     date.setFullYear(disaster["Start Year"]);
-    const countryName = (nameMapping[disaster["Country"]] ?? disaster["Country"])
-    const disasterName = `${countryName} (${disaster["Start Year"]})`;
+    const countryName = (nameMapping[disaster["Country"]] ?? disaster["Country"]);
+    const month = disaster["Start Month"] ? disaster["Start Month"] : 0;
+    const disasterName = `${countryName} (${disaster["Start Year"]} ${months[month - 1]})`;
     return {
       disaster: disasterName,
       disasterType: disaster["Disaster Type"],
